@@ -1,8 +1,10 @@
-package videodemos.example.restaurantinspector;
+package videodemos.example.restaurantinspector.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import videodemos.example.restaurantinspector.R;
 
 public class MainActivity extends AppCompatActivity {
 
