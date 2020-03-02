@@ -17,7 +17,7 @@ import videodemos.example.restaurantinspector.R;
 public class RestaurantManager {
     private final int NUM_OF_FIRST_NONVIOLATION_COLS = 5;
     public static RestaurantManager instance;
-    private List<Restaurant> resturantList = new ArrayList<>();
+    private List<Restaurant> restaurantList = new ArrayList<>();
 
     public static RestaurantManager getInstance(Context c) {
         if (instance == null) {
@@ -27,12 +27,12 @@ public class RestaurantManager {
         return instance;
     }
 
-    public List<Restaurant> getResturantList() {
-        return resturantList;
+    public List<Restaurant> getRestaurantList() {
+        return restaurantList;
     }
 
     public Restaurant getRestaurant(int index) {
-        return resturantList.get(index);
+        return restaurantList.get(index);
     }
 
     private RestaurantManager(Context c) {
@@ -74,9 +74,9 @@ public class RestaurantManager {
                     restaurant.setLongitude(0);
                 }
 
-                resturantList.add(restaurant);
+                restaurantList.add(restaurant);
 
-                Log.d("MyActivity", "Just  created" + restaurant);
+                Log.d("MyActivity", "Just  created this right now" + restaurant);
 
             }
         } catch (IOException e) {
@@ -96,6 +96,7 @@ public class RestaurantManager {
             // Step over headers
             reader.readLine();
             while ((line = reader.readLine()) != null) {
+                Log.d("My Activity String initial string", line);
                 Inspection inspection = new Inspection();
                 String[] tokens = line.split("\"");
                 String firstHalf = tokens[0];
@@ -105,19 +106,23 @@ public class RestaurantManager {
 
                 String trackingNum = sections[0];
 
-                for (Restaurant r : resturantList) {
+                for (Restaurant r : restaurantList) {
                     if (r.getTrackingNumber().equals(trackingNum)) {
                         inspection.setInspectionDate(sections[1]);
                         inspection.setInspType(sections[2]);
-                        inspection.setNumCriticalType(Integer.parseInt(sections[3]));
+                        inspection.setNumCritical(Integer.parseInt(sections[3]));
                         inspection.setNumNonCritical(Integer.parseInt(sections[4]));
-                        inspection.setHazardRating(sections[4]);
-                        if (inspection.getNumCriticalType() != 0) {
+                        inspection.setHazardRating(sections[5]);
+
+                        if (inspection.getNumCritical() != 0) {
                             String secondHalf = tokens[1];
-                            sections = secondHalf.split("|");
+                            sections = secondHalf.split("\\|");
+
                             for (String violationPossibility : sections) {
-                                String violation = violationPossibility.substring(0, 3);
-                                inspection.addViolation(Integer.parseInt(violation));
+                                    if(violationPossibility.length() > 3){
+                                        String violation = violationPossibility.substring(0, 3);
+                                        inspection.addViolation(Integer.parseInt(violation));
+                                    }
 
                             }
                         }

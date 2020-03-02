@@ -4,10 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import java.util.HashMap;
-
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
-import videodemos.example.restaurantinspector.Model.Violations;
+import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,7 +17,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         manager = RestaurantManager.getInstance(this);
-        Violations violationInstance = Violations.getInstance();
+        ViolationMaps violationInstance = ViolationMaps.getInstance();
+        manager.InspectionReader(this);
 
     }
 }

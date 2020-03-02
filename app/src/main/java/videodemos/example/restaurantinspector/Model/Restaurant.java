@@ -74,5 +74,17 @@ public class Restaurant {
         inspections.add(i);
     }
 
-
+    @Override
+    public String toString() {
+        return "Restaurant{" +
+                "trackingNumber='" + trackingNumber + '\'' +
+                ", name='" + name + '\'' +
+                ", physicalAddress='" + physicalAddress + '\'' +
+                ", physicalCity='" + physicalCity + '\'' +
+                ", factype='" + factype + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", inspections=" + inspections +
+                '}';
+    }
 }

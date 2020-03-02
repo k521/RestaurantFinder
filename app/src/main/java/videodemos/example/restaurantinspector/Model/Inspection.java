@@ -1,7 +1,6 @@
 package videodemos.example.restaurantinspector.Model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Inspection{
@@ -10,10 +9,10 @@ public class Inspection{
     private String hazardRating;
     private String InspectionDate;
     private String InspType;
-    private int NumCriticalType;
+    private int NumCritical;
     private int NumNonCritical;
-    private String ViolLump;
 
+    private ArrayList<Integer> violationCodes = new ArrayList<>();
 
     public String getInspectionDate() {
         return InspectionDate;
@@ -31,12 +30,12 @@ public class Inspection{
         InspType = inspType;
     }
 
-    public int getNumCriticalType() {
-        return NumCriticalType;
+    public int getNumCritical() {
+        return NumCritical;
     }
 
-    public void setNumCriticalType(int numCriticalType) {
-        NumCriticalType = numCriticalType;
+    public void setNumCritical(int numCritical) {
+        NumCritical = numCritical;
     }
 
     public int getNumNonCritical() {
@@ -47,13 +46,6 @@ public class Inspection{
         NumNonCritical = numNonCritical;
     }
 
-    public String getViolLump() {
-        return ViolLump;
-    }
-
-    public void setViolLump(String violLump) {
-        ViolLump = violLump;
-    }
 
     private List<Integer> violationList = new ArrayList<>();
 
