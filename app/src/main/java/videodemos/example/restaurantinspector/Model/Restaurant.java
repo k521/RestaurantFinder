@@ -62,6 +62,10 @@ public class Restaurant {
         this.latitude = latitude;
     }
 
+    public ArrayList<Inspection> getInspections() {
+        return inspections;
+    }
+
     public double getLongitude() {
         return longitude;
     }

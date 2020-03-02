@@ -61,7 +61,17 @@ public class Inspection{
         violationList.add(violationCode);
     }
 
-
-
+    @Override
+    public String toString() {
+        return "Inspection{" +
+                "hazardRating='" + hazardRating + '\'' +
+                ", InspectionDate='" + InspectionDate + '\'' +
+                ", InspType='" + InspType + '\'' +
+                ", NumCritical=" + NumCritical +
+                ", NumNonCritical=" + NumNonCritical +
+                ", violationCodes=" + violationCodes +
+                ", violationList=" + violationList +
+                '}';
+    }
 }
 

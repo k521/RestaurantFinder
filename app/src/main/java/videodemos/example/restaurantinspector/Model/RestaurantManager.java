@@ -96,7 +96,6 @@ public class RestaurantManager {
             // Step over headers
             reader.readLine();
             while ((line = reader.readLine()) != null) {
-                Log.d("My Activity String initial string", line);
                 Inspection inspection = new Inspection();
                 String[] tokens = line.split("\"");
                 String firstHalf = tokens[0];

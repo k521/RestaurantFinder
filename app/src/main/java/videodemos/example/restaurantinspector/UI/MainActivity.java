@@ -1,9 +1,13 @@
 package videodemos.example.restaurantinspector.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 
+import videodemos.example.restaurantinspector.Model.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
@@ -16,9 +20,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         manager = RestaurantManager.getInstance(this);
         ViolationMaps violationInstance = ViolationMaps.getInstance();
         manager.InspectionReader(this);
+
+        RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
+
+        restaurantsRecyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        restaurantsRecyclerView.setLayoutManager(layoutManager);
+
+        RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList());
+        restaurantsRecyclerView.setAdapter(restaurantsAdapter);
+
+
+
 
     }
 }
