@@ -117,7 +117,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/violations"
+        android:id="@+id/violationsListView"
         android:layout_width="409dp"
         android:layout_height="357dp"
         android:layout_marginStart="1dp"
