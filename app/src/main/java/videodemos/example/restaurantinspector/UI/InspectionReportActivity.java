@@ -24,36 +24,62 @@ import videodemos.example.restaurantinspector.R;
 
 public class InspectionReportActivity extends AppCompatActivity {
     private List<Violation> violationList = new ArrayList<Violation>();
-    RestaurantManager restaurantManager;
-    Restaurant currentRestaurant;
+
     String restaurantName = getIntent().getStringExtra("restaurantName");
+    String inspectionDate = getIntent().getIntExtra("inspectionDate");
+
+    RestaurantManager restaurantManager = getInstance(this);
+    Restaurant currentRestaurant;
+
+    ArrayList<Inspection> inspectionsList;
+    Inspection currentInspection;
+
+    ArrayList<Integer> violationCodes;
+    ViolationMaps maps = getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspection_report);
 
-        for(Restaurant r: restaurantManager){
-            if(r.getName() == restaurantName){
-                currentRestaurant = r;
-            }
-        }
-
         getCurrentRestaurant();
+        getCurrentInspectionReport();
+        getViolationCodes();
+
         populateViolationList();
         populateListView();
         //registerClickCallback();
     }
 
-    private void getCurrentRestaurant(){
-        for(Restaurant r: restaurantManager){
-            if(r.getName() == restaurantName){
-                currentRestaurant = r;
+    private void getViolationCodes() {
+        violationCodes = currentInspection.getViolationCodes();
+    }
+
+    private void getCurrentInspectionReport() {
+        inspectionsList = currentRestaurant.getInspections();
+        for(Inspection foundInspection: inspectionsList){
+            if(foundInspection.getInspectionDate() == inspectionDate){
+                currentInspection = foundInspection;
             }
         }
     }
+
+    private void getCurrentRestaurant(){
+        for(Restaurant foundRestaurant: restaurantManager){
+            if(foundRestaurant.getName() == restaurantName){
+                currentRestaurant = foundRestaurant;
+            }
+        }
+
+    }
     private void populateViolationList() {
-        // populate violationList using for each loop item in violationMaps for each inspection
+        for(Integer violationHashCode: violationCodes){
+            String violation = maps.shortViolation.get(violationHashCode);
+            //String idToImage = maps.natureViolation.get(violationHashCode);
+            boolean severityToImage = maps.severity.get(violationHashCode);
+            Violation newViolate = Violation(violation, idToImage, severityToImage);
+            violationList.add(newViolate);
+        }
     }
 
 
@@ -203,5 +229,44 @@ public class InspectionReportActivity extends AppCompatActivity {
 //        shortViolation.put(501,"FOODSAFE level 1 or Equivalent not present.");
 //        shortViolation.put(502,"In Operator's absence, nobody has FOODSAFE level 1 or Equivalent.");
     //  }
-
+//public static HashMap<Integer, String> natureViolation = new HashMap<Integer, String>();
+    //    private static void populateShortViolation(){
+//        //TODO: Add boolean as second field based on criticallity
+//        natureViolation.put(101, "");
+//        natureViolation.put(102,"");
+//        natureViolation.put(103,"");
+//        natureViolation.put(104,"");
+//        natureViolation.put(201, "");
+//        natureViolation.put(202,"");
+//        natureViolation.put(203,"");
+//        natureViolation.put(204,"");
+//        natureViolation.put(205,"");
+//        natureViolation.put(206,");
+//        natureViolation.put(208,"");
+//        natureViolation.put(209,"");
+//        natureViolation.put(210,"");
+//        natureViolation.put(211,"");
+//        natureViolation.put(212,"");
+//        natureViolation.put(301,"");
+//        natureViolation.put(302,"");
+//        natureViolation.put(303,"");
+//        natureViolation.put(304,"");
+//        natureViolation.put(305,"");
+//        natureViolation.put(306,"");
+//        natureViolation.put(307,"");
+//        natureViolation.put(308,"");
+//        natureViolation.put(309,"");
+//        natureViolation.put(310,"");
+//        natureViolation.put(311,"");
+//        natureViolation.put(312,"");
+//        natureViolation.put(313,"");
+//        natureViolation.put(314,"");
+//        natureViolation.put(315,"");
+//        natureViolation.put(401,"");
+//        natureViolation.put(402,"");
+//        natureViolation.put(403,"");
+//        natureViolation.put(404,"");
+//        natureViolation.put(501,"");
+//        natureViolation.put(502,"");
+    //  }
 }
