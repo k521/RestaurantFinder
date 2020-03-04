@@ -9,18 +9,18 @@ public class Inspection{
 
     private String hazardRating;
     
-    private Calendar inspectionDate;
+    private String inspectionDate;
     private String inspType;
     private int numCritical;
     private int numNonCritical;
 
     private List<Integer> violationList = new ArrayList<>();
 
-    public Calendar getInspectionDate() {
+    public String getInspectionDate() {
         return inspectionDate;
     }
 
-    public void setInspectionDate(Calendar inspectionDate)
+    public void setInspectionDate(String inspectionDate)
     {
         this.inspectionDate = inspectionDate;
     }

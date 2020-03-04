@@ -48,13 +48,20 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
     public void onBindViewHolder(@NonNull RestaurantsViewHolder holder, int position) {
         holder.restaurantName.setText(restaurantDataset.get(position).getName());
         Restaurant restaurantInQuestion = restaurantDataset.get(position);
-        Log.d("Adapter Class",restaurantInQuestion.toString());
         int sizeOfInspections = restaurantInQuestion.getInspections().size();
-        Inspection latestInspection = restaurantInQuestion.getInspections().get(sizeOfInspections - 1);
-        Calendar mostRecentDate = latestInspection.getInspectionDate();
-        holder.lastInspection.setText(mostRecentDate.toString());
-        int numOfIssues = latestInspection.getNumCritical() + latestInspection.getNumNonCritical();
-        holder.numOfIssues.setText("" + numOfIssues);
+        if(sizeOfInspections > 0){
+            Inspection latestInspection = restaurantInQuestion.getInspections().get(sizeOfInspections - 1);
+            holder.lastInspection.setText(latestInspection.getInspectionDate());
+            int numOfIssues = latestInspection.getNumCritical() + latestInspection.getNumNonCritical();
+            holder.numOfIssues.setText("" + numOfIssues);
+        }
+        else{
+            holder.lastInspection.setText(" No inspection so far");
+            holder.numOfIssues.setText("0");
+        }
+
+
+
 
 
 

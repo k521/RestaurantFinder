@@ -110,7 +110,7 @@ public class RestaurantManager {
                 String trackingNum = tokens[0].replaceAll("\"","");
                 for(Restaurant r: restaurantList){
                     if(r.getTrackingNumber().equals(trackingNum)){
-                        Calendar dateToAdd = makeDate(tokens[1].replace("\"",""));
+                        String dateToAdd = tokens[1].replace("\"","");
                         inspection.setInspectionDate(dateToAdd);
                         inspection.setInspType(tokens[2].replace("\"",""));
                         inspection.setNumNonCritical(Integer.parseInt(tokens[3]));
