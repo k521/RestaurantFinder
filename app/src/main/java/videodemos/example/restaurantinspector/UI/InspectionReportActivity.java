@@ -26,7 +26,7 @@ public class InspectionReportActivity extends AppCompatActivity {
     private List<Violation> violationList = new ArrayList<Violation>();
 
     String restaurantName = getIntent().getStringExtra("restaurantName");
-    String inspectionDate = getIntent().getIntExtra("inspectionDate");
+    String inspectionDate = getIntent().getStringExtra("inspectionDate");
 
     RestaurantManager restaurantManager = getInstance(this);
     Restaurant currentRestaurant;
