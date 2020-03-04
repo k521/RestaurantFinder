@@ -1,53 +1,59 @@
 package videodemos.example.restaurantinspector.Model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class Inspection{
 
 
     private String hazardRating;
-    private String InspectionDate;
-    private String InspType;
-    private int NumCritical;
-    private int NumNonCritical;
+    
+    private Calendar inspectionDate;
+    private String inspType;
+    private int numCritical;
+    private int numNonCritical;
 
-    private ArrayList<Integer> violationCodes = new ArrayList<>();
+    private List<Integer> violationList = new ArrayList<>();
 
-    public String getInspectionDate() {
-        return InspectionDate;
+    public Calendar getInspectionDate() {
+        return inspectionDate;
     }
 
-    public void setInspectionDate(String inspectionDate) {
-        InspectionDate = inspectionDate;
+    public void setInspectionDate(Calendar inspectionDate)
+    {
+        this.inspectionDate = inspectionDate;
+    }
+
+    public List<Integer> getViolationList() {
+        return violationList;
     }
 
     public String getInspType() {
-        return InspType;
+        return inspType;
     }
 
     public void setInspType(String inspType) {
-        InspType = inspType;
+        this.inspType = inspType;
     }
 
     public int getNumCritical() {
-        return NumCritical;
+        return numCritical;
     }
 
     public void setNumCritical(int numCritical) {
-        NumCritical = numCritical;
+        this.numCritical = numCritical;
     }
 
     public int getNumNonCritical() {
-        return NumNonCritical;
+        return numNonCritical;
     }
 
     public void setNumNonCritical(int numNonCritical) {
-        NumNonCritical = numNonCritical;
+        this.numNonCritical = numNonCritical;
     }
 
 
-    private List<Integer> violationList = new ArrayList<>();
 
     public String getHazardRating() {
         return hazardRating;
@@ -65,11 +71,10 @@ public class Inspection{
     public String toString() {
         return "Inspection{" +
                 "hazardRating='" + hazardRating + '\'' +
-                ", InspectionDate='" + InspectionDate + '\'' +
-                ", InspType='" + InspType + '\'' +
-                ", NumCritical=" + NumCritical +
-                ", NumNonCritical=" + NumNonCritical +
-                ", violationCodes=" + violationCodes +
+                ", inspectionDate='" + inspectionDate + '\'' +
+                ", inspType='" + inspType + '\'' +
+                ", numCritical=" + numCritical +
+                ", numNonCritical=" + numNonCritical +
                 ", violationList=" + violationList +
                 '}';
     }

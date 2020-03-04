@@ -23,7 +23,12 @@ public class MainActivity extends AppCompatActivity {
 
         manager = RestaurantManager.getInstance(this);
         ViolationMaps violationInstance = ViolationMaps.getInstance();
+
         manager.InspectionReader(this);
+
+        Restaurant r = manager.getRestaurant(0);
+        Log.d("MainActivity is here. We have", "" + r.getInspections().size());
+        manager.sortInspections();
 
         RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
 

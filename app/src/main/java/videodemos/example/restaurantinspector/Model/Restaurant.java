@@ -1,6 +1,8 @@
 package videodemos.example.restaurantinspector.Model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Restaurant {
 
@@ -91,4 +93,17 @@ public class Restaurant {
                 ", inspections=" + inspections +
                 '}';
     }
+
+    public void sortByInspectionDate(){
+        Comparator<Inspection> comparatorName = new Comparator<Inspection>() {
+            @Override
+            public int compare(Inspection r1, Inspection r2) {
+                return r1.getInspectionDate().compareTo(r2.getInspectionDate());
+            }
+        };
+
+        Collections.sort(inspections, comparatorName);
+    }
+
+
 }
