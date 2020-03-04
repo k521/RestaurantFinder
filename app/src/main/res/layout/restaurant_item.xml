@@ -3,18 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingStart="4dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="4dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_restaurant_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        app:cardBackgroundColor="@android:color/holo_orange_light"
+        app:cardBackgroundColor="@color/colorNoHazard"
         app:cardCornerRadius="16dp"
         app:cardElevation="@dimen/cardview_compat_inset_shadow">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cv_main_constraint"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 

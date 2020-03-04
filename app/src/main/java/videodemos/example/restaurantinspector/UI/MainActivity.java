@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         restaurantsRecyclerView.setLayoutManager(layoutManager);
 
-        RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList());
+        RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this);
         restaurantsRecyclerView.setAdapter(restaurantsAdapter);
 
 

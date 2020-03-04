@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RestaurantInspector</string>
+    <string name="number_of_issues">Number of issues: </string>
 </resources>
