@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.temporal.ChronoUnit;
@@ -64,27 +65,22 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             holder.lastInspection.setText(latestInspection.getInspectionDate());
             int numOfIssues = latestInspection.getNumCritical() + latestInspection.getNumNonCritical();
 
-            holder.numOfIssues.setText(context.getResources().getString(R.string.number_of_issues) + numOfIssues);
+            holder.numOfIssues.setText(context.getResources().getString(R.string.number_of_issues, numOfIssues));
 
             if (latestInspection.getHazardRating().equals("Low")){
-                int lowHazardColor = context.getResources().getColor(R.color.colorLowHazard);
+                int lowHazardColor = ContextCompat.getColor(context, R.color.colorLowHazard);
                 holder.cardViewBackground.setCardBackgroundColor(lowHazardColor);
             } else if (latestInspection.getHazardRating().equals("Moderate")){
-                int medHazardColor = context.getResources().getColor(R.color.colorMedHazard);
+                int medHazardColor = ContextCompat.getColor(context, R.color.colorMedHazard);
                 holder.cardViewBackground.setCardBackgroundColor(medHazardColor);
             } else {
-                int highHazardColor = context.getResources().getColor(R.color.colorHighHazard);
+                int highHazardColor = ContextCompat.getColor(context, R.color.colorHighHazard);
                 holder.cardViewBackground.setCardBackgroundColor(highHazardColor);
             }
+        } else {
+            holder.lastInspection.setText(context.getResources().getString(R.string.no_inspections_so_far));
+            holder.numOfIssues.setText(context.getResources().getString(R.string.number_of_issues, 0));
         }
-        else{
-            holder.lastInspection.setText(" No inspection so far");
-            holder.numOfIssues.setText("0");
-        }
-
-
-
-
 
     }
 
