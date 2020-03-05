@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RestaurantInspector</string>
+    <string name="coordinates">GPS Coordinates: $1%lf, $2%lf</string>
 </resources>
