@@ -192,47 +192,47 @@ public class InspectionReportActivity extends AppCompatActivity {
 
     //    private static void populateShortViolation(){
 //        //TODO: Add boolean as second field based on criticallity
-//        shortViolation.put(101, "Plans/construction/alterations not up to standard.");
-//        shortViolation.put(102,"Operation of unapproved food premises. ");
-//        shortViolation.put(103,"No valid permit for this restaurant.");
-//        shortViolation.put(104,"Permit not seen easily.");
-//        shortViolation.put(201, "Food contaminated or unfit for consumption.");
-//        shortViolation.put(202,"Food not processed in manner for safe eating.");
-//        shortViolation.put(203,"Food not cooled properly.");
-//        shortViolation.put(204,"Food not cooked or heated for safe eating.");
-//        shortViolation.put(205,"Cold food not stored properly.");
-//        shortViolation.put(206,"Hot food not stored properly.);
-//        shortViolation.put(208,"Food obtained from unapproved sources.");
-//        shortViolation.put(209,"Food not protected from contamination.");
-//        shortViolation.put(210,"Food not thawed properly.");
-//        shortViolation.put(211,"Frozen food not stored properly.");
-//        shortViolation.put(212,"Food handling procedures not provided.");
-//        shortViolation.put(301,"Equipment/utensils/food not sanitary.");
-//        shortViolation.put(302,"Equipment/utensils/food not properly washed/sanitized.");
-//        shortViolation.put(303,"Equipment/facilities/Water for sanitation not proper.");
-//        shortViolation.put(304,"Location contains pests.");
-//        shortViolation.put(305,"Conditions observed may cultivate pests.");
-//        shortViolation.put(306,"Food premise not sanitary.");
-//        shortViolation.put(307,"Equipment/utensils/food contact surfaces bad design/material");
-//        shortViolation.put(308,"Equipment/utensils/food contact surfaces not working.");
-//        shortViolation.put(309,"Chemical cleansers stored or labelled improperly.");
-//        shortViolation.put(310,"Single use items used more than once.);
-//        shortViolation.put(311,"Premise not maintained according to plan.");
-//        shortViolation.put(312,"Items unrelated to food business on premise.");
-//        shortViolation.put(313, "Live animals on premise.");
-//        shortViolation.put(314,"Approved sanitation procedures not provided.");
-//        shortViolation.put(315,"Inaccurate thermometers.");
-//        shortViolation.put(401,"Proper handwashing station not present.");
-//        shortViolation.put(402,"Hands not washed adequately or frequently enough.");
-//        shortViolation.put(403,"Employees lack hygiene.");
-//        shortViolation.put(404,"Employees smoking in not proper areas.");
-//        shortViolation.put(501,"FOODSAFE level 1 or Equivalent not present.");
-//        shortViolation.put(502,"In Operator's absence, nobody has FOODSAFE level 1 or Equivalent.");
+//        shortViolation.put(101, "Plans/construction/alterations not up to standard."); // miscellaneous_icon
+//        shortViolation.put(102,"Operation of unapproved food premises. ");        // miscellaneous_icon
+//        shortViolation.put(103,"No valid permit for this restaurant.");           // miscellaneous_icon
+//        shortViolation.put(104,"Permit not seen easily.");                        // miscellaneous_icon
+//        shortViolation.put(201, "Food contaminated or unfit for consumption.");   //unfit_consumption_icon
+//        shortViolation.put(202,"Food not processed in manner for safe eating.");  // miscellaneous_icon
+//        shortViolation.put(203,"Food not cooled properly.");                      //thaw_hazard_icon
+//        shortViolation.put(204,"Food not cooked or heated for safe eating.");     //unfit_consumption_icon
+//        shortViolation.put(205,"Cold food not stored properly.");                 // miscellaneous_icon
+//        shortViolation.put(206,"Hot food not stored properly.);                   // miscellaneous_icon
+//        shortViolation.put(208,"Food obtained from unapproved sources.");         // miscellaneous_icon
+//        shortViolation.put(209,"Food not protected from contamination.");         // contamination_icon
+//        shortViolation.put(210,"Food not thawed properly.");                      //thaw_hazard_icon
+//        shortViolation.put(211,"Frozen food not stored properly.");               // miscellaneous_icon
+//        shortViolation.put(212,"Food handling procedures not provided.");         // miscellaneous_icon
+//        shortViolation.put(301,"Equipment/utensils/food not sanitary.");          //sanitory_condition_icon
+//        shortViolation.put(302,"Equipment/utensils/food not properly washed/sanitized."); //sanitory_condition_icon
+//        shortViolation.put(303,"Equipment/facilities/Water for sanitation not proper.");  sanitory_condition_icon
+//        shortViolation.put(304,"Location contains pests.");                       //pests_icon
+//        shortViolation.put(305,"Conditions observed may cultivate pests.");       //pests_icon
+//        shortViolation.put(306,"Food premise not sanitary.");                     //sanitory_condition_icon
+//        shortViolation.put(307,"Equipment/utensils/food contact surfaces bad design/material");   //working_order
+//        shortViolation.put(308,"Equipment/utensils/food contact surfaces not working.");          //working_order
+//        shortViolation.put(309,"Chemical cleansers stored or labelled improperly.");              // miscellaneous_icon
+//        shortViolation.put(310,"Single use items used more than once.);                           // miscellaneous_icon
+//        shortViolation.put(311,"Premise not maintained according to plan.");                      // miscellaneous_icon
+//        shortViolation.put(312,"Items unrelated to food business on premise.");                   // miscellaneous_icon
+//        shortViolation.put(313, "Live animals on premise.");                                      // miscellaneous_icon
+//        shortViolation.put(314,"Approved sanitation procedures not provided.");                   // sanitory_condition_icon
+//        shortViolation.put(315,"Inaccurate thermometers.");                                       // working_order
+//        shortViolation.put(401,"Proper handwashing station not present.");                        // sanitory_condition_icon
+//        shortViolation.put(402,"Hands not washed adequately or frequently enough.");              // sanitory_condition_icon
+//        shortViolation.put(403,"Employees lack hygiene.");                                        // unhygienic_icon
+//        shortViolation.put(404,"Employees smoking in not proper areas.");                         // miscellaneous_icon
+//        shortViolation.put(501,"FOODSAFE level 1 or Equivalent not present.");                    // miscellaneous_icon
+//        shortViolation.put(502,"In Operator's absence, nobody has FOODSAFE level 1 or Equivalent."); // miscellaneous_icon
     //  }
 //public static HashMap<Integer, String> natureViolation = new HashMap<Integer, String>();
     //    private static void populateShortViolation(){
 //        //TODO: Add boolean as second field based on criticallity
-//        natureViolation.put(101, "");
+//        natureViolation.put(101, "miscellaneous_icon");
 //        natureViolation.put(102,"");
 //        natureViolation.put(103,"");
 //        natureViolation.put(104,"");
