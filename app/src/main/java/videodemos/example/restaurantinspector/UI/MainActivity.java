@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -30,15 +31,17 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity is here. We have", "" + r.getInspections().size());
         manager.sortInspections();
 
-        RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
+//        RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
+//
+//        restaurantsRecyclerView.setHasFixedSize(true);
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+//        restaurantsRecyclerView.setLayoutManager(layoutManager);
+//
+//        RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList());
+//        restaurantsRecyclerView.setAdapter(restaurantsAdapter);
 
-        restaurantsRecyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        restaurantsRecyclerView.setLayoutManager(layoutManager);
-
-        RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList());
-        restaurantsRecyclerView.setAdapter(restaurantsAdapter);
-
+        Intent intent = RestaurantReportActivity.makeIntent(this, 0);
+        startActivity(intent);
 
 
 
