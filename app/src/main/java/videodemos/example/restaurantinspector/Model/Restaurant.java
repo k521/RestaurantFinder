@@ -76,7 +76,7 @@ public class Restaurant {
         this.longitude = longitude;
     }
 
-    public void addInspection(Inspection i){
+    public void addInspection(Inspection i) {
         inspections.add(i);
     }
 
@@ -94,7 +94,7 @@ public class Restaurant {
                 '}';
     }
 
-    public void sortByInspectionDate(){
+    public void sortByInspectionDate() {
         Comparator<Inspection> comparatorName = new Comparator<Inspection>() {
             @Override
             public int compare(Inspection r1, Inspection r2) {

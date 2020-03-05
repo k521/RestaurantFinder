@@ -2,8 +2,6 @@ package videodemos.example.restaurantinspector.UI;
 
 
 import android.content.Context;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +9,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
 import java.util.List;
 
 import videodemos.example.restaurantinspector.Model.Inspection;
@@ -27,27 +22,39 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
     private List<Restaurant> restaurantDataset;
     private Context context;
+    private OnRestaurantListener onRestaurantListener;
 
 
-    public static class RestaurantsViewHolder extends RecyclerView.ViewHolder {
+    public class RestaurantsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView restaurantName;
         TextView numOfIssues;
         TextView lastInspection;
         CardView cardViewBackground;
+        OnRestaurantListener onRestaurantListener;
 
-        public RestaurantsViewHolder(View itemView) {
+        public RestaurantsViewHolder(View itemView, OnRestaurantListener onRestaurantListener) {
             super(itemView);
             restaurantName = itemView.findViewById(R.id.tv_card_restaraunt_name);
             numOfIssues = itemView.findViewById(R.id.tv_card_number_issues);
             lastInspection = itemView.findViewById(R.id.tv_card_last_inspection);
             cardViewBackground = itemView.findViewById(R.id.cv_restaurant_card);
+            this.onRestaurantListener = onRestaurantListener;
+
+            itemView.setOnClickListener(this);
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            onRestaurantListener.onRestaurantClick(getAdapterPosition());
 
         }
     }
 
-    public RestaurantsAdapter(List<Restaurant> restaurantDataset, Context context) {
+    public RestaurantsAdapter(List<Restaurant> restaurantDataset, Context context, OnRestaurantListener onRestaurantListener) {
         this.restaurantDataset = restaurantDataset;
         this.context = context;
+        this.onRestaurantListener = onRestaurantListener;
     }
 
     @Override
@@ -60,17 +67,17 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         holder.restaurantName.setText(restaurantDataset.get(position).getName());
         Restaurant restaurantInQuestion = restaurantDataset.get(position);
         int sizeOfInspections = restaurantInQuestion.getInspections().size();
-        if(sizeOfInspections > 0){
+        if (sizeOfInspections > 0) {
             Inspection latestInspection = restaurantInQuestion.getInspections().get(sizeOfInspections - 1);
             holder.lastInspection.setText(latestInspection.getInspectionDate());
             int numOfIssues = latestInspection.getNumCritical() + latestInspection.getNumNonCritical();
 
             holder.numOfIssues.setText(context.getResources().getString(R.string.number_of_issues, numOfIssues));
 
-            if (latestInspection.getHazardRating().equals("Low")){
+            if (latestInspection.getHazardRating().equals("Low")) {
                 int lowHazardColor = ContextCompat.getColor(context, R.color.colorLowHazard);
                 holder.cardViewBackground.setCardBackgroundColor(lowHazardColor);
-            } else if (latestInspection.getHazardRating().equals("Moderate")){
+            } else if (latestInspection.getHazardRating().equals("Moderate")) {
                 int medHazardColor = ContextCompat.getColor(context, R.color.colorMedHazard);
                 holder.cardViewBackground.setCardBackgroundColor(medHazardColor);
             } else {
@@ -90,10 +97,11 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.restaurant_item, parent, false);
 
-        RestaurantsViewHolder vh = new RestaurantsViewHolder(view);
+        RestaurantsViewHolder vh = new RestaurantsViewHolder(view, onRestaurantListener);
         return vh;
     }
 
-
-
+    public interface OnRestaurantListener {
+        void onRestaurantClick(int position);
+    }
 }
