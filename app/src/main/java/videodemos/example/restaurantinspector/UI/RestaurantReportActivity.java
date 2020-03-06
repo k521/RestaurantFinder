@@ -19,6 +19,7 @@ import videodemos.example.restaurantinspector.R;
 public class RestaurantReportActivity extends AppCompatActivity implements InspectionsAdapter.OnInspectionListener {
 
     private static final String RESTAURANT_INDEX = "RESTAURANT_INDEX";
+    private static int indexOfRestaurant = 0;
 
     public static Intent makeIntent(Context context, int indexOfRestaurant){
         Intent intent = new Intent(context, RestaurantReportActivity.class);
@@ -34,8 +35,9 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setupToolbar();
+
         int restaurantIndex = getIntent().getIntExtra(RESTAURANT_INDEX, 0);
+        indexOfRestaurant = restaurantIndex;
         RestaurantManager manager = RestaurantManager.getInstance(this);
         restaurant = manager.getRestaurantList().get(restaurantIndex);
 
@@ -46,6 +48,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
             setupRecyclerView();
         }
 
+        setupToolbar();
         setupRestaurantInfoTextViews();
 
     }
@@ -54,13 +57,13 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         Toolbar toolbar = findViewById(R.id.restaurant_report_toolbar);
         setSupportActionBar(toolbar);
 
-//        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                finish();
-//            }
-//        });
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
 
@@ -88,7 +91,16 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
 
     @Override
     public void onInspectionClick(int position) {
+        String tagRestauarnt = "Restaurant";
+        String tagInspection = "Inspection";
         Toast.makeText(this, "Inspection clicked: " + restaurant.getInspections().get(position).toString(), Toast.LENGTH_SHORT).show();
+        Intent intentThirdActivity = new Intent(this,InspectionReportActivity.class);
+        intentThirdActivity.putExtra("tagRestaurant",indexOfRestaurant);
+        intentThirdActivity.putExtra("Inspection",position);
+
+        // Start Activity here.
+        // startActivity(intentThirdActivity);
+
         // TODO GOING INTO THIRD ACTIVITY.
     }
 }
