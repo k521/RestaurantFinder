@@ -9,10 +9,10 @@ public class Inspection{
 
     private String hazardRating;
     
-    private String inspectionDate;
-    private String inspType;
-    private int numCritical;
-    private int numNonCritical;
+    private String inspectionDate = "";
+    private String inspType = "";
+    private int numCritical = 0;
+    private int numNonCritical = 0;
 
     private List<Integer> violationList = new ArrayList<>();
 
