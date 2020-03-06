@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
         restaurantsRecyclerView.setAdapter(restaurantsAdapter);
-        
+
     }
 
     @Override

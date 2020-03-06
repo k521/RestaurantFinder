@@ -89,5 +89,6 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
     @Override
     public void onInspectionClick(int position) {
         Toast.makeText(this, "Inspection clicked: " + restaurant.getInspections().get(position).toString(), Toast.LENGTH_SHORT).show();
+        // TODO GOING INTO THIRD ACTIVITY.
     }
 }
