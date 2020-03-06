@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
     @Override
     public void onRestaurantClick(int position) {
-       // Toast.makeText(this, "Restaurant Clicked is " + manager.getRestaurant(position).toString(), Toast.LENGTH_LONG).show();
             Intent intent = RestaurantReportActivity.makeIntent(this, position);
             startActivity(intent);
     }
