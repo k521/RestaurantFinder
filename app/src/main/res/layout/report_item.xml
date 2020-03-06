@@ -14,17 +14,18 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cv_main_constraint"
         android:layout_width="match_parent"
-        android:layout_height="245dp"
+        android:layout_height="wrap_content"
         android:layout_margin="4dp">
 
 
         <TextView
             android:id="@+id/tv_card_number_non_crit_issues"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="# Non-Crit Issues"
-            android:textAlignment="center"
             android:textColor="@android:color/background_light"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -33,11 +34,12 @@
         <TextView
             android:id="@+id/tv_card_number_crit_issues"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="# Crit Issues"
-            android:textAlignment="center"
+            android:textAlignment="viewStart"
             android:textColor="@android:color/background_light"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/guideline4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -46,9 +48,9 @@
         <TextView
             android:id="@+id/tv_card_days_from_inspection"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:text="Days from"
-            android:textAlignment="center"
+            android:textAlignment="viewStart"
             android:textColor="@android:color/background_light"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -60,12 +62,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="155dp" />
+            app:layout_constraintGuide_percent="0.33333334" />
 
         <ImageView
             android:id="@+id/iv_card_inspection_hazard_icon"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"

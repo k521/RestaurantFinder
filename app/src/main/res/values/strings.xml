@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">RestaurantInspector</string>
-    <string name="coordinates">GPS Coordinates: $1%lf, $2%lf</string>
-    <string name="number_crit_issues"># of Critical Issues: $1%d</string>
-    <string name="number_non_crit_issues"># of Non-Critical Issues: $1%d</string>
+    <string name="coordinates">GPS Coordinates: %1$f, %2$f</string>
+    <string name="number_crit_issues"># of Critical Issues: %1$d</string>
+    <string name="number_non_crit_issues"># of Non-Critical Issues: %1$d</string>
+    <string name="no_inspections_yet">No inspections yet.</string>
 </resources>
