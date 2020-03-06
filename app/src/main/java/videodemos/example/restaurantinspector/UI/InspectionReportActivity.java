@@ -29,8 +29,8 @@ import static videodemos.example.restaurantinspector.Model.RestaurantManager.get
 public class InspectionReportActivity extends AppCompatActivity {
     private List<Violation> violationList = new ArrayList<Violation>();
 
-    String restaurantName = getIntent().getStringExtra("restaurantName");
-    String inspectionDate = getIntent().getStringExtra("inspectionDate");
+    int restaurantName = getIntent().getIntExtra("Restaurant", 0);
+    int inspectionIndex = getIntent().getIntExtra("Inspection", 0);
 
     RestaurantManager restaurantManager = RestaurantManager.getInstance(this);
     Restaurant currentRestaurant;
@@ -61,20 +61,11 @@ public class InspectionReportActivity extends AppCompatActivity {
 
     private void getCurrentInspectionReport() {
         inspectionsList = currentRestaurant.getInspections();
-        for(Inspection foundInspection: inspectionsList){
-            if(foundInspection.getInspectionDate() == inspectionDate){
-                currentInspection = foundInspection;
-            }
-        }
+        currentInspection = inspectionsList.get(inspectionIndex);
     }
 
     private void getCurrentRestaurant(){
-        for(Restaurant foundRestaurant: restaurantManager.getRestaurantList()){
-            if(foundRestaurant.getName() == restaurantName){
-                currentRestaurant = foundRestaurant;
-            }
-        }
-
+        currentRestaurant = restaurantManager.getRestaurantList().get(restaurantName);
     }
     private void populateViolationList() {
         for(Integer violationHashCode: violationCodes){
