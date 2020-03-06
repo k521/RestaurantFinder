@@ -3,10 +3,10 @@ package videodemos.example.restaurantinspector.Model;
 public class Violation {
 
     private String violation;
-    private String idToImage;
+    private int idToImage;
     private boolean severityToImage;
 
-    public Violation(String violation, String idToImage, boolean severityToImage){
+    public Violation(String violation, int idToImage, boolean severityToImage){
         this.violation = violation;
         this.idToImage = idToImage;
         this.severityToImage = severityToImage;
@@ -16,7 +16,7 @@ public class Violation {
         return violation;
     }
 
-    public String getIdToImage() {
+    public int getIdToImage() {
         return idToImage;
     }
 
@@ -27,7 +27,7 @@ public class Violation {
         this.violation = violation;
     }
 
-    public void setIdToImage(String idToImage) {
+    public void setIdToImage(int idToImage) {
         this.idToImage = idToImage;
     }
 

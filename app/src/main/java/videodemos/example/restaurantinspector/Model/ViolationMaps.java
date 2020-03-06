@@ -2,6 +2,8 @@ package videodemos.example.restaurantinspector.Model;
 
 import java.util.HashMap;
 
+import videodemos.example.restaurantinspector.R;
+
 public class ViolationMaps {
 
     private static ViolationMaps instance;
@@ -19,7 +21,7 @@ public class ViolationMaps {
 
     public static HashMap<Integer, Boolean> severity = new HashMap<Integer, Boolean>();
 
-    public static HashMap<Integer, String> natureViolation = new HashMap<Integer, String>();
+    public static HashMap<Integer, Integer> natureViolation = new HashMap<Integer, Integer>();
 
     public static HashMap<Integer, String> shortViolation = new HashMap<Integer, String>();
 
@@ -105,42 +107,42 @@ public class ViolationMaps {
 
       private static void populateNatureViolation(){
         //TODO: Add boolean as second field based on criticallity
-        natureViolation.put(101, "miscellaneous_icon");
-        natureViolation.put(102,"miscellaneous_icon");
-        natureViolation.put(103,"miscellaneous_icon");
-        natureViolation.put(104,"miscellaneous_icon");
-        natureViolation.put(201, "unfit_consumption_icon");
-        natureViolation.put(202,"miscellaneous_icon");
-        natureViolation.put(203,"thaw_hazard_icon");
-        natureViolation.put(204,"unfit_consumption_icon");
-        natureViolation.put(205,"miscellaneous_icon");
-        natureViolation.put(206,"miscellaneous_icon");
-        natureViolation.put(208,"miscellaneous_icon");
-        natureViolation.put(209,"contamination_icon");
-        natureViolation.put(210,"thaw_hazard_icon");
-        natureViolation.put(211,"miscellaneous_icon");
-        natureViolation.put(212,"miscellaneous_icon");
-        natureViolation.put(301,"sanitory_condition_icon");
-        natureViolation.put(302,"sanitory_condition_icon");
-        natureViolation.put(303,"sanitory_condition_icon");
-        natureViolation.put(304,"pests_icon");
-        natureViolation.put(305,"pests_icon");
-        natureViolation.put(306,"sanitory_condition_icon");
-        natureViolation.put(307,"working_order");
-        natureViolation.put(308,"working_order");
-        natureViolation.put(309,"miscellaneous_icon");
-        natureViolation.put(310,"miscellaneous_icon");
-        natureViolation.put(311,"miscellaneous_icon");
-        natureViolation.put(312,"miscellaneous_icon");
-        natureViolation.put(313,"miscellaneous_icon");
-        natureViolation.put(314,"sanitory_condition_icon");
-        natureViolation.put(315,"working_order");
-        natureViolation.put(401,"sanitory_condition_icon");
-        natureViolation.put(402,"sanitory_condition_icon");
-        natureViolation.put(403,"unhygienic_icon");
-        natureViolation.put(404,"miscellaneous_icon");
-        natureViolation.put(501,"miscellaneous_icon");
-        natureViolation.put(502,"miscellaneous_icon");
+        natureViolation.put(101, R.drawable.miscellaneous_icon);
+        natureViolation.put(102, R.drawable.miscellaneous_icon);
+        natureViolation.put(103,R.drawable.miscellaneous_icon);
+        natureViolation.put(104,R.drawable.miscellaneous_icon);
+        natureViolation.put(201, R.drawable.unfit_consumption_icon);
+        natureViolation.put(202,R.drawable.miscellaneous_icon);
+        natureViolation.put(203,R.drawable.thaw_hazard_icon);
+        natureViolation.put(204,R.drawable.unfit_consumption_icon);
+        natureViolation.put(205,R.drawable.miscellaneous_icon);
+        natureViolation.put(206,R.drawable.miscellaneous_icon);
+        natureViolation.put(208,R.drawable.miscellaneous_icon);
+        natureViolation.put(209,R.drawable.contamination_icon);
+        natureViolation.put(210,R.drawable.thaw_hazard_icon);
+        natureViolation.put(211,R.drawable.miscellaneous_icon);
+        natureViolation.put(212,R.drawable.miscellaneous_icon);
+        natureViolation.put(301,R.drawable.sanitory_condition_icon);
+        natureViolation.put(302,R.drawable.sanitory_condition_icon);
+        natureViolation.put(303,R.drawable.sanitory_condition_icon);
+        natureViolation.put(304,R.drawable.pests_icon);
+        natureViolation.put(305,R.drawable.pests_icon);
+        natureViolation.put(306,R.drawable.sanitory_condition_icon);
+        natureViolation.put(307,R.drawable.working_order);
+        natureViolation.put(308,R.drawable.working_order);
+        natureViolation.put(309,R.drawable.miscellaneous_icon);
+        natureViolation.put(310,R.drawable.miscellaneous_icon);
+        natureViolation.put(311,R.drawable.miscellaneous_icon);
+        natureViolation.put(312,R.drawable.miscellaneous_icon);
+        natureViolation.put(313,R.drawable.miscellaneous_icon);
+        natureViolation.put(314,R.drawable.sanitory_condition_icon);
+        natureViolation.put(315,R.drawable.working_order);
+        natureViolation.put(401,R.drawable.sanitory_condition_icon);
+        natureViolation.put(402,R.drawable.sanitory_condition_icon);
+        natureViolation.put(403,R.drawable.unhygienic_icon);
+        natureViolation.put(404,R.drawable.miscellaneous_icon);
+        natureViolation.put(501,R.drawable.miscellaneous_icon);
+        natureViolation.put(502,R.drawable.miscellaneous_icon);
       }
 
         private static void populateShortViolation(){
@@ -181,7 +183,7 @@ public class ViolationMaps {
         shortViolation.put(404,"Employees smoking in not proper areas.");                         //
         shortViolation.put(501,"FOODSAFE level 1 or Equivalent not present.");                    //
         shortViolation.put(502,"In Operator's absence, nobody has FOODSAFE level 1 or Equivalent."); //
-    //  }
+     }
 //    private static void populateSeverity(){
 //        //TODO: Add boolean as second field based on criticallity
 //        severity.put(101, false);

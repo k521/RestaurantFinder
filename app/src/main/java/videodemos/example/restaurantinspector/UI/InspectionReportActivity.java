@@ -79,7 +79,7 @@ public class InspectionReportActivity extends AppCompatActivity {
     private void populateViolationList() {
         for(Integer violationHashCode: violationCodes){
             String violation = maps.shortViolation.get(violationHashCode);
-            String idToImage = maps.natureViolation.get(violationHashCode);
+            int idToImage = maps.natureViolation.get(violationHashCode);
             boolean severityToImage = maps.severity.get(violationHashCode);
             Violation newViolate = new Violation(violation, idToImage, severityToImage);
             violationList.add(newViolate);
@@ -121,15 +121,10 @@ public class InspectionReportActivity extends AppCompatActivity {
             }
 
             ImageView violationType = (ImageView) itemView.findViewById(R.id.violationType);
-            if(currentViolation.getIdToImage() == food){
-                violationType.setImageResource(foodimageID);
-            }
-            else if(currentViolation.getIdToImage() == equipment){
-                violationType.setImageResource(equipmentimageID);
-            }
-            else if(currentViolation.getIdToImage() == misc){
-                violationType.setImageResource(miscImageID);
-            }
+
+            violationType.setImageResource(currentViolation.getIdToImage());
+
+
 
             TextView description = (TextView) itemView.findViewById(R.id.violationDescription);
             description.setText(currentViolation.getViolation());
