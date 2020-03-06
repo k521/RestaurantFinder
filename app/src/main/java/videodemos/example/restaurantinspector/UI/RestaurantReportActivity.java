@@ -96,9 +96,9 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         Intent intentThirdActivity = new Intent(this,InspectionReportActivity.class);
         intentThirdActivity.putExtra("tagRestaurant",indexOfRestaurant);
         intentThirdActivity.putExtra("Inspection",position);
+
         // Start Activity here.
-
-
+        // startActivity(intentThirdActivity);
 
         // TODO GOING INTO THIRD ACTIVITY.
     }

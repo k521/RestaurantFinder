@@ -1,5 +1,18 @@
 package videodemos.example.restaurantinspector.Model;
 
+import android.util.Log;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.Months;
+import org.joda.time.Years;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.util.HashMap;
 
 public class ViolationMaps {
@@ -55,6 +68,25 @@ public class ViolationMaps {
         violationCodes.put(502,"Not Critical,In operator’s absence no staff on duty has FOODSAFE Level 1 or equivalent [s. 10(2)],Not Repeat");
     }
 
+    public static void numOfDatesInBetween(String dateThen){
+
+    }
+    public static int daysInBetween(String dateInput) {
+        DateTimeFormatter dateFormat = DateTimeFormat
+                .forPattern("G,C,Y,x,w,e,E,Y,D,M,d,a,K,h,H,k,m,s,S,z,Z");
+
+        String year = dateInput.substring(0,4);
+        String month = dateInput.substring(4,6);
+        String date = dateInput.substring(6,8);
+        String dateInQuestion = year + "-" + month + "-" + date;
+        LocalTime localTime = new LocalTime();
+        LocalDate localDate = new LocalDate();
+        DateTime dateTime = new DateTime();
+        LocalDateTime localDateTime = new LocalDateTime();
+        DateTimeZone dateTimeZone = DateTimeZone.getDefault();
+        int days = Days.daysBetween(DateTime.parse(dateInQuestion),dateTime).getDays();
+        return days;
+    }
 //    private static void populateSeverity(){
 //        //TODO: Add boolean as second field based on criticallity
 //        severity.put(101, false);
