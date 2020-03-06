@@ -4,4 +4,6 @@
     <string name="number_crit_issues"># of Critical Issues: %1$d</string>
     <string name="number_non_crit_issues"># of Non-Critical Issues: %1$d</string>
     <string name="no_inspections_yet">No inspections yet.</string>
+    <string name="number_of_issues">Number of issues: %1$d</string>
+    <string name="no_inspections_so_far">No inspection so far</string>
 </resources>
