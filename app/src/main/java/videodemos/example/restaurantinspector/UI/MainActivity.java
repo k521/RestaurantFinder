@@ -1,6 +1,7 @@
 package videodemos.example.restaurantinspector.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.restaurant_list_toolbar);
+        setSupportActionBar(toolbar);
 
         manager = RestaurantManager.getInstance(this);
         ViolationMaps violationInstance = ViolationMaps.getInstance();

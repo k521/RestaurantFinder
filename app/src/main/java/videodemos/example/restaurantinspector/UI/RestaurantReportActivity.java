@@ -35,7 +35,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setupToolbar();
+
         int restaurantIndex = getIntent().getIntExtra(RESTAURANT_INDEX, 0);
         indexOfRestaurant = restaurantIndex;
         RestaurantManager manager = RestaurantManager.getInstance(this);
@@ -48,6 +48,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
             setupRecyclerView();
         }
 
+        setupToolbar();
         setupRestaurantInfoTextViews();
 
     }
@@ -56,13 +57,13 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         Toolbar toolbar = findViewById(R.id.restaurant_report_toolbar);
         setSupportActionBar(toolbar);
 
-//        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                finish();
-//            }
-//        });
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
 
