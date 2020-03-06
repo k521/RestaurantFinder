@@ -50,9 +50,18 @@ public class InspectionReportActivity extends AppCompatActivity {
         getCurrentInspectionReport();
         getViolationCodes();
 
+        setTextViews();
+
         populateViolationList();
         populateListView();
         //registerClickCallback();
+    }
+
+    private void setTextViews() {
+        TextView dateOfInspection = findViewById(R.id.dateOfInspection);
+        TextView inspectionType = findViewById(R.id.inspectionType);
+        TextView criticalIssues = findViewById(R.id.criticalIssues);
+        TextView nonCriticalIssues = findViewById(R.id.nonCriticalIssues);
     }
 
     private void getViolationCodes() {

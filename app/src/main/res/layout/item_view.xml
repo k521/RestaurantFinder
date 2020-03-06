@@ -10,8 +10,7 @@
         android:id="@+id/severity"
         android:layout_width="98dp"
         android:layout_height="103dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginRight="1dp"
+        android:layout_marginEnd="316dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/btn_star_big_on" />
@@ -20,9 +19,7 @@
         android:id="@+id/violationType"
         android:layout_width="98dp"
         android:layout_height="103dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginStart="96dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/btn_star_big_on" />
@@ -30,10 +27,7 @@
     <TextView
         android:id="@+id/violationDescription"
         android:layout_width="212dp"
-        android:layout_height="98dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginTop="3dp"
+        android:layout_height="103dp"
         android:text="TextView"
         app:layout_constraintStart_toEndOf="@+id/violationType"
         app:layout_constraintTop_toTopOf="parent" />

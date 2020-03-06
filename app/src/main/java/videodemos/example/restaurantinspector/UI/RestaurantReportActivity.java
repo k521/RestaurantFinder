@@ -95,11 +95,13 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         String tagInspection = "Inspection";
         Toast.makeText(this, "Inspection clicked: " + restaurant.getInspections().get(position).toString(), Toast.LENGTH_SHORT).show();
         Intent intentThirdActivity = new Intent(this,InspectionReportActivity.class);
+
         intentThirdActivity.putExtra("tagRestaurant",indexOfRestaurant);
         intentThirdActivity.putExtra("Inspection",position);
 
         // Start Activity here.
-        // startActivity(intentThirdActivity);
+
+        startActivity(intentThirdActivity);
 
         // TODO GOING INTO THIRD ACTIVITY.
     }
