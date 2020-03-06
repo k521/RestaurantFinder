@@ -17,10 +17,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import videodemos.example.restaurantinspector.Model.Inspection;
 import videodemos.example.restaurantinspector.Model.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.Model.Violation;
+import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
+
+import static videodemos.example.restaurantinspector.Model.RestaurantManager.getInstance;
 
 public class InspectionReportActivity extends AppCompatActivity {
     private List<Violation> violationList = new ArrayList<Violation>();
@@ -28,14 +32,14 @@ public class InspectionReportActivity extends AppCompatActivity {
     String restaurantName = getIntent().getStringExtra("restaurantName");
     String inspectionDate = getIntent().getStringExtra("inspectionDate");
 
-    RestaurantManager restaurantManager = getInstance(this);
+    RestaurantManager restaurantManager = RestaurantManager.getInstance(this);
     Restaurant currentRestaurant;
 
     ArrayList<Inspection> inspectionsList;
     Inspection currentInspection;
 
-    ArrayList<Integer> violationCodes;
-    ViolationMaps maps = getInstance();
+    List<Integer> violationCodes;
+    ViolationMaps maps = ViolationMaps.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +56,7 @@ public class InspectionReportActivity extends AppCompatActivity {
     }
 
     private void getViolationCodes() {
-        violationCodes = currentInspection.getViolationCodes();
+        violationCodes = currentInspection.getViolationList();
     }
 
     private void getCurrentInspectionReport() {
@@ -65,7 +69,7 @@ public class InspectionReportActivity extends AppCompatActivity {
     }
 
     private void getCurrentRestaurant(){
-        for(Restaurant foundRestaurant: restaurantManager){
+        for(Restaurant foundRestaurant: restaurantManager.getRestaurantList()){
             if(foundRestaurant.getName() == restaurantName){
                 currentRestaurant = foundRestaurant;
             }
@@ -75,9 +79,9 @@ public class InspectionReportActivity extends AppCompatActivity {
     private void populateViolationList() {
         for(Integer violationHashCode: violationCodes){
             String violation = maps.shortViolation.get(violationHashCode);
-            //String idToImage = maps.natureViolation.get(violationHashCode);
+            String idToImage = maps.natureViolation.get(violationHashCode);
             boolean severityToImage = maps.severity.get(violationHashCode);
-            Violation newViolate = Violation(violation, idToImage, severityToImage);
+            Violation newViolate = new Violation(violation, idToImage, severityToImage);
             violationList.add(newViolate);
         }
     }
@@ -110,10 +114,10 @@ public class InspectionReportActivity extends AppCompatActivity {
 
             ImageView severity = (ImageView) itemView.findViewById(R.id.severity);
             if(currentViolation.getSeverityToImage() == true){
-                severity.setImageResource(criticalID);
+                severity.setImageResource(R.drawable.critical_icon); // cirtical.
             }
             else{
-                severity.setImageResource(nonCriticalID);
+                severity.setImageResource(R.drawable.non_critical_icon); //nonCritical ID
             }
 
             ImageView violationType = (ImageView) itemView.findViewById(R.id.violationType);
@@ -148,45 +152,7 @@ public class InspectionReportActivity extends AppCompatActivity {
 //        });
 //    }
 
-//    private static void populateSeverity(){
-//        //TODO: Add boolean as second field based on criticallity
-//        severity.put(101, false);
-//        severity.put(102,false);
-//        severity.put(103,false);
-//        severity.put(104,false);
-//        severity.put(201, true);
-//        severity.put(202,true);
-//        severity.put(203,true);
-//        severity.put(204,true);
-//        severity.put(205,true);
-//        severity.put(206,true);
-//        severity.put(208,false);
-//        severity.put(209,false);
-//        severity.put(210,false);
-//        severity.put(211,false);
-//        severity.put(212,false);
-//        severity.put(301,true);
-//        severity.put(302,true);
-//        severity.put(303,true);
-//        severity.put(304,false);
-//        severity.put(305,false);
-//        severity.put(306,false);
-//        severity.put(307,false);
-//        severity.put(308,false);
-//        severity.put(309,false);
-//        severity.put(310,false);
-//        severity.put(311,false);
-//        severity.put(312,false);
-//        severity.put(313,false);
-//        severity.put(314,false);
-//        severity.put(315,false);
-//        severity.put(401,true);
-//        severity.put(402,true);
-//        severity.put(403,false);
-//        severity.put(404,false);
-//        severity.put(501,false);
-//        severity.put(502,false);
-    //  }
+
 
     //public static HashMap<Integer, String> shortViolation = new HashMap<Integer, String>();
 
