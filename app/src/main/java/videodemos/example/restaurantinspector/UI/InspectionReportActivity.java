@@ -29,8 +29,9 @@ import static videodemos.example.restaurantinspector.Model.RestaurantManager.get
 public class InspectionReportActivity extends AppCompatActivity {
     private List<Violation> violationList = new ArrayList<Violation>();
 
-    int restaurantName = getIntent().getIntExtra("Restaurant", 0);
-    int inspectionIndex = getIntent().getIntExtra("Inspection", 0);
+    int restaurantName;
+    int inspectionIndex;
+
 
     RestaurantManager restaurantManager = RestaurantManager.getInstance(this);
     Restaurant currentRestaurant;
@@ -45,6 +46,9 @@ public class InspectionReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspection_report);
+
+        restaurantName = getIntent().getIntExtra("tagRestaurant", 0);
+        inspectionIndex = getIntent().getIntExtra("Inspection", 0);
 
         getCurrentRestaurant();
         getCurrentInspectionReport();
@@ -62,11 +66,11 @@ public class InspectionReportActivity extends AppCompatActivity {
         TextView inspectionType = findViewById(R.id.inspectionType);
         TextView criticalIssues = findViewById(R.id.criticalIssues);
         TextView nonCriticalIssues = findViewById(R.id.nonCriticalIssues);
-
+//
         dateOfInspection.setText(currentInspection.getInspectionDate());
         inspectionType.setText(currentInspection.getInspType());
-        criticalIssues.setText(currentInspection.getNumCritical());
-        nonCriticalIssues.setText(currentInspection.getNumNonCritical());
+        criticalIssues.setText(Integer.toString(currentInspection.getNumCritical()));
+        nonCriticalIssues.setText(Integer.toString(currentInspection.getNumNonCritical()));
     }
 
     private void getViolationCodes() {

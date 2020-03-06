@@ -10,8 +10,14 @@
         android:id="@+id/severity"
         android:layout_width="98dp"
         android:layout_height="103dp"
+        android:layout_marginTop="72dp"
         android:layout_marginEnd="316dp"
+        android:layout_marginBottom="556dp"
+        android:contentDescription="@string/coordinates"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/btn_star_big_on" />
 
@@ -20,6 +26,11 @@
         android:layout_width="98dp"
         android:layout_height="103dp"
         android:layout_marginStart="96dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginBottom="556dp"
+        android:contentDescription="@string/number_of_issues"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/violationDescription"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/btn_star_big_on" />
@@ -28,7 +39,11 @@
         android:id="@+id/violationDescription"
         android:layout_width="212dp"
         android:layout_height="103dp"
-        android:text="TextView"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="556dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/violationType"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
