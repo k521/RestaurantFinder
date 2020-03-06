@@ -3,4 +3,8 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="colorLowHazard">#4CAF50</color>
+    <color name="colorMedHazard">#FF9800</color>
+    <color name="colorHighHazard">#F44336</color>
+    <color name="colorNoHazard">#607D8B</color>
 </resources>

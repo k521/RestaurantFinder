@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RestaurantInspector</string>
+    <string name="number_of_issues">Number of issues: %1$d</string>
+    <string name="no_inspections_so_far">No inspection so far</string>
 </resources>

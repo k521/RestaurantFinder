@@ -6,13 +6,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import videodemos.example.restaurantinspector.Model.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RestaurantsAdapter.OnRestaurantListener {
 
     private RestaurantManager manager;
 
@@ -36,11 +37,14 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         restaurantsRecyclerView.setLayoutManager(layoutManager);
 
-        RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList());
+        RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
         restaurantsRecyclerView.setAdapter(restaurantsAdapter);
 
 
+    }
 
-
+    @Override
+    public void onRestaurantClick(int position) {
+        Toast.makeText(this, "Restaurant Clicked is " + manager.getRestaurant(position).toString(), Toast.LENGTH_LONG).show();
     }
 }
