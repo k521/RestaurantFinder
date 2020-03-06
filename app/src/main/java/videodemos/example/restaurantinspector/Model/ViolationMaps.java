@@ -18,16 +18,35 @@ import java.util.HashMap;
 public class ViolationMaps {
 
     private static ViolationMaps instance;
+    private static ViolationMaps monthInstance;
 
     public static ViolationMaps getInstance(){
         if(instance == null){
             populateViolations();
+            populateMonths();
         }
         return instance;
     }
    public static HashMap<Integer, String> violationCodes = new HashMap<Integer, String>();
+    public static HashMap<Integer,String> months = new HashMap<>();
 
     public static HashMap<Integer, Boolean> severity = new HashMap<Integer, Boolean>();
+
+    private static  void populateMonths(){
+        months.put(1,"January");
+        months.put(2,"February");
+        months.put(3,"March");
+        months.put(4,"April");
+        months.put(5,"May");
+        months.put(6,"June");
+        months.put(7,"July");
+        months.put(8,"August");
+        months.put(9,"September");
+        months.put(10,"October");
+        months.put(11,"November");
+        months.put(12,"December");
+
+    }
 
     private static void populateViolations(){
         violationCodes.put(101,"Not Critical,Plans/construction/alterations not in accordance with the Regulation [s. 3; s. 4],Not Repeat");
@@ -68,9 +87,7 @@ public class ViolationMaps {
         violationCodes.put(502,"Not Critical,In operator’s absence no staff on duty has FOODSAFE Level 1 or equivalent [s. 10(2)],Not Repeat");
     }
 
-    public static void numOfDatesInBetween(String dateThen){
 
-    }
     public static int daysInBetween(String dateInput) {
         DateTimeFormatter dateFormat = DateTimeFormat
                 .forPattern("G,C,Y,x,w,e,E,Y,D,M,d,a,K,h,H,k,m,s,S,z,Z");

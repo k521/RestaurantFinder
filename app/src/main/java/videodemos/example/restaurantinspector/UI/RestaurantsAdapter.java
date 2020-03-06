@@ -16,6 +16,7 @@ import java.util.List;
 
 import videodemos.example.restaurantinspector.Model.Inspection;
 import videodemos.example.restaurantinspector.Model.Restaurant;
+import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
 
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
@@ -68,8 +69,37 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         Restaurant restaurantInQuestion = restaurantDataset.get(position);
         int sizeOfInspections = restaurantInQuestion.getInspections().size();
         if (sizeOfInspections > 0) {
-            Inspection latestInspection = restaurantInQuestion.getInspections().get(sizeOfInspections - 1);
-            holder.lastInspection.setText(latestInspection.getInspectionDate());
+           // Inspection latestInspection = restaurantInQuestion.getInspections().get(sizeOfInspections - 1);
+            Inspection latestInspection = restaurantInQuestion.getInspections().get(0);
+
+
+            // Get the number of days since the last inspection
+            int numOfDaysSinceLastInspection = ViolationMaps.daysInBetween(latestInspection.getInspectionDate());
+
+            // Check to see if it happened in the last 30 days
+            if(numOfDaysSinceLastInspection <= 30){
+                holder.lastInspection.setText("Last Inspection : " + numOfDaysSinceLastInspection + " days ago. ");
+            }
+            else if(numOfDaysSinceLastInspection <= 365){
+                String date = latestInspection.getInspectionDate();
+                String month = date.substring(4,6);
+                String day = date.substring(6,8);
+
+                int monthInteger = Integer.parseInt(month);
+                int dayInteger = Integer.parseInt(day);
+
+                String monthName = ViolationMaps.months.get(monthInteger);
+                holder.lastInspection.setText("Last Inspection : " + monthName + " " + dayInteger);
+
+            }else{
+                String date = latestInspection.getInspectionDate();
+                String year = date.substring(0,4);
+                String month = date.substring(4,6);
+
+                String monthName = ViolationMaps.months.get(Integer.parseInt(month));
+                holder.lastInspection.setText("Last Inspection : " + monthName + " " + year);
+
+            }
             int numOfIssues = latestInspection.getNumCritical() + latestInspection.getNumNonCritical();
 
             holder.numOfIssues.setText(context.getResources().getString(R.string.number_of_issues, numOfIssues));

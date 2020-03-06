@@ -142,18 +142,6 @@ public class RestaurantManager {
 
     }
 
-    private Calendar makeDate(String dateInput) {
-        String yearString = dateInput.substring(0, 4);
-        String monthString = dateInput.substring(4, 6);
-        String dateString = dateInput.substring(6, dateInput.length());
-        Calendar date = Calendar.getInstance();
-        date.set(Integer.parseInt(yearString), Integer.parseInt(monthString), Integer.parseInt(dateString));
-        return date;
-
-    }
-
-    ;
-
     private void sortByRestaurantName() {
         Comparator<Restaurant> comparatorName = new Comparator<Restaurant>() {
             @Override

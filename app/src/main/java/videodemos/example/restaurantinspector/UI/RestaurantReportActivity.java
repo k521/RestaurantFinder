@@ -21,7 +21,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
     private static final String RESTAURANT_INDEX = "RESTAURANT_INDEX";
     private static int indexOfRestaurant = 0;
 
-    public static Intent makeIntent(Context context, int indexOfRestaurant){
+    public static Intent makeIntent(Context context, int indexOfRestaurant) {
         Intent intent = new Intent(context, RestaurantReportActivity.class);
         intent.putExtra(RESTAURANT_INDEX, indexOfRestaurant);
 
@@ -41,7 +41,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         RestaurantManager manager = RestaurantManager.getInstance(this);
         restaurant = manager.getRestaurantList().get(restaurantIndex);
 
-        if (restaurant.getInspections().isEmpty()){
+        if (restaurant.getInspections().isEmpty()) {
             setContentView(R.layout.activity_restaurant_report_empty);
         } else {
             setContentView(R.layout.activity_restaurant_report);
@@ -65,7 +65,6 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
             }
         });
     }
-
 
 
     private void setupRestaurantInfoTextViews() {
@@ -94,12 +93,12 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         String tagRestauarnt = "Restaurant";
         String tagInspection = "Inspection";
         Toast.makeText(this, "Inspection clicked: " + restaurant.getInspections().get(position).toString(), Toast.LENGTH_SHORT).show();
-        Intent intentThirdActivity = new Intent(this,InspectionReportActivity.class);
-        intentThirdActivity.putExtra("tagRestaurant",indexOfRestaurant);
-        intentThirdActivity.putExtra("Inspection",position);
+        Intent intentThirdActivity = new Intent(this, InspectionReportActivity.class);
+        intentThirdActivity.putExtra("tagRestaurant", indexOfRestaurant);
+        intentThirdActivity.putExtra("Inspection", position);
 
         // Start Activity here.
-        // startActivity(intentThirdActivity);
+        //startActivity(intentThirdActivity);
 
         // TODO GOING INTO THIRD ACTIVITY.
     }
