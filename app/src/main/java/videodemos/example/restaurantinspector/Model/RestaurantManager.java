@@ -59,11 +59,11 @@ public class RestaurantManager {
                 // Read the data
 
                 Restaurant restaurant = new Restaurant();
-                restaurant.setTrackingNumber(tokens[0].replace("\"",""));
-                restaurant.setName(tokens[1].replace("\"",""));
-                restaurant.setPhysicalAddress(tokens[2].replace("\"",""));
-                restaurant.setPhysicalCity(tokens[3].replace("\"",""));
-                restaurant.setFactype(tokens[4].replace("\"",""));
+                restaurant.setTrackingNumber(tokens[0].replace("\"", ""));
+                restaurant.setName(tokens[1].replace("\"", ""));
+                restaurant.setPhysicalAddress(tokens[2].replace("\"", ""));
+                restaurant.setPhysicalCity(tokens[3].replace("\"", ""));
+                restaurant.setFactype(tokens[4].replace("\"", ""));
 
                 if (tokens[5].length() > 0) {
                     restaurant.setLatitude(Double.parseDouble(tokens[5]));
@@ -87,7 +87,7 @@ public class RestaurantManager {
             e.printStackTrace();
         }
 
-       sortByRestaurantName();
+        sortByRestaurantName();
     }
 
     public void InspectionReader(Context c) {
@@ -107,21 +107,21 @@ public class RestaurantManager {
 
                 // New splitting method
                 String[] tokens = line.split(",");
-                String trackingNum = tokens[0].replaceAll("\"","");
-                for(Restaurant r: restaurantList){
-                    if(r.getTrackingNumber().equals(trackingNum)){
-                        String dateToAdd = tokens[1].replace("\"","");
+                String trackingNum = tokens[0].replaceAll("\"", "");
+                for (Restaurant r : restaurantList) {
+                    if (r.getTrackingNumber().equals(trackingNum)) {
+                        String dateToAdd = tokens[1].replace("\"", "");
                         inspection.setInspectionDate(dateToAdd);
-                        inspection.setInspType(tokens[2].replace("\"",""));
+                        inspection.setInspType(tokens[2].replace("\"", ""));
                         inspection.setNumNonCritical(Integer.parseInt(tokens[3]));
                         inspection.setNumCritical(Integer.parseInt(tokens[4]));
-                        inspection.setHazardRating(tokens[5].replace("\"",""));
-                        if(Integer.parseInt(tokens[4]) > 0){
+                        inspection.setHazardRating(tokens[5].replace("\"", ""));
+                        if (Integer.parseInt(tokens[4]) > 0) {
                             String[] violations = tokens[6].split("\\|");
                             for (String violationPossibility : violations) {
-                                    violationPossibility = violationPossibility.replaceAll("\"","");
-                                    String violation = violationPossibility.substring(0, 3);
-                                    inspection.addViolation(Integer.parseInt(violation));
+                                violationPossibility = violationPossibility.replaceAll("\"", "");
+                                String violation = violationPossibility.substring(0, 3);
+                                inspection.addViolation(Integer.parseInt(violation));
 
                             }
 
@@ -133,8 +133,6 @@ public class RestaurantManager {
                 }
 
 
-
-
             }
 
         } catch (Exception e) {
@@ -144,17 +142,19 @@ public class RestaurantManager {
 
     }
 
-    private Calendar makeDate(String dateInput){
-        String yearString = dateInput.substring(0,4);
-        String monthString = dateInput.substring(4,6);
-        String dateString = dateInput.substring(6,dateInput.length());
+    private Calendar makeDate(String dateInput) {
+        String yearString = dateInput.substring(0, 4);
+        String monthString = dateInput.substring(4, 6);
+        String dateString = dateInput.substring(6, dateInput.length());
         Calendar date = Calendar.getInstance();
-        date.set(Integer.parseInt(yearString),Integer.parseInt(monthString),Integer.parseInt(dateString));
+        date.set(Integer.parseInt(yearString), Integer.parseInt(monthString), Integer.parseInt(dateString));
         return date;
 
-    };
+    }
 
-    private void sortByRestaurantName(){
+    ;
+
+    private void sortByRestaurantName() {
         Comparator<Restaurant> comparatorName = new Comparator<Restaurant>() {
             @Override
             public int compare(Restaurant r1, Restaurant r2) {
@@ -165,8 +165,8 @@ public class RestaurantManager {
         Collections.sort(restaurantList, comparatorName);
     }
 
-    public void sortInspections(){
-        for(Restaurant r:restaurantList){
+    public void sortInspections() {
+        for (Restaurant r : restaurantList) {
             r.sortByInspectionDate();
         }
     }
