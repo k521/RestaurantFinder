@@ -4,7 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -27,6 +30,10 @@ import videodemos.example.restaurantinspector.R;
 import static videodemos.example.restaurantinspector.Model.RestaurantManager.getInstance;
 
 public class InspectionReportActivity extends AppCompatActivity {
+
+    private static final String  TAG_RESTAURANT = "Restaurant";
+    private static final String TAG_INSPECTION = "Inspection";
+
     private List<Violation> violationList = new ArrayList<Violation>();
 
     int restaurantName;
@@ -49,6 +56,8 @@ public class InspectionReportActivity extends AppCompatActivity {
 
         restaurantName = getIntent().getIntExtra("tagRestaurant", 0);
         inspectionIndex = getIntent().getIntExtra("Inspection", 0);
+
+        Log.d("Inspection Activity","Received information of " + restaurantManager.getRestaurant(restaurantName).getInspections().get(inspectionIndex));
 
         getCurrentRestaurant();
         getCurrentInspectionReport();
@@ -88,6 +97,9 @@ public class InspectionReportActivity extends AppCompatActivity {
     private void populateViolationList() {
         for(Integer violationHashCode: violationCodes){
             String violation = maps.shortViolation.get(violationHashCode);
+
+         //   Log.d(" Restaurant in Question",currentInspection.toString());
+            Log.d("Found Violation of ", violation);
             int idToImage = maps.natureViolation.get(violationHashCode);
             boolean severityToImage = maps.severity.get(violationHashCode);
 
@@ -108,6 +120,7 @@ public class InspectionReportActivity extends AppCompatActivity {
 
         public MyListAdapter() {
             super(InspectionReportActivity.this, R.layout.item_view, violationList);
+            Log.d("Inside MyListAdapter", "" + violationList.size());
         }
 
 
@@ -135,7 +148,6 @@ public class InspectionReportActivity extends AppCompatActivity {
             violationType.setImageResource(currentViolation.getIdToImage());
 
 
-
             TextView description = (TextView) itemView.findViewById(R.id.violationDescription);
             description.setText(currentViolation.getViolation());
 
@@ -156,5 +168,14 @@ public class InspectionReportActivity extends AppCompatActivity {
 
 //        });
 //    }
+
+    public static Intent makeIntent(Context c, int indexOfRestaurant, int indexOfInspection){
+
+        Intent intentThirdActivity = new Intent(c,InspectionReportActivity.class);
+        intentThirdActivity.putExtra(TAG_RESTAURANT,indexOfRestaurant);
+        intentThirdActivity.putExtra(TAG_INSPECTION,indexOfInspection);
+        return intentThirdActivity;
+
+    }
 
 }

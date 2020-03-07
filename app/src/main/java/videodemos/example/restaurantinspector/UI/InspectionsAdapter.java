@@ -17,6 +17,7 @@ import java.util.List;
 
 import videodemos.example.restaurantinspector.Model.Inspection;
 import videodemos.example.restaurantinspector.Model.Restaurant;
+import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
 
 public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.InspectionsViewHolder> {
@@ -69,18 +70,43 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
         Inspection inspectionInQuestion = inspectionDataset.get(position);
         int critIssues = inspectionInQuestion.getNumCritical();
         int nonCritIssues = inspectionInQuestion.getNumNonCritical();
-        String daysFrom = inspectionInQuestion.getInspectionDate();
 
         holder.numOfCritIssues.setText(context.getResources().getString(R.string.number_crit_issues, critIssues));
         holder.numOfNonCritIssues.setText(context.getResources().getString(R.string.number_non_crit_issues, nonCritIssues));
-        holder.daysSinceInspection.setText(daysFrom);
+
+
+        int numOfDaysSinceLastInspection = ViolationMaps.daysInBetween(inspectionInQuestion.getInspectionDate());
+
+        // Check to see if it happened in the last 30 days
+        if (numOfDaysSinceLastInspection <= 30) {
+            holder.daysSinceInspection.setText("Date of Inspection : " + numOfDaysSinceLastInspection + " days ago. ");
+        } else if (numOfDaysSinceLastInspection <= 365) {
+            String date = inspectionInQuestion.getInspectionDate();
+            String month = date.substring(4, 6);
+            String day = date.substring(6, 8);
+
+            int monthInteger = Integer.parseInt(month);
+            int dayInteger = Integer.parseInt(day);
+
+            String monthName = ViolationMaps.months.get(monthInteger);
+            holder.daysSinceInspection.setText("Date of  Inspection : " + monthName + " " + dayInteger);
+
+        } else {
+            String date = inspectionInQuestion.getInspectionDate();
+            String year = date.substring(0, 4);
+            String month = date.substring(4, 6);
+
+            String monthName = ViolationMaps.months.get(Integer.parseInt(month));
+            holder.daysSinceInspection.setText("Date of  Inspection : " + monthName + " " + year);
+
+        }
 
         String hazardLevel = inspectionInQuestion.getHazardRating();
         int hazardColor;
-        if (hazardLevel.equals("Low")){
-            hazardColor= ContextCompat.getColor(context, R.color.colorLowHazard);
+        if (hazardLevel.equals("Low")) {
+            hazardColor = ContextCompat.getColor(context, R.color.colorLowHazard);
             holder.cardViewBackground.setCardBackgroundColor(hazardColor);
-        } else if(hazardLevel.equals("Moderate")){
+        } else if (hazardLevel.equals("Moderate")) {
             hazardColor = ContextCompat.getColor(context, R.color.colorMedHazard);
             holder.cardViewBackground.setCardBackgroundColor(hazardColor);
         } else {

@@ -32,8 +32,9 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         manager.InspectionReader(this);
 
         Restaurant r = manager.getRestaurant(0);
-        Log.d("MainActivity is here. We have", "" + r.getInspections().size());
+        Log.d("MainActivity is here. We have", "" + r.toString());
         manager.sortInspections();
+
 
         RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
 

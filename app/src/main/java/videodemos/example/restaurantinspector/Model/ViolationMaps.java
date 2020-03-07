@@ -1,5 +1,19 @@
 package videodemos.example.restaurantinspector.Model;
 
+import android.util.Log;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.Months;
+import org.joda.time.Years;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+
 import java.util.HashMap;
 
 import videodemos.example.restaurantinspector.R;
@@ -7,6 +21,7 @@ import videodemos.example.restaurantinspector.R;
 public class ViolationMaps {
 
     private static ViolationMaps instance;
+    private static ViolationMaps monthInstance;
 
     public static ViolationMaps getInstance(){
         if(instance == null){
@@ -14,10 +29,12 @@ public class ViolationMaps {
             populateSeverity();
             populateShortViolation();
             populateNatureViolation();
+            populateMonths();
         }
         return instance;
     }
     public static HashMap<Integer, String> violationCodes = new HashMap<Integer, String>();
+    public static HashMap<Integer,String> months = new HashMap<>();
 
     public static HashMap<Integer, Boolean> severity = new HashMap<Integer, Boolean>();
 
@@ -25,6 +42,22 @@ public class ViolationMaps {
 
     public static HashMap<Integer, String> shortViolation = new HashMap<Integer, String>();
 
+
+    private static  void populateMonths(){
+        months.put(1,"January");
+        months.put(2,"February");
+        months.put(3,"March");
+        months.put(4,"April");
+        months.put(5,"May");
+        months.put(6,"June");
+        months.put(7,"July");
+        months.put(8,"August");
+        months.put(9,"September");
+        months.put(10,"October");
+        months.put(11,"November");
+        months.put(12,"December");
+
+    }
 
     private static void populateViolations(){
         violationCodes.put(101,"Not Critical,Plans/construction/alterations not in accordance with the Regulation [s. 3; s. 4],Not Repeat");
@@ -144,7 +177,23 @@ public class ViolationMaps {
         natureViolation.put(501,R.drawable.miscellaneous_icon);
         natureViolation.put(502,R.drawable.miscellaneous_icon);
       }
+    public static int daysInBetween(String dateInput) {
+        DateTimeFormatter dateFormat = DateTimeFormat
+                .forPattern("G,C,Y,x,w,e,E,Y,D,M,d,a,K,h,H,k,m,s,S,z,Z");
 
+        Log.d("Input date is ", dateInput);
+        String year = dateInput.substring(0,4);
+        String month = dateInput.substring(4,6);
+        String date = dateInput.substring(6,8);
+        String dateInQuestion = year + "-" + month + "-" + date;
+        LocalTime localTime = new LocalTime();
+        LocalDate localDate = new LocalDate();
+        DateTime dateTime = new DateTime();
+        LocalDateTime localDateTime = new LocalDateTime();
+        DateTimeZone dateTimeZone = DateTimeZone.getDefault();
+        int days = Days.daysBetween(DateTime.parse(dateInQuestion),dateTime).getDays();
+        return days;
+    }
         private static void populateShortViolation(){
         //TODO: Add boolean as second field based on criticallity
         shortViolation.put(101, "Plans/construction/alterations not up to standard.");
@@ -184,6 +233,7 @@ public class ViolationMaps {
         shortViolation.put(501,"FOODSAFE level 1 or Equivalent not present.");                    //
         shortViolation.put(502,"In Operator's absence, nobody has FOODSAFE level 1 or Equivalent."); //
      }
+
 //    private static void populateSeverity(){
 //        //TODO: Add boolean as second field based on criticallity
 //        severity.put(101, false);
