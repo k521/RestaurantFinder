@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +22,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
     private static final String RESTAURANT_INDEX = "RESTAURANT_INDEX";
     private static int indexOfRestaurant = 0;
 
-    public static Intent makeIntent(Context context, int indexOfRestaurant) {
+    public static Intent makeIntent(Context context, int indexOfRestaurant){
         Intent intent = new Intent(context, RestaurantReportActivity.class);
         intent.putExtra(RESTAURANT_INDEX, indexOfRestaurant);
 
@@ -41,7 +42,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         RestaurantManager manager = RestaurantManager.getInstance(this);
         restaurant = manager.getRestaurantList().get(restaurantIndex);
 
-        if (restaurant.getInspections().isEmpty()) {
+        if (restaurant.getInspections().isEmpty()){
             setContentView(R.layout.activity_restaurant_report_empty);
         } else {
             setContentView(R.layout.activity_restaurant_report);
@@ -50,7 +51,6 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
 
         setupToolbar();
         setupRestaurantInfoTextViews();
-
     }
 
     private void setupToolbar() {
@@ -65,6 +65,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
             }
         });
     }
+
 
 
     private void setupRestaurantInfoTextViews() {
@@ -90,16 +91,9 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
 
     @Override
     public void onInspectionClick(int position) {
-        String tagRestauarnt = "Restaurant";
-        String tagInspection = "Inspection";
-        Toast.makeText(this, "Inspection clicked: " + restaurant.getInspections().get(position).toString(), Toast.LENGTH_SHORT).show();
-        Intent intentThirdActivity = new Intent(this, InspectionReportActivity.class);
-        intentThirdActivity.putExtra("tagRestaurant", indexOfRestaurant);
-        intentThirdActivity.putExtra("Inspection", position);
+        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +" Inspect Index " + position);
+        Intent launchThirdActivity = InspectionReportActivity.makeIntent(this,indexOfRestaurant,position);
+        startActivity(launchThirdActivity);
 
-        // Start Activity here.
-        //startActivity(intentThirdActivity);
-
-        // TODO GOING INTO THIRD ACTIVITY.
     }
 }
