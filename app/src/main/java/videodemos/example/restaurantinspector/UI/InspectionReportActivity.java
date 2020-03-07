@@ -54,17 +54,13 @@ public class InspectionReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspection_report);
 
-        restaurantName = getIntent().getIntExtra("tagRestaurant", 0);
-        inspectionIndex = getIntent().getIntExtra("Inspection", 0);
-
-        Log.d("Inspection Activity","Received information of " + restaurantManager.getRestaurant(restaurantName).getInspections().get(inspectionIndex));
+        restaurantName = getIntent().getIntExtra(TAG_RESTAURANT, 0);
+        inspectionIndex = getIntent().getIntExtra(TAG_INSPECTION, 0);
 
         getCurrentRestaurant();
         getCurrentInspectionReport();
         getViolationCodes();
-
         setTextViews();
-
         populateViolationList();
         populateListView();
         //registerClickCallback();
@@ -98,8 +94,6 @@ public class InspectionReportActivity extends AppCompatActivity {
         for(Integer violationHashCode: violationCodes){
             String violation = maps.shortViolation.get(violationHashCode);
 
-         //   Log.d(" Restaurant in Question",currentInspection.toString());
-            Log.d("Found Violation of ", violation);
             int idToImage = maps.natureViolation.get(violationHashCode);
             boolean severityToImage = maps.severity.get(violationHashCode);
 
@@ -120,7 +114,6 @@ public class InspectionReportActivity extends AppCompatActivity {
 
         public MyListAdapter() {
             super(InspectionReportActivity.this, R.layout.item_view, violationList);
-            Log.d("Inside MyListAdapter", "" + violationList.size());
         }
 
 

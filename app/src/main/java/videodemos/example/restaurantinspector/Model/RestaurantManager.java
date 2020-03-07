@@ -91,7 +91,6 @@ public class RestaurantManager {
     }
 
     public void InspectionReader(Context c) {
-        Log.d("InspectonReader", " I entered");
         InputStream is = c.getResources().openRawResource(R.raw.inspectionreports);
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("UTF-8"))

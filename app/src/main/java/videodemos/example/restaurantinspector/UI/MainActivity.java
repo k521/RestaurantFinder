@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         manager.InspectionReader(this);
 
         Restaurant r = manager.getRestaurant(0);
-        Log.d("MainActivity is here. We have", "" + r.toString());
         manager.sortInspections();
 
 

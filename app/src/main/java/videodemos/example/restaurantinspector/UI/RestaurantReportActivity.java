@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -90,7 +91,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
 
     @Override
     public void onInspectionClick(int position) {
-
+        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +" Inspect Index " + position);
         Intent launchThirdActivity = InspectionReportActivity.makeIntent(this,indexOfRestaurant,position);
         startActivity(launchThirdActivity);
 
