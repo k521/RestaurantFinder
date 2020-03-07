@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +51,6 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
 
         setupToolbar();
         setupRestaurantInfoTextViews();
-
     }
 
     private void setupToolbar() {
@@ -91,16 +91,9 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
 
     @Override
     public void onInspectionClick(int position) {
-        String tagRestauarnt = "Restaurant";
-        String tagInspection = "Inspection";
-        Toast.makeText(this, "Inspection clicked: " + restaurant.getInspections().get(position).toString(), Toast.LENGTH_SHORT).show();
-        Intent intentThirdActivity = new Intent(this,InspectionReportActivity.class);
-        intentThirdActivity.putExtra("tagRestaurant",indexOfRestaurant);
-        intentThirdActivity.putExtra("Inspection",position);
-        // Start Activity here.
+        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +" Inspect Index " + position);
+        Intent launchThirdActivity = InspectionReportActivity.makeIntent(this,indexOfRestaurant,position);
+        startActivity(launchThirdActivity);
 
-
-
-        // TODO GOING INTO THIRD ACTIVITY.
     }
 }
