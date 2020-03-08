@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
         TextView numOfCritIssues;
         TextView numOfNonCritIssues;
         TextView daysSinceInspection;
+        ImageView hazardIcon;
         CardView cardViewBackground;
         OnInspectionListener onInspectionListener;
 
@@ -40,6 +42,7 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
             numOfCritIssues = itemView.findViewById(R.id.tv_card_number_crit_issues);
             numOfNonCritIssues = itemView.findViewById(R.id.tv_card_number_non_crit_issues);
             daysSinceInspection = itemView.findViewById(R.id.tv_card_days_from_inspection);
+            hazardIcon = itemView.findViewById(R.id.iv_card_inspection_hazard_icon);
             cardViewBackground = itemView.findViewById(R.id.cv_inspection_card);
             this.onInspectionListener = onInspectionListener;
 
@@ -70,6 +73,7 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
         Inspection inspectionInQuestion = inspectionDataset.get(position);
         int critIssues = inspectionInQuestion.getNumCritical();
         int nonCritIssues = inspectionInQuestion.getNumNonCritical();
+        String daysFrom = inspectionInQuestion.getInspectionDate();
 
         holder.numOfCritIssues.setText(context.getResources().getString(R.string.number_crit_issues, critIssues));
         holder.numOfNonCritIssues.setText(context.getResources().getString(R.string.number_non_crit_issues, nonCritIssues));
@@ -103,15 +107,18 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
 
         String hazardLevel = inspectionInQuestion.getHazardRating();
         int hazardColor;
-        if (hazardLevel.equals("Low")) {
-            hazardColor = ContextCompat.getColor(context, R.color.colorLowHazard);
+        if (hazardLevel.equals("Low")){
+            hazardColor= ContextCompat.getColor(context, R.color.colorLowHazard);
             holder.cardViewBackground.setCardBackgroundColor(hazardColor);
-        } else if (hazardLevel.equals("Moderate")) {
+            holder.hazardIcon.setImageResource(R.drawable.low_hazard_icon);
+        } else if(hazardLevel.equals("Moderate")){
             hazardColor = ContextCompat.getColor(context, R.color.colorMedHazard);
             holder.cardViewBackground.setCardBackgroundColor(hazardColor);
+            holder.hazardIcon.setImageResource(R.drawable.med_hazard_icon);
         } else {
             hazardColor = ContextCompat.getColor(context, R.color.colorHighHazard);
             holder.cardViewBackground.setCardBackgroundColor(hazardColor);
+            holder.hazardIcon.setImageResource(R.drawable.high_hazard_icon);
         }
 
     }

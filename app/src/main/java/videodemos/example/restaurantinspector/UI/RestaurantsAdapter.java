@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         TextView restaurantName;
         TextView numOfIssues;
         TextView lastInspection;
+        ImageView hazardIcon;
         CardView cardViewBackground;
         OnRestaurantListener onRestaurantListener;
 
@@ -39,6 +41,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             numOfIssues = itemView.findViewById(R.id.tv_card_number_issues);
             lastInspection = itemView.findViewById(R.id.tv_card_last_inspection);
             cardViewBackground = itemView.findViewById(R.id.cv_restaurant_card);
+            hazardIcon = itemView.findViewById(R.id.iv_card_hazard_icon);
             this.onRestaurantListener = onRestaurantListener;
 
             itemView.setOnClickListener(this);
@@ -107,12 +110,15 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             if (latestInspection.getHazardRating().equals("Low")) {
                 int lowHazardColor = ContextCompat.getColor(context, R.color.colorLowHazard);
                 holder.cardViewBackground.setCardBackgroundColor(lowHazardColor);
+                holder.hazardIcon.setImageResource(R.drawable.low_hazard_icon);
             } else if (latestInspection.getHazardRating().equals("Moderate")) {
                 int medHazardColor = ContextCompat.getColor(context, R.color.colorMedHazard);
                 holder.cardViewBackground.setCardBackgroundColor(medHazardColor);
+                holder.hazardIcon.setImageResource(R.drawable.med_hazard_icon);
             } else {
                 int highHazardColor = ContextCompat.getColor(context, R.color.colorHighHazard);
                 holder.cardViewBackground.setCardBackgroundColor(highHazardColor);
+                holder.hazardIcon.setImageResource(R.drawable.high_hazard_icon);
             }
         } else {
             holder.lastInspection.setText(context.getResources().getString(R.string.no_inspections_so_far));

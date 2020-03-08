@@ -70,13 +70,15 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/ic_dialog_alert"
-            tools:srcCompat="@android:drawable/ic_dialog_alert" />
+            app:srcCompat="@drawable/no_hazard_icon"
+            tools:srcCompat="@drawable/med_hazard_icon" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline3"
