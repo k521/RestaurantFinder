@@ -24,19 +24,7 @@ public class ViolationMaps {
     private static ViolationMaps instance;
     private static ViolationMaps monthInstance;
     private Context context;
-
-//    public static ViolationMaps getInstance(Context context){
-//        this.context = context;
-//        if(instance == null){
-//            populateViolations();
-//            populateSeverity();
-//            populateShortViolation();
-//            populateNatureViolation();
-//            populateMonths();
-//        }
-//        return instance;
-//    }
-
+    
     public ViolationMaps(Context context) {
         this.context = context;
         populateViolations();
