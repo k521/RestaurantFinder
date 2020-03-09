@@ -63,7 +63,7 @@ public class InspectionReportActivity extends AppCompatActivity {
         setTextViews();
         populateViolationList();
         populateListView();
-        //registerClickCallback();
+        registerClickCallback();
     }
 
     private void setTextViews() {
@@ -149,18 +149,21 @@ public class InspectionReportActivity extends AppCompatActivity {
         }
 
     }
-//    private void registerClickCallback() {
-//        ListView list = (ListView) findViewById(R.id.violations);
-//        list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-//            @Override
-//            public void onItemClick(AdapterView<?> paret, View viewClicked, int position, long id){
-//                TextView textView = (TextView) viewClicked;
-//                String message = "a";//the detailed description of the violation
-//                Toast.makeText(InspectionReportActivity.this, message, Toast.LENGTH_LONG);
-//            }
+    private void registerClickCallback() {
+        ListView list = (ListView) findViewById(R.id.violationsListView);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> paret, View viewClicked, int position, long id){
+                int index = violationCodes.get(position);
+                String message = maps.violationCodes.get(index);
+                TextView textView = (TextView) viewClicked;
 
-//        });
-//    }
+                Toast.makeText(InspectionReportActivity.this, message, Toast.LENGTH_LONG).show();
+
+            }
+
+        });
+    }
 
     public static Intent makeIntent(Context c, int indexOfRestaurant, int indexOfInspection){
 
