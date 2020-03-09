@@ -24,7 +24,7 @@ public class ViolationMaps {
     private static ViolationMaps instance;
     private static ViolationMaps monthInstance;
     private Context context;
-    
+
     public ViolationMaps(Context context) {
         this.context = context;
         populateViolations();
