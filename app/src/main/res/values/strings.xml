@@ -7,4 +7,6 @@
     <string name="number_of_issues">Number of issues: %1$d</string>
     <string name="no_inspections_so_far">No inspection so far</string>
     <string name="inspections">Inspections</string>
+    <string name="inspections_details">Inspection Details</string>
+    <string name="hazard_level">Hazard Level: %1$s</string>
 </resources>
