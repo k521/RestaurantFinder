@@ -9,4 +9,12 @@
     <string name="inspections">Inspections</string>
     <string name="inspections_details">Inspection Details</string>
     <string name="hazard_level">Hazard Level: %1$s</string>
+    <string name="inspectionType">TextView</string>
+    <string name="criticalIssues">TextView</string>
+    <string name="nonCriticalIssues">TextView</string>
+    <string name="nonCritical"># of non-Critical Issues:</string>
+    <string name="criticalIssuesInput"># of Critical Issues:</string>
+    <string name="inspectionTypeNotInput">Inspection Type:</string>
+    <string name="date_of_inspection">Date of inspection:</string>
+    <string name="dateOfInspection">TextView</string>
 </resources>
