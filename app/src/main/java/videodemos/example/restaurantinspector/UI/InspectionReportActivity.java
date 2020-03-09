@@ -10,10 +10,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +63,7 @@ public class InspectionReportActivity extends AppCompatActivity {
         setupHazardInfo();
         populateViolationList();
         populateListView();
-        //registerClickCallback();
+        registerClickCallback();
     }
 
     private void setupHazardInfo() {
@@ -203,18 +205,21 @@ public class InspectionReportActivity extends AppCompatActivity {
         }
 
     }
-//    private void registerClickCallback() {
-//        ListView list = (ListView) findViewById(R.id.violations);
-//        list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-//            @Override
-//            public void onItemClick(AdapterView<?> paret, View viewClicked, int position, long id){
-//                TextView textView = (TextView) viewClicked;
-//                String message = "a";//the detailed description of the violation
-//                Toast.makeText(InspectionReportActivity.this, message, Toast.LENGTH_LONG);
-//            }
+    private void registerClickCallback() {
+        ListView list = (ListView) findViewById(R.id.violationsListView);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> paret, View viewClicked, int position, long id){
+                int index = violationCodes.get(position);
+                String message = maps.violationCodes.get(index);
+                TextView textView = (TextView) viewClicked;
 
-//        });
-//    }
+                Toast.makeText(InspectionReportActivity.this, message, Toast.LENGTH_LONG).show();
+
+            }
+
+        });
+    }
 
     public static Intent makeIntent(Context c, int indexOfRestaurant, int indexOfInspection){
 
