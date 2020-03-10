@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         setupToolbar();
 
         manager = RestaurantManager.getInstance(this);
-        ViolationMaps violationInstance = ViolationMaps.getInstance();
 
         manager.InspectionReader(this);
 

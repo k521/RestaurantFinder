@@ -45,7 +45,7 @@ public class InspectionReportActivity extends AppCompatActivity {
     Inspection currentInspection;
 
     List<Integer> violationCodes;
-    ViolationMaps maps = ViolationMaps.getInstance();
+    ViolationMaps maps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +54,7 @@ public class InspectionReportActivity extends AppCompatActivity {
 
         restaurantName = getIntent().getIntExtra(TAG_RESTAURANT, 0);
         inspectionIndex = getIntent().getIntExtra(TAG_INSPECTION, 0);
+        maps = new ViolationMaps(this);
 
         getCurrentRestaurant();
         getCurrentInspectionReport();
@@ -128,7 +129,8 @@ public class InspectionReportActivity extends AppCompatActivity {
         int monthInteger = Integer.parseInt(month);
         int dayInteger = Integer.parseInt(day);
 
-        String monthName = ViolationMaps.months.get(monthInteger);
+        ViolationMaps violations = new ViolationMaps(this);
+        String monthName = violations.months.get(monthInteger);
         inspectionDate = monthName + " " + dayInteger + ", " + year;
 
         return inspectionDate;
