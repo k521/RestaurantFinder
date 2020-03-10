@@ -3,6 +3,11 @@ package videodemos.example.restaurantinspector.Model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+
+/**
+ * Class to hold restaurant information.
+ */
 
 public class Restaurant {
 
@@ -14,7 +19,7 @@ public class Restaurant {
     private double latitude;
     private double longitude;
 
-    private ArrayList<Inspection> inspections = new ArrayList<>();
+    private List<Inspection> inspections = new ArrayList<>();
 
     public String getTrackingNumber() {
         return trackingNumber;
@@ -24,6 +29,7 @@ public class Restaurant {
         this.trackingNumber = trackingNumber;
     }
 
+
     public String getName() {
         return name;
     }
@@ -31,6 +37,8 @@ public class Restaurant {
     public void setName(String name) {
         this.name = name;
     }
+
+
 
     public String getPhysicalAddress() {
         return physicalAddress;
@@ -40,21 +48,16 @@ public class Restaurant {
         this.physicalAddress = physicalAddress;
     }
 
-    public String getPhysicalCity() {
-        return physicalCity;
-    }
+
 
     public void setPhysicalCity(String physicalCity) {
         this.physicalCity = physicalCity;
     }
 
-    public String getFactype() {
-        return factype;
-    }
-
     public void setFactype(String factype) {
         this.factype = factype;
     }
+
 
     public double getLatitude() {
         return latitude;
@@ -64,9 +67,7 @@ public class Restaurant {
         this.latitude = latitude;
     }
 
-    public ArrayList<Inspection> getInspections() {
-        return inspections;
-    }
+
 
     public double getLongitude() {
         return longitude;
@@ -76,9 +77,29 @@ public class Restaurant {
         this.longitude = longitude;
     }
 
+
     public void addInspection(Inspection i) {
         inspections.add(i);
     }
+
+    public List<Inspection> getInspections() {
+        return inspections;
+    }
+
+
+    public void sortByInspectionDate() {
+        Comparator<Inspection> comparatorName = new Comparator<Inspection>() {
+            @Override
+            public int compare(Inspection r1, Inspection r2) {
+                int r1InspectionDate = Integer.parseInt(r1.getInspectionDate());
+                int r2InspectionDate = Integer.parseInt(r2.getInspectionDate());
+                return r2InspectionDate - r1InspectionDate;
+            }
+        };
+
+        Collections.sort(inspections, comparatorName);
+    }
+
 
     @Override
     public String toString() {
@@ -92,20 +113,6 @@ public class Restaurant {
                 ", longitude=" + longitude +
                 ", inspections=" + inspections +
                 '}';
-    }
-
-    public void sortByInspectionDate() {
-        Comparator<Inspection> comparatorName = new Comparator<Inspection>() {
-            @Override
-            public int compare(Inspection r1, Inspection r2) {
-                int r1InspectionDate = Integer.parseInt(r1.getInspectionDate());
-                int r2InspectionDate = Integer.parseInt(r2.getInspectionDate());
-                return r2InspectionDate - r1InspectionDate;
-                //return r1.getInspectionDate().compareTo(r2.getInspectionDate());
-            }
-        };
-
-        Collections.sort(inspections, comparatorName);
     }
 
 

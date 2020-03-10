@@ -12,6 +12,10 @@ import android.widget.TextView;
 
 import videodemos.example.restaurantinspector.R;
 
+/**
+ * A class that displays attribution information.
+ */
+
 public class InfoScreenActivity extends AppCompatActivity {
 
     public static Intent makeLaunchIntent (Context context) {

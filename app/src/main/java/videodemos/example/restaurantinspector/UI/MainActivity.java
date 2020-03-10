@@ -17,6 +17,10 @@ import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
 
+/**
+ * Main Activity displays all the restaurants.
+ */
+
 public class MainActivity extends AppCompatActivity implements RestaurantsAdapter.OnRestaurantListener {
 
     private RestaurantManager manager;
@@ -31,10 +35,14 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         manager.InspectionReader(this);
 
-        Restaurant r = manager.getRestaurant(0);
         manager.sortInspections();
 
 
+        setUpRestaurantsRecylerView();
+
+    }
+
+    private void setUpRestaurantsRecylerView() {
         RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
 
         restaurantsRecyclerView.setHasFixedSize(true);
@@ -43,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
         restaurantsRecyclerView.setAdapter(restaurantsAdapter);
-
     }
 
     private void setupToolbar() {

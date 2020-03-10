@@ -21,6 +21,10 @@ import videodemos.example.restaurantinspector.Model.Restaurant;
 import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
 
+/**
+ * Restaurants adapter for RecyclerView
+ */
+
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
 
     private List<Restaurant> restaurantDataset;

@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class Inspection{
+/**
+ * Inspection class to hold information about a particular restaurant's inspection.
+ */
 
+public class Inspection {
 
     private String hazardRating;
-    
     private String inspectionDate = "";
     private String inspType = "";
     private int numCritical = 0;
@@ -16,17 +18,20 @@ public class Inspection{
 
     private List<Integer> violationList = new ArrayList<>();
 
+    public String getHazardRating() {
+        return hazardRating;
+    }
+
+    public void setHazardRating(String hazardRating) {
+        this.hazardRating = hazardRating;
+    }
+
     public String getInspectionDate() {
         return inspectionDate;
     }
 
-    public void setInspectionDate(String inspectionDate)
-    {
+    public void setInspectionDate(String inspectionDate) {
         this.inspectionDate = inspectionDate;
-    }
-
-    public List<Integer> getViolationList() {
-        return violationList;
     }
 
     public String getInspType() {
@@ -53,18 +58,12 @@ public class Inspection{
         this.numNonCritical = numNonCritical;
     }
 
-
-
-    public String getHazardRating() {
-        return hazardRating;
-    }
-
-    public void setHazardRating(String hazardRating) {
-        this.hazardRating = hazardRating;
-    }
-
-    public void addViolation(int violationCode){
+    public void addViolation(int violationCode) {
         violationList.add(violationCode);
+    }
+
+    public List<Integer> getViolationList() {
+        return violationList;
     }
 
     @Override

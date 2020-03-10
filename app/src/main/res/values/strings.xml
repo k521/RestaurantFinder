@@ -9,13 +9,16 @@
     <string name="inspections">Inspections</string>
     <string name="inspections_details">Inspection Details</string>
     <string name="hazard_level">Hazard Level: %1$s</string>
+    <string name="date_of_inspection_days_ago">Date of Inspection : %1$d  days ago.</string>
+    <string name="date_of_inspection_with_params">Date of Inspection : %1$s %2$d</string>
+    <string name="date_of_inspections">Date of Inspection :</string>
     <string name="sv1">Plans/construction/alterations not up to standard.</string>
     <string name="sv2">Operation of unapproved food premises.</string>
     <string name="sv3">No valid permit for this restaurant.</string>
     <string name="sv4">Permit not seen easily.</string>
     <string name="sv5">Food contaminated or unfit for consumption.</string>
     <string name="sv6">Food not processed in manner for safe eating.</string>
-    <string name="sv7">Food not coo led properly.</string>
+    <string name="sv7">Food not cooled properly.</string>
     <string name="sv8">Food not cooked or heated for safe eating.</string>
     <string name="sv9">Cold food not stored properly.</string>
     <string name="sv10">Hot food not stored properly.</string>
@@ -51,7 +54,6 @@
     <string name="nonCritical"># of non-Critical Issues:</string>
     <string name="criticalIssuesInput"># of Critical Issues:</string>
     <string name="inspectionTypeNotInput">Inspection Type:</string>
-    <string name="date_of_inspection">Date of inspection:</string>
     <string name="dateOfInspection">TextView</string>
     <string name="attribution_links">
                     AdapterView OnClickListener\n

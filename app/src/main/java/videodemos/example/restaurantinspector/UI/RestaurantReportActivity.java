@@ -40,7 +40,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         int restaurantIndex = getIntent().getIntExtra(RESTAURANT_INDEX, 0);
         indexOfRestaurant = restaurantIndex;
         RestaurantManager manager = RestaurantManager.getInstance(this);
-        restaurant = manager.getRestaurantList().get(restaurantIndex);
+        restaurant = manager.getRestaurant(restaurantIndex);
 
         if (restaurant.getInspections().isEmpty()){
             setContentView(R.layout.activity_restaurant_report_empty);
