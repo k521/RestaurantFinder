@@ -2,7 +2,6 @@ package videodemos.example.restaurantinspector.UI;
 
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import videodemos.example.restaurantinspector.Model.DateCalculations;
 import videodemos.example.restaurantinspector.Model.Inspection;
-import videodemos.example.restaurantinspector.Model.Restaurant;
-import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
 
 public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.InspectionsViewHolder> {
@@ -79,7 +77,8 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
         holder.numOfNonCritIssues.setText(context.getResources().getString(R.string.number_non_crit_issues, nonCritIssues));
 
 
-        int numOfDaysSinceLastInspection = ViolationMaps.daysInBetween(inspectionInQuestion.getInspectionDate());
+        DateCalculations dateCalculations = new DateCalculations(context);
+        int numOfDaysSinceLastInspection = dateCalculations.daysInBetween(inspectionInQuestion.getInspectionDate());
 
         // Check to see if it happened in the last 30 days
         if (numOfDaysSinceLastInspection <= 30) {
@@ -92,7 +91,7 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
             int monthInteger = Integer.parseInt(month);
             int dayInteger = Integer.parseInt(day);
 
-            String monthName = ViolationMaps.months.get(monthInteger);
+            String monthName = dateCalculations.getMonthName(monthInteger);
             holder.daysSinceInspection.setText("Date of  Inspection : " + monthName + " " + dayInteger);
 
         } else {
@@ -100,7 +99,7 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
             String year = date.substring(0, 4);
             String month = date.substring(4, 6);
 
-            String monthName = ViolationMaps.months.get(Integer.parseInt(month));
+            String monthName = dateCalculations.getMonthName(Integer.parseInt(month));
             holder.daysSinceInspection.setText("Date of  Inspection : " + monthName + " " + year);
 
         }

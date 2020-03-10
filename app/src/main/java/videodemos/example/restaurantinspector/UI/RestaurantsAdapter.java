@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import videodemos.example.restaurantinspector.Model.DateCalculations;
 import videodemos.example.restaurantinspector.Model.Inspection;
 import videodemos.example.restaurantinspector.Model.Restaurant;
-import videodemos.example.restaurantinspector.Model.Violation;
 import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
 
@@ -79,8 +79,8 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
             // Get the number of days since the last inspection
 
-            ViolationMaps violations = new ViolationMaps(context);
-            int numOfDaysSinceLastInspection = violations.daysInBetween(latestInspection.getInspectionDate());
+            DateCalculations dateCalculations = new DateCalculations(context);
+            int numOfDaysSinceLastInspection = dateCalculations.daysInBetween(latestInspection.getInspectionDate());
 
             // Check to see if it happened in the last 30 days
             if(numOfDaysSinceLastInspection <= 30){
@@ -94,7 +94,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                 int monthInteger = Integer.parseInt(month);
                 int dayInteger = Integer.parseInt(day);
 
-                String monthName = violations.months.get(monthInteger);
+                String monthName = dateCalculations.getMonthName(monthInteger);
                 holder.lastInspection.setText("Last Inspection : " + monthName + " " + dayInteger);
 
             }else{
@@ -102,7 +102,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                 String year = date.substring(0,4);
                 String month = date.substring(4,6);
 
-                String monthName = violations.months.get(Integer.parseInt(month));
+                String monthName = dateCalculations.getMonthName(Integer.parseInt(month));
                 holder.lastInspection.setText("Last Inspection : " + monthName + " " + year);
 
             }

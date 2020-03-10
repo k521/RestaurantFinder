@@ -20,6 +20,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import videodemos.example.restaurantinspector.Model.DateCalculations;
 import videodemos.example.restaurantinspector.Model.Inspection;
 import videodemos.example.restaurantinspector.Model.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
@@ -129,8 +130,8 @@ public class InspectionReportActivity extends AppCompatActivity {
         int monthInteger = Integer.parseInt(month);
         int dayInteger = Integer.parseInt(day);
 
-        ViolationMaps violations = new ViolationMaps(this);
-        String monthName = violations.months.get(monthInteger);
+        DateCalculations dateCalculations = new DateCalculations(this);
+        String monthName = dateCalculations.getMonthName(monthInteger);
         inspectionDate = monthName + " " + dayInteger + ", " + year;
 
         return inspectionDate;
@@ -149,11 +150,12 @@ public class InspectionReportActivity extends AppCompatActivity {
         currentRestaurant = restaurantManager.getRestaurantList().get(restaurantName);
     }
     private void populateViolationList() {
+        ViolationMaps violationMaps = new ViolationMaps(this);
         for(Integer violationHashCode: violationCodes){
-            String violation = maps.shortViolation.get(violationHashCode);
+            String violation = violationMaps.getShortViolationCodeDescription(violationHashCode);
 
-            int idToImage = maps.natureViolation.get(violationHashCode);
-            boolean severityToImage = maps.severity.get(violationHashCode);
+            int idToImage = violationMaps.getNatureViolation(violationHashCode);
+            boolean severityToImage = violationMaps.getSeverity(violationHashCode);
 
             Violation newViolate = new Violation(violation, idToImage, severityToImage);
             violationList.add(newViolate);
@@ -187,7 +189,7 @@ public class InspectionReportActivity extends AppCompatActivity {
             Violation currentViolation = violationList.get(position);
 
             ImageView severity = (ImageView) itemView.findViewById(R.id.severity);
-            if(currentViolation.getSeverityToImage() == true){
+            if(currentViolation.isSevere() == true){
                 severity.setImageResource(R.drawable.critical_icon); // cirtical.
             }
             else{
@@ -213,8 +215,8 @@ public class InspectionReportActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> paret, View viewClicked, int position, long id){
                 int index = violationCodes.get(position);
-                String message = maps.violationCodes.get(index);
-                //TextView textView = (TextView) viewClicked;
+                ViolationMaps violationMaps = new ViolationMaps(InspectionReportActivity.this);
+                String message = violationMaps.getFullViolationCodeDescription(index);
 
                 Toast.makeText(InspectionReportActivity.this, message, Toast.LENGTH_LONG).show();
 
