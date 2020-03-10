@@ -214,7 +214,7 @@ public class InspectionReportActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> paret, View viewClicked, int position, long id){
                 int index = violationCodes.get(position);
                 String message = maps.violationCodes.get(index);
-                TextView textView = (TextView) viewClicked;
+                //TextView textView = (TextView) viewClicked;
 
                 Toast.makeText(InspectionReportActivity.this, message, Toast.LENGTH_LONG).show();
 
