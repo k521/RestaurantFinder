@@ -17,56 +17,63 @@
     <string name="inspectionTypeNotInput">Inspection Type:</string>
     <string name="date_of_inspection">Date of inspection:</string>
     <string name="dateOfInspection">TextView</string>
-    <string name="citations_for_drawables">
+    <string name="attribution_links">
+                    AdapterView OnClickListener\n
+                    <a href="https://www.youtube.com/watch?v=69C1ljfDvl0&amp;t=441s">youtube.com</a>\n
+                    \n
+                    Joda Time\n
+                    <a href="https://stackoverflow.com/questions/3802893/number-of-days-between-two-dates-in-joda-time">stackoverflow.com</a>\n
+                    \n
                     Triangle Vector\n
-                    https://clipartstation.com/warning-clipart-4/ \n
+                    <a href="https://clipartstation.com/warning-clipart-4/">clipartstation.com</a>\n
                     \n
                     Wrench Vector\n
-                    https://www.nicepng.com/maxp/u2w7y3e6u2y3a9r5/\n
+                    <a href="https://www.nicepng.com/maxp/u2w7y3e6u2y3a9r5/">nicepng.com</a>\n
                     \n
-                    Hot icon: (The link accurately doesnt take you to image, rather a Google Image search does)\n
-                    https://pngtree.com/so/lj-hot-on-icon\n
+                    Hot icon: (The link accurately doesn\'t take you to image, rather a  Google Image search does)\n
+                    <a href="https://pngtree.com/so/lj-hot-on-icon">pngtree.com</a>\n
                     \n
-                    Pest( cockroach ) Vector:\n
-                    http://icon-library.com/icon/pest-icon-3.html\n
+                    Pest( cockroach ) Vector\n
+                    <a href="http://icon-library.com/icon/pest-icon-3.html">icon-library.com</a>\n
                     \n
                     Hand-washing Vector\n
-                    https://www.flaticon.com/free-icon/hand-wash_1216004\n
+                    <a href="https://www.flaticon.com/free-icon/hand-wash_1216004">flaticon.com</a>\n
                     \n
-                    Cooking Utensil Vector:\n
-                    https://www.freepik.com/free-icon/cooking_908165.htm\n
+                    Cooking Utensil Vector\n
+                    <a href="https://www.freepik.com/free-icon/cooking_908165.html">freepik.com</a>\n
                     \n
                     Thermometer Indicator Vector:\n
-                    https://www.onlinewebfonts.com/icon/541882\n
+                    <a href="https://www.onlinewebfonts.com/icon/541882">onlinewebfonts.com</a>\n
                     \n
                     Soap Hand-washing Vector:\n
-                    https://ya-webdesign.com/imgdownload.html\n
+                    <a href="https://ya-webdesign.com/imgdownload.html">ya-webdesign.com</a>\n
                     \n
                     Food Dish Logo ( for Contamination )\n
-                    https://freeiconshop.com/icon/food-icon-outline-filled/\n
+                    <a href="https://freeiconshop.com/icon/food-icon-outline-filled/">freeiconshop.com</a>\n
                     \n
                     Stop Hand Sign\n
-                    https://www.pngkey.com/detail/u2a9o0y3t4y3y3i1_stop-sign-stop-hand-sign-svg/\n
+                    <a href="https://www.pngkey.com/detail/u2a9o0y3t4y3y3i1_stop-sign-stop-hand-sign-svg/">pngkey.com</a>\n
                     \n
                     Unhygienic logo > fork/knife\n
-                    https://www.flaticon.com/free-icon/restaurant_754938\n
+                    <a href="https://www.flaticon.com/free-icon/restaurant_754938">flaticon.com</a>\n
                     \n
                     Unhygienic logo > Bacteria:\n
-                    https://www.flaticon.com/free-icon/bacteria_191117\n
+                    <a href="https://www.flaticon.com/free-icon/bacteria_191117">flaticon.com</a>\n
                     \n
                     Unfit Consumption> X sign:\n
-                    https://muslimcouncil.org.hk/5-dos-5-donts-ramadan/\n
+                    <a href="https://muslimcouncil.org.hk/5-dos-5-donts-ramadan/">muslimcouncil.org.hk</a>\n
                     \n
                     Unfit Consumption > fork/knife:\n
-                    https://www.onlinewebfonts.com/icon/480176\n
+                    <a href="https://www.onlinewebfonts.com/icon/480176">onlinewebfonts.com</a>\n
                     \n
                     Working Order> wrench:\n
-                    https://www.pngkey.com/download/u2q8u2q8u2o0w7q8_this-icon-is-a-hand-holding-a-wrench/\n
+                    <a href="https://www.pngkey.com/download/u2q8u2q8u2o0w7q8_this-icon-is-a-hand-holding-a-wrench/">pngkey.com</a>\n
                     \n
                     Siren Vector:\n
-                    https://www.flaticon.com/free-icon/siren_819586\n
+                    <a href="https://www.flaticon.com/free-icon/siren_819586">flaticon.com</a>\n
                     \n
                     Magnifying glass\n
-                    https://pngriver.com/download-system-magnifying-glass-png-image-77125-for-designing-projects-114528/download-system-magnifying-glass-png-image-77125-for-designing-projects/\n
+                    <a href="https://pngriver.com/download-system-magnifying-glass-png-image-77125-for-designing-projects-114528/download-system-magnifying-glass-png-image-77125-for-designing-projects/">pngriver.com</a>\n
                     </string>
+    <string name="attribution">Attribution</string>
 </resources>
