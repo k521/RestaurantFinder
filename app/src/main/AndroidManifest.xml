@@ -9,12 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".UI.InspectionReportActivity"></activity>
+
+        <activity android:name=".UI.InfoScreenActivity"/>
+        <activity android:name=".UI.InspectionReportActivity" />
         <activity android:name=".UI.RestaurantReportActivity" />
         <activity android:name=".UI.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

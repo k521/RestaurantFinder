@@ -20,6 +20,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import videodemos.example.restaurantinspector.Model.DateCalculations;
 import videodemos.example.restaurantinspector.Model.Inspection;
 import videodemos.example.restaurantinspector.Model.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
@@ -27,25 +28,37 @@ import videodemos.example.restaurantinspector.Model.Violation;
 import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
 
+/**
+ * Displays individual inspection reports.
+ */
+
 public class InspectionReportActivity extends AppCompatActivity {
 
-    private static final String  TAG_RESTAURANT = "Restaurant";
+    public static Intent makeIntent(Context c, int indexOfRestaurant, int indexOfInspection) {
+        Intent intentThirdActivity = new Intent(c, InspectionReportActivity.class);
+        intentThirdActivity.putExtra(TAG_RESTAURANT, indexOfRestaurant);
+        intentThirdActivity.putExtra(TAG_INSPECTION, indexOfInspection);
+        return intentThirdActivity;
+
+    }
+
+    private static final String TAG_RESTAURANT = "Restaurant";
     private static final String TAG_INSPECTION = "Inspection";
 
     private List<Violation> violationList = new ArrayList<Violation>();
 
-    int restaurantName;
-    int inspectionIndex;
+    private int restaurantName;
+    private int inspectionIndex;
 
 
-    RestaurantManager restaurantManager = RestaurantManager.getInstance(this);
-    Restaurant currentRestaurant;
+    private RestaurantManager restaurantManager = RestaurantManager.getInstance(this);
+    private Restaurant currentRestaurant;
 
-    ArrayList<Inspection> inspectionsList;
-    Inspection currentInspection;
+    private List<Inspection> inspectionsList;
+    private Inspection currentInspection;
 
-    List<Integer> violationCodes;
-    ViolationMaps maps;
+    private List<Integer> violationCodes;
+    private ViolationMaps maps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +78,48 @@ public class InspectionReportActivity extends AppCompatActivity {
         populateViolationList();
         populateListView();
         registerClickCallback();
+    }
+
+    private void getCurrentRestaurant() {
+        currentRestaurant = restaurantManager.getRestaurant(restaurantName);
+    }
+
+    private void getCurrentInspectionReport() {
+        inspectionsList = currentRestaurant.getInspections();
+        currentInspection = inspectionsList.get(inspectionIndex);
+    }
+
+
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.inspection_report_toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        TextView title = findViewById(R.id.tv_inspection_details_restaurant_title);
+        title.setText(currentRestaurant.getName());
+    }
+
+
+    private void getViolationCodes() {
+        violationCodes = currentInspection.getViolationList();
+    }
+
+    private void setTextViews() {
+        TextView dateOfInspection = findViewById(R.id.dateOfInspection);
+        TextView inspectionType = findViewById(R.id.inspectionType);
+        TextView criticalIssues = findViewById(R.id.criticalIssues);
+        TextView nonCriticalIssues = findViewById(R.id.nonCriticalIssues);
+        dateOfInspection.setText(getDateForDisplay());
+        inspectionType.setText(currentInspection.getInspType());
+        criticalIssues.setText(Integer.toString(currentInspection.getNumCritical()));
+        nonCriticalIssues.setText(Integer.toString(currentInspection.getNumNonCritical()));
     }
 
     private void setupHazardInfo() {
@@ -90,83 +145,60 @@ public class InspectionReportActivity extends AppCompatActivity {
         hazardDescription.setText(getString(R.string.hazard_level, hazardRating));
     }
 
-    private void setupToolbar() {
-        Toolbar toolbar = findViewById(R.id.inspection_report_toolbar);
-        setSupportActionBar(toolbar);
-
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
-        TextView title = findViewById(R.id.tv_inspection_details_restaurant_title);
-        title.setText(currentRestaurant.getName());
-    }
-
-    private void setTextViews() {
-        TextView dateOfInspection = findViewById(R.id.dateOfInspection);
-        TextView inspectionType = findViewById(R.id.inspectionType);
-        TextView criticalIssues = findViewById(R.id.criticalIssues);
-        TextView nonCriticalIssues = findViewById(R.id.nonCriticalIssues);
-//
-        dateOfInspection.setText(getDateForDisplay());
-        inspectionType.setText(currentInspection.getInspType());
-        criticalIssues.setText(Integer.toString(currentInspection.getNumCritical()));
-        nonCriticalIssues.setText(Integer.toString(currentInspection.getNumNonCritical()));
-    }
-
-    private String getDateForDisplay(){
-        // Get the number of days since the inspection
-        String inspectionDate;
-        String date = currentInspection.getInspectionDate();
-        String year = date.substring(0,4);
-        String month = date.substring(4,6);
-        String day = date.substring(6,8);
-
-        int monthInteger = Integer.parseInt(month);
-        int dayInteger = Integer.parseInt(day);
-
-        ViolationMaps violations = new ViolationMaps(this);
-        String monthName = violations.months.get(monthInteger);
-        inspectionDate = monthName + " " + dayInteger + ", " + year;
-
-        return inspectionDate;
-    }
-
-    private void getViolationCodes() {
-        violationCodes = currentInspection.getViolationList();
-    }
-
-    private void getCurrentInspectionReport() {
-        inspectionsList = currentRestaurant.getInspections();
-        currentInspection = inspectionsList.get(inspectionIndex);
-    }
-
-    private void getCurrentRestaurant(){
-        currentRestaurant = restaurantManager.getRestaurantList().get(restaurantName);
-    }
     private void populateViolationList() {
-        for(Integer violationHashCode: violationCodes){
-            String violation = maps.shortViolation.get(violationHashCode);
+        ViolationMaps violationMaps = new ViolationMaps(this);
+        for (Integer violationHashCode : violationCodes) {
+            String violation = violationMaps.getShortViolationCodeDescription(violationHashCode);
 
-            int idToImage = maps.natureViolation.get(violationHashCode);
-            boolean severityToImage = maps.severity.get(violationHashCode);
+            int idToImage = violationMaps.getNatureViolation(violationHashCode);
+            boolean severityToImage = violationMaps.getSeverity(violationHashCode);
 
             Violation newViolate = new Violation(violation, idToImage, severityToImage);
             violationList.add(newViolate);
         }
     }
 
-
     private void populateListView() {
         ArrayAdapter<Violation> adapter = new MyListAdapter();
-        ListView list = (ListView) findViewById(R.id.violationsListView);
+        ListView list = findViewById(R.id.violationsListView);
         list.setAdapter(adapter);
 
     }
+
+    private void registerClickCallback() {
+        ListView list = findViewById(R.id.violationsListView);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> paret, View viewClicked, int position, long id) {
+                int index = violationCodes.get(position);
+                ViolationMaps violationMaps = new ViolationMaps(InspectionReportActivity.this);
+                String message = violationMaps.getFullViolationCodeDescription(index);
+
+                Toast.makeText(InspectionReportActivity.this, message, Toast.LENGTH_LONG).show();
+
+            }
+
+        });
+    }
+
+    private String getDateForDisplay() {
+        // Get the number of days since the inspection
+        String inspectionDate;
+        String date = currentInspection.getInspectionDate();
+        String year = date.substring(0, 4);
+        String month = date.substring(4, 6);
+        String day = date.substring(6, 8);
+
+        int monthInteger = Integer.parseInt(month);
+        int dayInteger = Integer.parseInt(day);
+
+        DateCalculations dateCalculations = new DateCalculations(this);
+        String monthName = dateCalculations.getMonthName(monthInteger);
+        inspectionDate = monthName + " " + dayInteger + ", " + year;
+
+        return inspectionDate;
+    }
+
 
     private class MyListAdapter extends ArrayAdapter<Violation> {
 
@@ -179,56 +211,30 @@ public class InspectionReportActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             View itemView = convertView;
-            if(itemView == null){
+            if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
             }
 
 
             Violation currentViolation = violationList.get(position);
 
-            ImageView severity = (ImageView) itemView.findViewById(R.id.severity);
-            if(currentViolation.getSeverityToImage() == true){
-                severity.setImageResource(R.drawable.critical_icon); // cirtical.
-            }
-            else{
-                severity.setImageResource(R.drawable.non_critical_icon); //nonCritical ID
+            ImageView severity = itemView.findViewById(R.id.severity);
+            if (currentViolation.isSevere() == true) {
+                severity.setImageResource(R.drawable.critical_icon);
+            } else {
+                severity.setImageResource(R.drawable.non_critical_icon);
             }
 
-            ImageView violationType = (ImageView) itemView.findViewById(R.id.violationType);
+            ImageView violationType = itemView.findViewById(R.id.violationType);
 
             violationType.setImageResource(currentViolation.getIdToImage());
 
 
-            TextView description = (TextView) itemView.findViewById(R.id.violationDescription);
+            TextView description = itemView.findViewById(R.id.violationDescription);
             description.setText(currentViolation.getViolation());
 
             return itemView;
-            //return super.getView(position, convertView, parent);
         }
-
-    }
-    private void registerClickCallback() {
-        ListView list = (ListView) findViewById(R.id.violationsListView);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> paret, View viewClicked, int position, long id){
-                int index = violationCodes.get(position);
-                String message = maps.violationCodes.get(index);
-                TextView textView = (TextView) viewClicked;
-
-                Toast.makeText(InspectionReportActivity.this, message, Toast.LENGTH_LONG).show();
-
-            }
-
-        });
-    }
-
-    public static Intent makeIntent(Context c, int indexOfRestaurant, int indexOfInspection){
-
-        Intent intentThirdActivity = new Intent(c,InspectionReportActivity.class);
-        intentThirdActivity.putExtra(TAG_RESTAURANT,indexOfRestaurant);
-        intentThirdActivity.putExtra(TAG_INSPECTION,indexOfInspection);
-        return intentThirdActivity;
 
     }
 

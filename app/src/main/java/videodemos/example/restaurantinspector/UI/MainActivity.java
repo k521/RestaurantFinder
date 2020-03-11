@@ -8,12 +8,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import videodemos.example.restaurantinspector.Model.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
+
+/**
+ * Main Activity displays all the restaurants.
+ */
 
 public class MainActivity extends AppCompatActivity implements RestaurantsAdapter.OnRestaurantListener {
 
@@ -23,17 +29,34 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setupToolbar();
+        setupRestaurantManager();
+        setUpRestaurantsRecylerView();
+
+    }
+
+    private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.restaurant_list_toolbar);
         setSupportActionBar(toolbar);
 
+        ImageButton helpButton = findViewById(R.id.ib_restaurant_help_icon);
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = InfoScreenActivity.makeLaunchIntent(MainActivity.this);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void setupRestaurantManager(){
         manager = RestaurantManager.getInstance(this);
-
         manager.InspectionReader(this);
-
-        Restaurant r = manager.getRestaurant(0);
         manager.sortInspections();
+    }
 
-
+    private void setUpRestaurantsRecylerView() {
         RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
 
         restaurantsRecyclerView.setHasFixedSize(true);
@@ -42,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
         restaurantsRecyclerView.setAdapter(restaurantsAdapter);
-
     }
 
     @Override

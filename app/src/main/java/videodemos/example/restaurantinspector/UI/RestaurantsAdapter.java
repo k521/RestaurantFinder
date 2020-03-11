@@ -15,18 +15,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import videodemos.example.restaurantinspector.Model.DateCalculations;
 import videodemos.example.restaurantinspector.Model.Inspection;
 import videodemos.example.restaurantinspector.Model.Restaurant;
-import videodemos.example.restaurantinspector.Model.Violation;
 import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
+
+/**
+ * Restaurants adapter for RecyclerView
+ */
 
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
 
     private List<Restaurant> restaurantDataset;
     private Context context;
     private OnRestaurantListener onRestaurantListener;
-
 
     public class RestaurantsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView restaurantName;
@@ -69,24 +72,23 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantsViewHolder holder, int position) {
+        final int LESS_THAN_A_MONTH = 30;
+        final int LESS_THAN_A_YEAR = 365;
+
         holder.restaurantName.setText(restaurantDataset.get(position).getName());
         Restaurant restaurantInQuestion = restaurantDataset.get(position);
+
         int sizeOfInspections = restaurantInQuestion.getInspections().size();
         if (sizeOfInspections > 0) {
-           // Inspection latestInspection = restaurantInQuestion.getInspections().get(sizeOfInspections - 1);
             Inspection latestInspection = restaurantInQuestion.getInspections().get(0);
-
-
             // Get the number of days since the last inspection
-
-            ViolationMaps violations = new ViolationMaps(context);
-            int numOfDaysSinceLastInspection = violations.daysInBetween(latestInspection.getInspectionDate());
+            DateCalculations dateCalculations = new DateCalculations(context);
+            int numOfDaysSinceLastInspection = dateCalculations.daysInBetween(latestInspection.getInspectionDate());
 
             // Check to see if it happened in the last 30 days
-            if(numOfDaysSinceLastInspection <= 30){
-                holder.lastInspection.setText("Last Inspection : " + numOfDaysSinceLastInspection + " days ago. ");
-            }
-            else if(numOfDaysSinceLastInspection <= 365){
+            if(numOfDaysSinceLastInspection <= LESS_THAN_A_MONTH){
+                holder.lastInspection.setText(context.getString(R.string.date_of_inspection_days_ago, numOfDaysSinceLastInspection));
+            } else if(numOfDaysSinceLastInspection <= LESS_THAN_A_YEAR){
                 String date = latestInspection.getInspectionDate();
                 String month = date.substring(4,6);
                 String day = date.substring(6,8);
@@ -94,16 +96,16 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                 int monthInteger = Integer.parseInt(month);
                 int dayInteger = Integer.parseInt(day);
 
-                String monthName = violations.months.get(monthInteger);
-                holder.lastInspection.setText("Last Inspection : " + monthName + " " + dayInteger);
+                String monthName = dateCalculations.getMonthName(monthInteger);
+                holder.lastInspection.setText(context.getString(R.string.date_of_inspection_with_params, monthName, dayInteger));
 
             }else{
                 String date = latestInspection.getInspectionDate();
                 String year = date.substring(0,4);
                 String month = date.substring(4,6);
 
-                String monthName = violations.months.get(Integer.parseInt(month));
-                holder.lastInspection.setText("Last Inspection : " + monthName + " " + year);
+                String monthName = dateCalculations.getMonthName(Integer.parseInt(month));
+                holder.lastInspection.setText(context.getString(R.string.date_of_inspection_with_params, monthName, Integer.parseInt(year)));
 
             }
             int numOfIssues = latestInspection.getNumCritical() + latestInspection.getNumNonCritical();
@@ -136,8 +138,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.restaurant_item, parent, false);
 
-        RestaurantsViewHolder vh = new RestaurantsViewHolder(view, onRestaurantListener);
-        return vh;
+        return new RestaurantsViewHolder(view, onRestaurantListener);
     }
 
     public interface OnRestaurantListener {

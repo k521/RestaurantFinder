@@ -9,18 +9,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import videodemos.example.restaurantinspector.R;
 
+/**
+ * A class that holds and loads the list of restaurants.
+ */
 
 public class RestaurantManager {
-    private final int NUM_OF_FIRST_NONVIOLATION_COLS = 5;
     public static RestaurantManager instance;
     private List<Restaurant> restaurantList = new ArrayList<>();
+
 
     public static RestaurantManager getInstance(Context c) {
         if (instance == null) {
@@ -39,6 +41,11 @@ public class RestaurantManager {
     }
 
     private RestaurantManager(Context c) {
+        readFromCSV(c);
+        sortByRestaurantName();
+    }
+
+    private void readFromCSV(Context c) {
         InputStream is = c.getResources().openRawResource(R.raw.restaurants);
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("UTF-8"))
@@ -46,6 +53,14 @@ public class RestaurantManager {
 
         String line = "";
         try {
+
+            final int TRACKING_NUM_INDEX = 0;
+            final int SET_NAME_INDEX = 1;
+            final int SET_PHYSICAL_ADDRESS = 2;
+            final int SET_PHYSICALCITY = 3;
+            final int SET_FACT_TYPE = 4;
+            final int SET_LATITUDE_TYPE = 5;
+            final int SET_LONGITUDE= 6;
 
             // Step over headers
             reader.readLine();
@@ -55,39 +70,43 @@ public class RestaurantManager {
 
                 String[] tokens = line.split(",");
 
-
                 // Read the data
 
                 Restaurant restaurant = new Restaurant();
-                restaurant.setTrackingNumber(tokens[0].replace("\"", ""));
-                restaurant.setName(tokens[1].replace("\"", ""));
-                restaurant.setPhysicalAddress(tokens[2].replace("\"", ""));
-                restaurant.setPhysicalCity(tokens[3].replace("\"", ""));
-                restaurant.setFactype(tokens[4].replace("\"", ""));
+                restaurant.setTrackingNumber(tokens[TRACKING_NUM_INDEX].
+                        replace("\"", ""));
 
-                if (tokens[5].length() > 0) {
-                    restaurant.setLatitude(Double.parseDouble(tokens[5]));
+                restaurant.setName(tokens[SET_NAME_INDEX].
+                        replace("\"", ""));
+
+                restaurant.setPhysicalAddress(tokens[SET_PHYSICAL_ADDRESS].
+                        replace("\"", ""));
+
+                restaurant.setPhysicalCity(tokens[SET_PHYSICALCITY].
+                        replace("\"", ""));
+
+                restaurant.setFactype(tokens[SET_FACT_TYPE].
+                        replace("\"", ""));
+
+                if (tokens[SET_LATITUDE_TYPE].length() > 0) {
+                    restaurant.setLatitude(Double.parseDouble(tokens[SET_LATITUDE_TYPE]));
                 } else {
                     restaurant.setLatitude(0);
                 }
 
-                if (tokens[6].length() > 0) {
-                    restaurant.setLongitude(Double.parseDouble(tokens[6]));
+                if (tokens[SET_LONGITUDE].length() > 0) {
+                    restaurant.setLongitude(Double.parseDouble(tokens[SET_LONGITUDE]));
                 } else {
                     restaurant.setLongitude(0);
                 }
 
                 restaurantList.add(restaurant);
 
-                Log.d("MyActivity", "Just  created this right now" + restaurant);
-
             }
         } catch (IOException e) {
             Log.wtf("My Activity", "Error reading data file on line " + line, e);
             e.printStackTrace();
         }
-
-        sortByRestaurantName();
     }
 
     public void InspectionReader(Context c) {
@@ -99,30 +118,31 @@ public class RestaurantManager {
         String line = "";
         try {
 
+            final int TRACKING_NUM_INDEX = 1;
+            final int DATE_INDEX = 2;
+            final int INSPECTION_TYPE_INDEX = 3;
+            final int CRITICAL_INDEX = 4;
+            final int HAZARD_INDEX = 5;
+            final int VIOLATIONS_LUMP_INDEX = 7;
 
             // Step over headers
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 Inspection inspection = new Inspection();
 
-
-
-                //" SPLH-9NEUHG" ,20191001," Routine" ,0,1," Low" ," 209,Not Critical,Food not protected from contamination [s. 12(a)],Not Repeat"
-
                 // Even newer splitting method
                 String[] tokens = line.split("\"");
-                String trackingNum = tokens[1];
+                String trackingNum = tokens[TRACKING_NUM_INDEX];
                 for(Restaurant r: restaurantList){
                     if(r.getTrackingNumber().equals(trackingNum)){
-                        String dateToAdd = tokens[2];
-                        dateToAdd = dateToAdd.substring(1,dateToAdd.length() - 1);
-                        dateToAdd.replaceAll(",","");
+                        String dateToAdd = tokens[DATE_INDEX];
+                        dateToAdd = dateToAdd.substring(1, dateToAdd.length() - 1);
                         inspection.setInspectionDate(dateToAdd);
 
-                        String inspectionType = tokens[3];
+                        String inspectionType = tokens[INSPECTION_TYPE_INDEX];
                         inspection.setInspType(inspectionType);
 
-                        String valuesForCritical = tokens[4];
+                        String valuesForCritical = tokens[CRITICAL_INDEX];
                         valuesForCritical = valuesForCritical.replaceAll(",","");
 
                         char charNumNonCrit = valuesForCritical.charAt(0);
@@ -131,15 +151,14 @@ public class RestaurantManager {
                         char charNumCrit = valuesForCritical.charAt(1);
                         String numCrit = Character.toString(charNumCrit);
 
-
                         inspection.setNumNonCritical(Integer.parseInt(numNonCrit));
                         inspection.setNumCritical(Integer.parseInt(numCrit));
 
-                        String hazardRating = tokens[5];
+                        String hazardRating = tokens[HAZARD_INDEX];
                         inspection.setHazardRating(hazardRating);
 
                         if(Integer.parseInt(numNonCrit) + Integer.parseInt(numCrit) > 0){
-                            String[] violations = tokens[7].split("\\|");
+                            String[] violations = tokens[VIOLATIONS_LUMP_INDEX].split("\\|");
 
                             for(String violationPossibility: violations){
                                 String violation = violationPossibility.substring(0, 3);

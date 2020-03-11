@@ -1,28 +1,21 @@
 package videodemos.example.restaurantinspector.Model;
 
 import android.content.Context;
-import android.util.Log;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
-import org.joda.time.Months;
-import org.joda.time.Years;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-
 import java.util.HashMap;
 
 import videodemos.example.restaurantinspector.R;
 
+
+/**
+ * A class used as a library to hold violation information that is displayed in the UI.
+ */
 public class ViolationMaps {
 
-    private static ViolationMaps instance;
-    private static ViolationMaps monthInstance;
+    private HashMap<Integer, String> violationCodes = new HashMap<Integer, String>();
+    private HashMap<Integer, Boolean> severity = new HashMap<Integer, Boolean>();
+    private HashMap<Integer, Integer> natureViolation = new HashMap<Integer, Integer>();
+    private HashMap<Integer, String> shortViolation = new HashMap<Integer, String>();
+
     private Context context;
 
     public ViolationMaps(Context context) {
@@ -31,34 +24,25 @@ public class ViolationMaps {
         populateSeverity();
         populateShortViolation();
         populateNatureViolation();
-        populateMonths();
     }
 
-    public static HashMap<Integer, String> violationCodes = new HashMap<Integer, String>();
-    public static HashMap<Integer, String> months = new HashMap<>();
 
-    public static HashMap<Integer, Boolean> severity = new HashMap<Integer, Boolean>();
-
-    public static HashMap<Integer, Integer> natureViolation = new HashMap<Integer, Integer>();
-
-    public static HashMap<Integer, String> shortViolation = new HashMap<Integer, String>();
-
-
-    private void populateMonths() {
-        months.put(1, context.getResources().getString(R.string.january));
-        months.put(2, context.getResources().getString(R.string.february));
-        months.put(3, context.getResources().getString(R.string.march));
-        months.put(4, context.getResources().getString(R.string.april));
-        months.put(5, context.getResources().getString(R.string.may));
-        months.put(6, context.getResources().getString(R.string.june));
-        months.put(7, context.getResources().getString(R.string.july));
-        months.put(8, context.getResources().getString(R.string.august));
-        months.put(9, context.getResources().getString(R.string.september));
-        months.put(10, context.getResources().getString(R.string.october));
-        months.put(11, context.getResources().getString(R.string.november));
-        months.put(12, context.getResources().getString(R.string.december));
-
+    public String getFullViolationCodeDescription(int index) {
+        return violationCodes.get(index);
     }
+
+    public String getShortViolationCodeDescription(int index) {
+        return shortViolation.get(index);
+    }
+
+    public boolean getSeverity(int index) {
+        return severity.get(index);
+    }
+
+    public int getNatureViolation(int index) {
+        return natureViolation.get(index);
+    }
+
 
     private void populateViolations() {
         violationCodes.put(101, context.getResources().getString(R.string.violationDescription101));
@@ -100,7 +84,6 @@ public class ViolationMaps {
     }
 
     private void populateSeverity() {
-        //TODO: Add boolean as second field based on criticallity
         severity.put(101, false);
         severity.put(102, false);
         severity.put(103, false);
@@ -140,7 +123,6 @@ public class ViolationMaps {
     }
 
     private void populateNatureViolation() {
-        //TODO: Add boolean as second field based on criticallity
         natureViolation.put(101, R.drawable.miscellaneous_icon);
         natureViolation.put(102, R.drawable.miscellaneous_icon);
         natureViolation.put(103, R.drawable.miscellaneous_icon);
@@ -179,26 +161,7 @@ public class ViolationMaps {
         natureViolation.put(502, R.drawable.miscellaneous_icon);
     }
 
-    public static int daysInBetween(String dateInput) {
-        DateTimeFormatter dateFormat = DateTimeFormat
-                .forPattern("G,C,Y,x,w,e,E,Y,D,M,d,a,K,h,H,k,m,s,S,z,Z");
-
-        Log.d("Input date is ", dateInput);
-        String year = dateInput.substring(0, 4);
-        String month = dateInput.substring(4, 6);
-        String date = dateInput.substring(6, 8);
-        String dateInQuestion = year + "-" + month + "-" + date;
-        LocalTime localTime = new LocalTime();
-        LocalDate localDate = new LocalDate();
-        DateTime dateTime = new DateTime();
-        LocalDateTime localDateTime = new LocalDateTime();
-        DateTimeZone dateTimeZone = DateTimeZone.getDefault();
-        int days = Days.daysBetween(DateTime.parse(dateInQuestion), dateTime).getDays();
-        return days;
-    }
-
     private void populateShortViolation() {
-        //TODO: Add boolean as second field based on criticallity
         shortViolation.put(101, context.getResources().getString(R.string.sv1));
         shortViolation.put(102, context.getResources().getString(R.string.sv2));
         shortViolation.put(103, context.getResources().getString(R.string.sv3));

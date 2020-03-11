@@ -2,7 +2,6 @@ package videodemos.example.restaurantinspector.UI;
 
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import videodemos.example.restaurantinspector.Model.DateCalculations;
 import videodemos.example.restaurantinspector.Model.Inspection;
-import videodemos.example.restaurantinspector.Model.Restaurant;
-import videodemos.example.restaurantinspector.Model.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
+
+/**
+ * Inspection adapter for RecyclerView.
+ */
 
 public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.InspectionsViewHolder> {
 
@@ -27,14 +29,13 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
     private Context context;
     private OnInspectionListener onInspectionListener;
 
-
     public class InspectionsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView numOfCritIssues;
-        TextView numOfNonCritIssues;
-        TextView daysSinceInspection;
-        ImageView hazardIcon;
-        CardView cardViewBackground;
-        OnInspectionListener onInspectionListener;
+        private TextView numOfCritIssues;
+        private TextView numOfNonCritIssues;
+        private TextView daysSinceInspection;
+        private ImageView hazardIcon;
+        private CardView cardViewBackground;
+        private OnInspectionListener onInspectionListener;
 
         public InspectionsViewHolder(View itemView, OnInspectionListener onInspectionListener) {
             super(itemView);
@@ -53,11 +54,11 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
         @Override
         public void onClick(View v) {
             onInspectionListener.onInspectionClick(getAdapterPosition());
-
         }
     }
 
-    public InspectionsAdapter(List<Inspection> inspectionDataset, Context context, OnInspectionListener onInspectionListener) {
+    public InspectionsAdapter(List<Inspection> inspectionDataset, Context context,
+                              OnInspectionListener onInspectionListener) {
         this.inspectionDataset = inspectionDataset;
         this.context = context;
         this.onInspectionListener = onInspectionListener;
@@ -70,21 +71,22 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull InspectionsViewHolder holder, int position) {
+        final int LESS_THAN_A_MONTH = 30;
+        final int LESS_THAN_A_YEAR = 365;
+
         Inspection inspectionInQuestion = inspectionDataset.get(position);
         int critIssues = inspectionInQuestion.getNumCritical();
         int nonCritIssues = inspectionInQuestion.getNumNonCritical();
-        String daysFrom = inspectionInQuestion.getInspectionDate();
 
         holder.numOfCritIssues.setText(context.getResources().getString(R.string.number_crit_issues, critIssues));
         holder.numOfNonCritIssues.setText(context.getResources().getString(R.string.number_non_crit_issues, nonCritIssues));
 
+        DateCalculations dateCalculations = new DateCalculations(context);
+        int numOfDaysSinceLastInspection = dateCalculations.daysInBetween(inspectionInQuestion.getInspectionDate());
 
-        int numOfDaysSinceLastInspection = ViolationMaps.daysInBetween(inspectionInQuestion.getInspectionDate());
-
-        // Check to see if it happened in the last 30 days
-        if (numOfDaysSinceLastInspection <= 30) {
-            holder.daysSinceInspection.setText("Date of Inspection : " + numOfDaysSinceLastInspection + " days ago. ");
-        } else if (numOfDaysSinceLastInspection <= 365) {
+        if (numOfDaysSinceLastInspection <= LESS_THAN_A_MONTH) {
+            holder.daysSinceInspection.setText(context.getString(R.string.date_of_inspection_days_ago, numOfDaysSinceLastInspection));
+        } else if (numOfDaysSinceLastInspection <= LESS_THAN_A_YEAR) {
             String date = inspectionInQuestion.getInspectionDate();
             String month = date.substring(4, 6);
             String day = date.substring(6, 8);
@@ -92,16 +94,16 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
             int monthInteger = Integer.parseInt(month);
             int dayInteger = Integer.parseInt(day);
 
-            String monthName = ViolationMaps.months.get(monthInteger);
-            holder.daysSinceInspection.setText("Date of  Inspection : " + monthName + " " + dayInteger);
+            String monthName = dateCalculations.getMonthName(monthInteger);
+            holder.daysSinceInspection.setText(context.getString(R.string.date_of_inspection_with_params, monthName, dayInteger));
 
         } else {
             String date = inspectionInQuestion.getInspectionDate();
             String year = date.substring(0, 4);
             String month = date.substring(4, 6);
 
-            String monthName = ViolationMaps.months.get(Integer.parseInt(month));
-            holder.daysSinceInspection.setText("Date of  Inspection : " + monthName + " " + year);
+            String monthName = dateCalculations.getMonthName(Integer.parseInt(month));
+            holder.daysSinceInspection.setText(context.getString(R.string.date_of_inspection_with_params, monthName, Integer.parseInt(year)));
 
         }
 
@@ -129,8 +131,7 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.report_item, parent, false);
 
-        InspectionsViewHolder vh = new InspectionsViewHolder(view, onInspectionListener);
-        return vh;
+        return new InspectionsViewHolder(view, onInspectionListener);
     }
 
     public interface OnInspectionListener {
