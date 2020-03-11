@@ -41,9 +41,7 @@ public class RestaurantManager {
     }
 
     private RestaurantManager(Context c) {
-
         readFromCSV(c);
-
         sortByRestaurantName();
     }
 
@@ -52,6 +50,7 @@ public class RestaurantManager {
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("UTF-8"))
         );
+
         String line = "";
         try {
 
@@ -62,7 +61,6 @@ public class RestaurantManager {
             final int SET_FACT_TYPE = 4;
             final int SET_LATITUDE_TYPE = 5;
             final int SET_LONGITUDE= 6;
-
 
             // Step over headers
             reader.readLine();
@@ -112,8 +110,6 @@ public class RestaurantManager {
     }
 
     public void InspectionReader(Context c) {
-
-        // TODO Extract constants
         InputStream is = c.getResources().openRawResource(R.raw.inspectionreports);
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("UTF-8"))
@@ -122,6 +118,13 @@ public class RestaurantManager {
         String line = "";
         try {
 
+            final int TRACKING_NUM_INDEX = 1;
+            final int DATE_INDEX = 2;
+            final int INSPECTION_TYPE_INDEX = 3;
+            final int CRITICAL_INDEX = 4;
+            final int HAZARD_INDEX = 5;
+            final int VIOLATIONS_LUMP_INDEX = 7;
+
             // Step over headers
             reader.readLine();
             while ((line = reader.readLine()) != null) {
@@ -129,18 +132,17 @@ public class RestaurantManager {
 
                 // Even newer splitting method
                 String[] tokens = line.split("\"");
-                String trackingNum = tokens[1];
+                String trackingNum = tokens[TRACKING_NUM_INDEX];
                 for(Restaurant r: restaurantList){
                     if(r.getTrackingNumber().equals(trackingNum)){
-                        String dateToAdd = tokens[2];
-                        dateToAdd = dateToAdd.substring(1,dateToAdd.length() - 1);
-                        dateToAdd.replaceAll(",","");
+                        String dateToAdd = tokens[DATE_INDEX];
+                        dateToAdd = dateToAdd.substring(1, dateToAdd.length() - 1);
                         inspection.setInspectionDate(dateToAdd);
 
-                        String inspectionType = tokens[3];
+                        String inspectionType = tokens[INSPECTION_TYPE_INDEX];
                         inspection.setInspType(inspectionType);
 
-                        String valuesForCritical = tokens[4];
+                        String valuesForCritical = tokens[CRITICAL_INDEX];
                         valuesForCritical = valuesForCritical.replaceAll(",","");
 
                         char charNumNonCrit = valuesForCritical.charAt(0);
@@ -149,15 +151,14 @@ public class RestaurantManager {
                         char charNumCrit = valuesForCritical.charAt(1);
                         String numCrit = Character.toString(charNumCrit);
 
-
                         inspection.setNumNonCritical(Integer.parseInt(numNonCrit));
                         inspection.setNumCritical(Integer.parseInt(numCrit));
 
-                        String hazardRating = tokens[5];
+                        String hazardRating = tokens[HAZARD_INDEX];
                         inspection.setHazardRating(hazardRating);
 
                         if(Integer.parseInt(numNonCrit) + Integer.parseInt(numCrit) > 0){
-                            String[] violations = tokens[7].split("\\|");
+                            String[] violations = tokens[VIOLATIONS_LUMP_INDEX].split("\\|");
 
                             for(String violationPossibility: violations){
                                 String violation = violationPossibility.substring(0, 3);

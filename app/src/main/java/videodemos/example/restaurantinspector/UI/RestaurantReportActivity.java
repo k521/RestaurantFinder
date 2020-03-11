@@ -20,7 +20,6 @@ import videodemos.example.restaurantinspector.R;
 public class RestaurantReportActivity extends AppCompatActivity implements InspectionsAdapter.OnInspectionListener {
 
     private static final String RESTAURANT_INDEX = "RESTAURANT_INDEX";
-    private static int indexOfRestaurant = 0;
 
     public static Intent makeIntent(Context context, int indexOfRestaurant){
         Intent intent = new Intent(context, RestaurantReportActivity.class);
@@ -29,18 +28,16 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         return intent;
     }
 
+    private int indexOfRestaurant;
     private Restaurant restaurant;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        int restaurantIndex = getIntent().getIntExtra(RESTAURANT_INDEX, 0);
-        indexOfRestaurant = restaurantIndex;
+        indexOfRestaurant = getIntent().getIntExtra(RESTAURANT_INDEX, 0);
         RestaurantManager manager = RestaurantManager.getInstance(this);
-        restaurant = manager.getRestaurant(restaurantIndex);
+        restaurant = manager.getRestaurant(indexOfRestaurant);
 
         if (restaurant.getInspections().isEmpty()){
             setContentView(R.layout.activity_restaurant_report_empty);
@@ -66,8 +63,6 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         });
     }
 
-
-
     private void setupRestaurantInfoTextViews() {
         TextView restaurantName = findViewById(R.id.tv_report_restaurant_name);
         restaurantName.setText(restaurant.getName());
@@ -92,8 +87,8 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
     @Override
     public void onInspectionClick(int position) {
         Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +" Inspect Index " + position);
-        Intent launchThirdActivity = InspectionReportActivity.makeIntent(this,indexOfRestaurant,position);
-        startActivity(launchThirdActivity);
+        Intent intent = InspectionReportActivity.makeIntent(this,indexOfRestaurant,position);
+        startActivity(intent);
 
     }
 }

@@ -29,7 +29,6 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
     private Context context;
     private OnInspectionListener onInspectionListener;
 
-
     public class InspectionsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView numOfCritIssues;
         private TextView numOfNonCritIssues;
@@ -55,7 +54,6 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
         @Override
         public void onClick(View v) {
             onInspectionListener.onInspectionClick(getAdapterPosition());
-
         }
     }
 
@@ -76,14 +74,12 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
         final int LESS_THAN_A_MONTH = 30;
         final int LESS_THAN_A_YEAR = 365;
 
-
         Inspection inspectionInQuestion = inspectionDataset.get(position);
         int critIssues = inspectionInQuestion.getNumCritical();
         int nonCritIssues = inspectionInQuestion.getNumNonCritical();
 
         holder.numOfCritIssues.setText(context.getResources().getString(R.string.number_crit_issues, critIssues));
         holder.numOfNonCritIssues.setText(context.getResources().getString(R.string.number_non_crit_issues, nonCritIssues));
-
 
         DateCalculations dateCalculations = new DateCalculations(context);
         int numOfDaysSinceLastInspection = dateCalculations.daysInBetween(inspectionInQuestion.getInspectionDate());
@@ -135,8 +131,7 @@ public class InspectionsAdapter extends RecyclerView.Adapter<InspectionsAdapter.
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.report_item, parent, false);
 
-        InspectionsViewHolder vh = new InspectionsViewHolder(view, onInspectionListener);
-        return vh;
+        return new InspectionsViewHolder(view, onInspectionListener);
     }
 
     public interface OnInspectionListener {

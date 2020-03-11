@@ -29,28 +29,11 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         setupToolbar();
-
-        manager = RestaurantManager.getInstance(this);
-
-        manager.InspectionReader(this);
-
-        manager.sortInspections();
-
-
+        setupRestaurantManager();
         setUpRestaurantsRecylerView();
 
-    }
-
-    private void setUpRestaurantsRecylerView() {
-        RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
-
-        restaurantsRecyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        restaurantsRecyclerView.setLayoutManager(layoutManager);
-
-        RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
-        restaurantsRecyclerView.setAdapter(restaurantsAdapter);
     }
 
     private void setupToolbar() {
@@ -65,6 +48,23 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
                 startActivity(intent);
             }
         });
+    }
+
+    private void setupRestaurantManager(){
+        manager = RestaurantManager.getInstance(this);
+        manager.InspectionReader(this);
+        manager.sortInspections();
+    }
+
+    private void setUpRestaurantsRecylerView() {
+        RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
+
+        restaurantsRecyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        restaurantsRecyclerView.setLayoutManager(layoutManager);
+
+        RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
+        restaurantsRecyclerView.setAdapter(restaurantsAdapter);
     }
 
     @Override
