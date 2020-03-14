@@ -46,7 +46,17 @@ public class RestaurantManager {
     }
 
     private void readFromCSV(Context c) {
-        InputStream is = c.getResources().openRawResource(R.raw.restaurants);
+
+        //A016730    ,
+        // North Surrey Secondary School Cafeteria,
+        // 15945 96 Ave,
+        // Surrey
+        // ,Restaurant
+        // ,49.17706626
+        // ,-122.78034
+        //"SWOD-AHZUMF","Lee Yuen Seafood Restaurant","14755 104 Ave","Surrey","Restaurant",49.19166808,-122.8136896
+
+        InputStream is = c.getResources().openRawResource(R.raw.restaurants1);
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("UTF-8"))
         );
@@ -62,42 +72,71 @@ public class RestaurantManager {
             final int SET_LATITUDE_TYPE = 5;
             final int SET_LONGITUDE= 6;
 
+           // SWOD-AG5UGV,"Green Indian Cuisine, Pizza & Sweets",12565 88 Ave,Surrey,Restaurant,49.16401631,-122.8747815
+
+
+
             // Step over headers
             reader.readLine();
             while ((line = reader.readLine()) != null) {
 
                 // Split by ','
 
-                String[] tokens = line.split(",");
-
-                // Read the data
-
                 Restaurant restaurant = new Restaurant();
-                restaurant.setTrackingNumber(tokens[TRACKING_NUM_INDEX].
-                        replace("\"", ""));
 
-                restaurant.setName(tokens[SET_NAME_INDEX].
-                        replace("\"", ""));
+                String []tokensEdge = line.split("\"");
+                if(tokensEdge.length > 1) {
+                    String trackingNum = tokensEdge[0].replaceAll(",", "");
+                    restaurant.setTrackingNumber(trackingNum);
+                    restaurant.setName(tokensEdge[1]);
 
-                restaurant.setPhysicalAddress(tokens[SET_PHYSICAL_ADDRESS].
-                        replace("\"", ""));
+                    String[] tokensEdgeRest = tokensEdge[2].split(",");
 
-                restaurant.setPhysicalCity(tokens[SET_PHYSICALCITY].
-                        replace("\"", ""));
+                    restaurant.setPhysicalAddress(tokensEdgeRest[1]);
 
-                restaurant.setFactype(tokens[SET_FACT_TYPE].
-                        replace("\"", ""));
+                    restaurant.setPhysicalCity(tokensEdgeRest[2]);
 
-                if (tokens[SET_LATITUDE_TYPE].length() > 0) {
-                    restaurant.setLatitude(Double.parseDouble(tokens[SET_LATITUDE_TYPE]));
-                } else {
-                    restaurant.setLatitude(0);
+                    restaurant.setFactype(tokensEdgeRest[3]);
+
+                    restaurant.setLatitude(Double.parseDouble(tokensEdgeRest[4]));
+
+                    restaurant.setLatitude(Double.parseDouble(tokensEdgeRest[5]));
                 }
+                else{
+                    String[] tokens = line.split(",");
 
-                if (tokens[SET_LONGITUDE].length() > 0) {
-                    restaurant.setLongitude(Double.parseDouble(tokens[SET_LONGITUDE]));
-                } else {
-                    restaurant.setLongitude(0);
+                    // Read the data
+
+                    // We first try to see if our name has commas in it
+
+                    restaurant.setTrackingNumber(tokens[TRACKING_NUM_INDEX].
+                            replace("\"", ""));
+
+                    restaurant.setName(tokens[SET_NAME_INDEX].
+                            replace("\"", ""));
+
+                    restaurant.setPhysicalAddress(tokens[SET_PHYSICAL_ADDRESS].
+                            replace("\"", ""));
+
+                    restaurant.setPhysicalCity(tokens[SET_PHYSICALCITY].
+                            replace("\"", ""));
+
+                    restaurant.setFactype(tokens[SET_FACT_TYPE].
+                            replace("\"", ""));
+
+                    if (tokens[SET_LATITUDE_TYPE].length() > 0) {
+                        Log.d("RestaurantManager",tokens[SET_LATITUDE_TYPE]);
+                        Log.d("RestaurantManager","Line is " + line);
+                        restaurant.setLatitude(Double.parseDouble(tokens[SET_LATITUDE_TYPE]));
+                    } else {
+                        restaurant.setLatitude(0);
+                    }
+
+                    if (tokens[SET_LONGITUDE].length() > 0) {
+                        restaurant.setLongitude(Double.parseDouble(tokens[SET_LONGITUDE]));
+                    } else {
+                        restaurant.setLongitude(0);
+                    }
                 }
 
                 restaurantList.add(restaurant);
@@ -110,13 +149,27 @@ public class RestaurantManager {
     }
 
     public void InspectionReader(Context c) {
-        InputStream is = c.getResources().openRawResource(R.raw.inspectionreports);
+
+
+
+
+
+
+        InputStream is = c.getResources().openRawResource(R.raw.restaurantinspectionreports1);
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("UTF-8"))
         );
 
         String line = "";
         try {
+
+
+
+            //   NDAA-8RNNVR,20190412,Routine,0,2,
+            //   "306,Not Critical,Food premises not maintained in a sanitary condition
+            //   [s. 17(1)],Not Repeat|308,Not Critical,Equipment/utensils/food contact surfaces are
+            //   not in good working order [s. 16(b)],Not Repeat",Moderate
+
 
             final int TRACKING_NUM_INDEX = 1;
             final int DATE_INDEX = 2;
@@ -131,46 +184,132 @@ public class RestaurantManager {
                 Inspection inspection = new Inspection();
 
                 // Even newer splitting method
-                String[] tokens = line.split("\"");
-                String trackingNum = tokens[TRACKING_NUM_INDEX];
-                for(Restaurant r: restaurantList){
-                    if(r.getTrackingNumber().equals(trackingNum)){
-                        String dateToAdd = tokens[DATE_INDEX];
-                        dateToAdd = dateToAdd.substring(1, dateToAdd.length() - 1);
-                        inspection.setInspectionDate(dateToAdd);
+                String [] tokens = line.split("\"");
 
-                        String inspectionType = tokens[INSPECTION_TYPE_INDEX];
-                        inspection.setInspType(inspectionType);
+                String [] tokensFirstHalf = tokens[0].split(",");
 
-                        String valuesForCritical = tokens[CRITICAL_INDEX];
-                        valuesForCritical = valuesForCritical.replaceAll(",","");
+                String trackingNum = tokensFirstHalf[0];
 
-                        char charNumNonCrit = valuesForCritical.charAt(0);
-                        String numNonCrit = Character.toString(charNumNonCrit);
+                if(tokens.length > 1){
+                    for(Restaurant r : restaurantList){
+                        if(r.getTrackingNumber().equals(trackingNum)){
+                            String datetoAdd = tokensFirstHalf[1];
+                            inspection.setInspectionDate(datetoAdd);
 
-                        char charNumCrit = valuesForCritical.charAt(1);
-                        String numCrit = Character.toString(charNumCrit);
+                            String inspectionType = tokensFirstHalf[2];
+                            inspection.setInspType(inspectionType);
 
-                        inspection.setNumNonCritical(Integer.parseInt(numNonCrit));
-                        inspection.setNumCritical(Integer.parseInt(numCrit));
+                            int numOfCritical = Integer.parseInt(tokensFirstHalf[3]);
+                            inspection.setNumCritical(numOfCritical);
 
-                        String hazardRating = tokens[HAZARD_INDEX];
-                        inspection.setHazardRating(hazardRating);
+                            int numOfNonCritical = Integer.parseInt(tokensFirstHalf[4]);
+                            inspection.setNumNonCritical(numOfNonCritical);
 
-                        if(Integer.parseInt(numNonCrit) + Integer.parseInt(numCrit) > 0){
-                            String[] violations = tokens[VIOLATIONS_LUMP_INDEX].split("\\|");
-
-                            for(String violationPossibility: violations){
-                                String violation = violationPossibility.substring(0, 3);
-                               inspection.addViolation(Integer.parseInt(violation));
+                            if(numOfCritical + numOfNonCritical != 0){
+                                String[] violations = tokens[1].split("\\|");
+                                for(String violationPossibility: violations){
+                                    String violation = violationPossibility.substring(0, 3);
+                                    inspection.addViolation(Integer.parseInt(violation));
+                                }
                             }
 
-                        }
+                            String hazardLevel = tokens[2];
+                            if(hazardLevel.length() > 1){
+                                inspection.setHazardRating(hazardLevel);
+                            }
+                            else{
+                                inspection.setHazardRating("Low");
+                            }
 
-                        r.addInspection(inspection);
+                            r.addInspection(inspection);
+                            break;
+                        }
 
                     }
                 }
+                else{
+
+                    // NDAA-8RNNVR,20181017,Routine,0,0,,Low
+                    String [] tokensSplit = tokens[0].split(",");
+                     trackingNum = tokensSplit[0];
+
+                     for(Restaurant r : restaurantList){
+                         if(r.getTrackingNumber().equals(trackingNum)){
+                             String dateToAdd = tokensSplit[1];
+                             inspection.setInspectionDate(dateToAdd);
+
+                             String inspectionType = tokensSplit[2];
+                             inspection.setInspType(inspectionType);
+
+                             inspection.setNumNonCritical(Integer.parseInt(tokensSplit[3]));
+                             inspection.setNumCritical(Integer.parseInt(tokensSplit[4]));
+                             inspection.setHazardRating(tokensSplit[6]);
+
+                             r.addInspection(inspection);
+                             break;
+
+                         }
+                     }
+
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//                String[] tokens = line.split("\"");
+//                String trackingNum = tokens[TRACKING_NUM_INDEX];
+//                for(Restaurant r: restaurantList){
+//                    Log.d("Main Activity", " Found right restaurant");
+//                    if(r.getTrackingNumber().equals(trackingNum)){
+//                        String dateToAdd = tokens[DATE_INDEX];
+//                        dateToAdd = dateToAdd.substring(1, dateToAdd.length() - 1);
+//                        inspection.setInspectionDate(dateToAdd);
+//
+//                        String inspectionType = tokens[INSPECTION_TYPE_INDEX];
+//                        inspection.setInspType(inspectionType);
+//
+//                        String valuesForCritical = tokens[CRITICAL_INDEX];
+//                        valuesForCritical = valuesForCritical.replaceAll(",","");
+//
+//                        char charNumNonCrit = valuesForCritical.charAt(0);
+//                        String numNonCrit = Character.toString(charNumNonCrit);
+//
+//                        char charNumCrit = valuesForCritical.charAt(1);
+//                        String numCrit = Character.toString(charNumCrit);
+//
+//                        inspection.setNumNonCritical(Integer.parseInt(numNonCrit));
+//                        inspection.setNumCritical(Integer.parseInt(numCrit));
+//
+//                        String hazardRating = tokens[HAZARD_INDEX];
+//                        inspection.setHazardRating(hazardRating);
+//
+//                        if(Integer.parseInt(numNonCrit) + Integer.parseInt(numCrit) > 0){
+//                            String[] violations = tokens[VIOLATIONS_LUMP_INDEX].split("\\|");
+//
+//                            for(String violationPossibility: violations){
+//                                String violation = violationPossibility.substring(0, 3);
+//                               inspection.addViolation(Integer.parseInt(violation));
+//                            }
+//
+//                        }
+//
+//                        r.addInspection(inspection);
+//
+//                    }
+//                }
 
             }
 

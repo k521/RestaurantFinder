@@ -60,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
 
         restaurantsRecyclerView.setHasFixedSize(true);
+        restaurantsRecyclerView.setItemViewCacheSize(20);
+        restaurantsRecyclerView.setDrawingCacheEnabled(true);
+        restaurantsRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         restaurantsRecyclerView.setLayoutManager(layoutManager);
 
