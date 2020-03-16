@@ -59,6 +59,15 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5" />
 
+            <Button
+                android:id="@+id/button"
+                android:layout_width="68dp"
+                android:layout_height="41dp"
+                android:layout_marginTop="8dp"
+                android:text="Button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.appcompat.widget.Toolbar>
