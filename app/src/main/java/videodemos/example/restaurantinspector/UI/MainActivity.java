@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import okhttp3.Request;
+import okhttp3.Response;
 import videodemos.example.restaurantinspector.Model.DataHandling.RestaurantManager;
 import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.R;
@@ -29,17 +31,16 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         setContentView(R.layout.activity_main);
 
 
-        HttpHandler httpHandler = new HttpHandler();
 
-        httpHandler.getData();
+
 //        System.out.println("We are done here");
 //        System.out.println(httpHandler.getBody());
 
-        Toast.makeText(this,httpHandler.getBody(), Toast.LENGTH_LONG).show();
 
-//        setupToolbar();
-//        setupRestaurantManager();
-//        setUpRestaurantsRecylerView();
+
+        setupToolbar();
+        setupRestaurantManager();
+        setUpRestaurantsRecylerView();
 
     }
 

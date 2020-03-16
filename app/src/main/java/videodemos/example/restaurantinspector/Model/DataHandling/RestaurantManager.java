@@ -29,18 +29,6 @@ public class RestaurantManager {
     private List<Restaurant> restaurantList = new ArrayList<>();
 
 
-    // Temporary field members
-
-    private final String RESTAURANTS_CSV_URL = "http://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
-
-    private OkHttpClient client = new OkHttpClient();
-
-    private String body = "";
-
-    private boolean status = false;
-
-    private boolean exceptionThrown = false;
-
 
 
     public static RestaurantManager getInstance(Context c) {
@@ -84,13 +72,10 @@ public class RestaurantManager {
 
         String line = "";
         try {
-//            HttpHandler httpHandler = new HttpHandler();
-//            Thread gettingDataThread = httpHandler.getData();
-//            gettingDataThread.start();
-//            gettingDataThread.join();
+            HttpHandler httpHandler = new HttpHandler();
+            httpHandler.getData();
+            String body = httpHandler.getBody();
 
-
-            HttpHandlder();
             Log.d("RestaurantActivity", "please work" + body);
             BufferedReader reader = new BufferedReader(new StringReader(body));
             final int TRACKING_NUM_INDEX = 0;
@@ -349,28 +334,6 @@ public class RestaurantManager {
 
     }
 
-    private void HttpHandlder() throws InterruptedException {
-        Thread gettingDataThread = new Thread(new Runnable(){
-            public void run(){
-                try{
-                    Request request = new Request.Builder().
-                            url(RESTAURANTS_CSV_URL).
-                            get().build();
-
-                    Response response = client.newCall(request).execute();
-                    body = response.body().string();
-                    status = true;
-                } catch(Exception e){
-                    exceptionThrown = true;
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        gettingDataThread.start();
-        gettingDataThread.join();
-
-    }
 
 
     private void sortByRestaurantName() {

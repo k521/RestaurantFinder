@@ -5,7 +5,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class HttpHandler {
-    private final String RESTAURANTS_CSV_URL = "http://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
+    private final String RESTAURANTS_CSV_URL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
 
     private OkHttpClient client = new OkHttpClient();
 
