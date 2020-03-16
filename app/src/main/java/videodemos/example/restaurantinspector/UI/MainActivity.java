@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         setupToolbar();
         setupRestaurantManager();
         setUpRestaurantsRecylerView();
+        //
 
     }
 
