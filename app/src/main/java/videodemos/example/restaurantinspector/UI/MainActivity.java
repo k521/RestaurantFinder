@@ -7,14 +7,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import videodemos.example.restaurantinspector.Model.Restaurant;
-import videodemos.example.restaurantinspector.Model.RestaurantManager;
-import videodemos.example.restaurantinspector.Model.ViolationMaps;
+import videodemos.example.restaurantinspector.Model.DataHandling.RestaurantManager;
+import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.R;
 
 /**
@@ -30,9 +28,18 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupToolbar();
-        setupRestaurantManager();
-        setUpRestaurantsRecylerView();
+
+        HttpHandler httpHandler = new HttpHandler();
+
+        httpHandler.getData();
+//        System.out.println("We are done here");
+//        System.out.println(httpHandler.getBody());
+
+        Toast.makeText(this,httpHandler.getBody(), Toast.LENGTH_LONG).show();
+
+//        setupToolbar();
+//        setupRestaurantManager();
+//        setUpRestaurantsRecylerView();
 
     }
 

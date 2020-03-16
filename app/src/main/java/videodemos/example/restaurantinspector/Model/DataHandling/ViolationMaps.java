@@ -1,4 +1,4 @@
-package videodemos.example.restaurantinspector.Model;
+package videodemos.example.restaurantinspector.Model.DataHandling;
 
 import android.content.Context;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package videodemos.example.restaurantinspector.Model;
+package videodemos.example.restaurantinspector.Model.DataHandling;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,12 +7,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.R;
 
 /**
@@ -22,6 +27,20 @@ import videodemos.example.restaurantinspector.R;
 public class RestaurantManager {
     public static RestaurantManager instance;
     private List<Restaurant> restaurantList = new ArrayList<>();
+
+
+    // Temporary field members
+
+    private final String RESTAURANTS_CSV_URL = "http://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
+
+    private OkHttpClient client = new OkHttpClient();
+
+    private String body = "";
+
+    private boolean status = false;
+
+    private boolean exceptionThrown = false;
+
 
 
     public static RestaurantManager getInstance(Context c) {
@@ -41,11 +60,11 @@ public class RestaurantManager {
     }
 
     private RestaurantManager(Context c) {
-        readFromCSV(c);
+       readFromCSV(c);
         sortByRestaurantName();
     }
 
-    private void readFromCSV(Context c) {
+    public void readFromCSV(Context c) {
 
         //A016730    ,
         // North Surrey Secondary School Cafeteria,
@@ -57,13 +76,23 @@ public class RestaurantManager {
         //"SWOD-AHZUMF","Lee Yuen Seafood Restaurant","14755 104 Ave","Surrey","Restaurant",49.19166808,-122.8136896
 
         InputStream is = c.getResources().openRawResource(R.raw.restaurants1);
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("UTF-8"))
-        );
+//        BufferedReader reader = new BufferedReader(
+//                new InputStreamReader(is, Charset.forName("UTF-8"))
+//        );
+
+
 
         String line = "";
         try {
+//            HttpHandler httpHandler = new HttpHandler();
+//            Thread gettingDataThread = httpHandler.getData();
+//            gettingDataThread.start();
+//            gettingDataThread.join();
 
+
+            HttpHandlder();
+            Log.d("RestaurantActivity", "please work" + body);
+            BufferedReader reader = new BufferedReader(new StringReader(body));
             final int TRACKING_NUM_INDEX = 0;
             final int SET_NAME_INDEX = 1;
             final int SET_PHYSICAL_ADDRESS = 2;
@@ -142,7 +171,7 @@ public class RestaurantManager {
                 restaurantList.add(restaurant);
 
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.wtf("My Activity", "Error reading data file on line " + line, e);
             e.printStackTrace();
         }
@@ -319,6 +348,30 @@ public class RestaurantManager {
         }
 
     }
+
+    private void HttpHandlder() throws InterruptedException {
+        Thread gettingDataThread = new Thread(new Runnable(){
+            public void run(){
+                try{
+                    Request request = new Request.Builder().
+                            url(RESTAURANTS_CSV_URL).
+                            get().build();
+
+                    Response response = client.newCall(request).execute();
+                    body = response.body().string();
+                    status = true;
+                } catch(Exception e){
+                    exceptionThrown = true;
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        gettingDataThread.start();
+        gettingDataThread.join();
+
+    }
+
 
     private void sortByRestaurantName() {
         Comparator<Restaurant> comparatorName = new Comparator<Restaurant>() {

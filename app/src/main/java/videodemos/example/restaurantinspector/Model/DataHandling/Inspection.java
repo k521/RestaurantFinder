@@ -1,4 +1,4 @@
-package videodemos.example.restaurantinspector.Model;
+package videodemos.example.restaurantinspector.Model.DataHandling;
 
 import java.util.ArrayList;
 import java.util.Calendar;
