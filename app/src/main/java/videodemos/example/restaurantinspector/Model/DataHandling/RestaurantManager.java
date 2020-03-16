@@ -25,10 +25,14 @@ import videodemos.example.restaurantinspector.R;
  */
 
 public class RestaurantManager {
+
+    private final String RESTAURANT_URL = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
+    private final String INSPECTION_URL = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
+    private final String RESTAURANT_CSV_URL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
+    private final String INSPECTIONS_CSV_URL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
+
     public static RestaurantManager instance;
     private List<Restaurant> restaurantList = new ArrayList<>();
-
-
 
 
     public static RestaurantManager getInstance(Context c) {
@@ -72,7 +76,7 @@ public class RestaurantManager {
 
         String line = "";
         try {
-            HttpHandler httpHandler = new HttpHandler();
+            HttpHandler httpHandler = new HttpHandler(RESTAURANT_URL);
             httpHandler.getData();
             String body = httpHandler.getBody();
 
@@ -169,10 +173,10 @@ public class RestaurantManager {
 
 
 
-        InputStream is = c.getResources().openRawResource(R.raw.restaurantinspectionreports1);
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("UTF-8"))
-        );
+//        InputStream is = c.getResources().openRawResource(R.raw.restaurantinspectionreports1);
+//        BufferedReader reader = new BufferedReader(
+//                new InputStreamReader(is, Charset.forName("UTF-8"))
+//        );
 
         String line = "";
         try {
@@ -191,6 +195,13 @@ public class RestaurantManager {
             final int CRITICAL_INDEX = 4;
             final int HAZARD_INDEX = 5;
             final int VIOLATIONS_LUMP_INDEX = 7;
+
+            HttpHandler httpHandler = new HttpHandler(INSPECTION_URL);
+            httpHandler.getData();
+            String body = httpHandler.getBody();
+
+            Log.d("RestaurantActivity", "please work" + body);
+            BufferedReader reader = new BufferedReader(new StringReader(body));
 
             // Step over headers
             reader.readLine();
