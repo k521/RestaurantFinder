@@ -40,7 +40,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -50,6 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         RestaurantManager manager = RestaurantManager.getInstance(this);
@@ -65,19 +65,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
         LatLng surrey = new LatLng(49.0, -122.0);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(surrey));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(surrey));
 
         if(mLocationPermissionsGranted){
             Log.d(TAG, "Executing: getDeviceLocation() function");
             getDeviceLocation();
             mMap.setMyLocationEnabled(true);
+
+            //UI settings
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            mMap.getUiSettings().setAllGesturesEnabled(true);
+            mMap.getUiSettings().setZoomControlsEnabled(true);
         }
-
-
-
     }
-
-
 
     private static final String TAG = "MapActivity";
 
@@ -141,18 +141,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
-    // dependency:     implementation 'com.google.android.gms:play-services-location:15.0.1'
-    private FusedLocationProviderClient mFusedLocationClient;
-
+    private FusedLocationProviderClient mFusedLocationClient;     // dependency:     implementation 'com.google.android.gms:play-services-location:15.0.1'
     public static final float DEFAULT_ZOOM =15f;
 
     public void getDeviceLocation ()
     {
         Log.d(TAG, "getDeviceLocation: getting the device current location");
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
         try{
             if(mLocationPermissionsGranted){
                 Task location = mFusedLocationClient.getLastLocation();
@@ -165,8 +160,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM);
-
-
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
