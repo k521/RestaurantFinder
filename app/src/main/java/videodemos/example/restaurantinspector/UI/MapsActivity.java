@@ -7,15 +7,21 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import videodemos.example.restaurantinspector.Model.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
@@ -60,6 +66,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         LatLng surrey = new LatLng(49.0, -122.0);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(surrey));
+
+        if(mLocationPermissionsGranted){
+            Log.d(TAG, "Executing: getDeviceLocation() function");
+            getDeviceLocation();
+            mMap.setMyLocationEnabled(true);
+        }
+
+
 
     }
 
@@ -125,5 +139,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         }
+    }
+
+
+    // dependency:     implementation 'com.google.android.gms:play-services-location:15.0.1'
+    private FusedLocationProviderClient mFusedLocationClient;
+
+    public static final float DEFAULT_ZOOM =15f;
+
+    public void getDeviceLocation ()
+    {
+        Log.d(TAG, "getDeviceLocation: getting the device current location");
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        try{
+            if(mLocationPermissionsGranted){
+                Task location = mFusedLocationClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful()){
+                            Log.d(TAG, "onComplete: found location!");
+                            Location currentLocation = (Location) task.getResult();
+
+                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                    DEFAULT_ZOOM);
+
+
+                        }else{
+                            Log.d(TAG, "onComplete: current location is null");
+                            Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+
+        }catch (SecurityException e){
+            Log.e(TAG,"getDeviceLocation: SecurityException: " + e.getMessage() );
+        }
+    }
+
+    private void moveCamera(LatLng latLng, float zoom){
+        Log.d(TAG, "moveCamera: moving the camera to: lat:" + latLng.latitude + ", lng: " + latLng.longitude);
+        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(latLng,zoom));
     }
 }
