@@ -13,9 +13,11 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +51,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         getLocationPermission();
         mSearchText = findViewById(R.id.input_search);
+        mGps = findViewById(R.id.ic_gps);
 
 
     }
@@ -67,6 +70,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 return false;
+            }
+        });
+
+        mGps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: clicked gps icon");
+                getDeviceLocation();
             }
         });
 
@@ -146,6 +157,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //widgets
     private EditText mSearchText;
+    private ImageView mGps;
 
     //vars
     private Boolean mLocationPermissionsGranted = false;
