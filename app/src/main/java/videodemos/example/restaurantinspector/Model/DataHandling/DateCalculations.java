@@ -6,9 +6,11 @@ import android.util.Log;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
+import org.joda.time.Hours;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -30,6 +32,8 @@ public class DateCalculations {
         populateMonths();
     }
 
+    public DateCalculations(){}
+
     public String getMonthName(int monthIndex){
         return months.get(monthIndex);
     }
@@ -42,6 +46,18 @@ public class DateCalculations {
         DateTime dateTime = new DateTime();
         int days = Days.daysBetween(DateTime.parse(dateInQuestion), dateTime).getDays();
         return days;
+    }
+
+    public int hoursInBetween(String dateInput){
+        DateTime dateTimeToday = new DateTime();
+        int hours = Hours.hoursBetween(DateTime.parse(dateInput), dateTimeToday).getHours();
+        return hours;
+    }
+
+    public int minutesInBetween(String dateInput){
+        DateTime dateTimeToday = new DateTime();
+        int minutes = Minutes.minutesBetween(DateTime.parse(dateInput), dateTimeToday).getMinutes();
+        return minutes;
     }
 
     private void populateMonths() {

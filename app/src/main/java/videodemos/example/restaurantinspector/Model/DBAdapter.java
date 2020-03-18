@@ -16,49 +16,68 @@ public class DBAdapter {
     // For logging:
     private static final String TAG = "DBAdapter";
 
-    // DB Fields
-    public static final String KEY_ROWID = "_id";
-    public static final int COL_ROWID = 0;
+    // DB info: it's name, and the table we are using (just one).
+    public static final String DATABASE_NAME = "RestaurantInspectorDB";
+    public static final String DATABASE_TABLE_INSPECTIONS = "Inspections";
+    // Track DB version if a new version of your app changes the format.
+    public static final int DATABASE_VERSION = 1;
+
     /*
      * CHANGE 1:
      */
     // TODO: Setup your fields here:
-    public static final String KEY_NAME = "name";
-    public static final String KEY_STUDENTNUM = "studentnum";
-    public static final String KEY_FAVCOLOUR = "favcolour";
+    /*
+        Restaurant Table
+     */
+    public static final String DATABASE_TABLE_RESTAURANTS = "Restaurants";
+
+    public static final String KEY_TRACKING_NUMBER = "trackingNumber";
+    public static final String KEY_RESTAURANT_NAME = "restaurantName";
+    public static final String KEY_ADDRESS = "address";
+    public static final String KEY_CITY = "city";
+    public static final String KEY_FAC_TYPE = "type";
+    public static final String KEY_LATITUDE = "latitude";
+    public static final String KEY_LONGITUDE = "longitude";
+
 
     // TODO: Setup your field numbers here (0 = KEY_ROWID, 1=...)
-    public static final int COL_NAME = 1;
-    public static final int COL_STUDENTNUM = 2;
-    public static final int COL_FAVCOLOUR = 3;
+    public static final int COL_TRACKING_NUMBER = 0;
+    public static final int COL_RESTAURANT_NAME = 1;
+    public static final int COL_ADDRESS = 2;
+    public static final int COL_CITY = 3;
+    public static final int COL_FAC_TYPE = 4;
+    public static final int COL_LATITUDE = 5;
+    public static final int COL_LONGITUDE = 6;
 
 
-    public static final String[] ALL_KEYS = new String[]{KEY_ROWID, KEY_NAME, KEY_STUDENTNUM, KEY_FAVCOLOUR};
+    public static final String[] ALL_RESAURANT_KEYS = new String[]{
+            KEY_TRACKING_NUMBER,
+            KEY_RESTAURANT_NAME,
+            KEY_ADDRESS,
+            KEY_CITY,
+            KEY_FAC_TYPE,
+            KEY_LATITUDE,
+            KEY_LONGITUDE
+    };
 
-    // DB info: it's name, and the table we are using (just one).
-    public static final String DATABASE_NAME = "MyDb";
-    public static final String DATABASE_TABLE = "mainTable";
-    // Track DB version if a new version of your app changes the format.
-    public static final int DATABASE_VERSION = 2;
-
-    private static final String DATABASE_CREATE_SQL =
-            "CREATE TABLE " + DATABASE_TABLE
-                    + " (" + KEY_ROWID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-
+    private static final String DATABASE_CREATE_RESTAURANTS_SQL =
+            "CREATE TABLE " + DATABASE_TABLE_RESTAURANTS
+                    + " (" + KEY_TRACKING_NUMBER + " TEXT PRIMARY KEY, "
+                    + KEY_RESTAURANT_NAME + " TEXT NOT NULL, "
+                    + KEY_ADDRESS + " TEXT NOT NULL, "
+                    + KEY_CITY + " TEXT NOT NULL, "
+                    + KEY_FAC_TYPE + " TEXT NOT NULL, "
+                    + KEY_LATITUDE + " REAL NOT NULL, "
+                    + KEY_LONGITUDE + " REAL NOT NULL "
                     /*
                      * CHANGE 2:
                      */
-                    // TODO: Place your fields here!
                     // + KEY_{...} + " {type} not null"
                     //	- Key is the column name you created above.
                     //	- {type} is one of: text, integer, real, blob
                     //		(http://www.sqlite.org/datatype3.html)
                     //  - "not null" means it is a required field (must be given a value).
                     // NOTE: All must be comma separated (end of line!) Last one must have NO comma!!
-                    + KEY_NAME + " TEXT NOT NULL, "
-                    + KEY_STUDENTNUM + " INTEGER NOT NULL, "
-                    + KEY_FAVCOLOUR + " STRING NOT NULL"
-
                     // Rest  of creation:
                     + ");";
 
@@ -89,78 +108,33 @@ public class DBAdapter {
     }
 
     // Add a new set of values to the database.
-    public long insertRow(String name, int studentNum, String favColour) {
-        /*
-         * CHANGE 3:
-         */
-        // TODO: Update data in the row with new fields.
-        // TODO: Also change the function's arguments to be what you need!
+    public long insertRow(String trackingNumber, String name, String physicalAddress,
+                          String physicalCity, String factype, double latitude, double longitude) {
+
         // Create row's data:
         ContentValues initialValues = new ContentValues();
-        initialValues.put(KEY_NAME, name);
-        initialValues.put(KEY_STUDENTNUM, studentNum);
-        initialValues.put(KEY_FAVCOLOUR, favColour);
+        initialValues.put(KEY_TRACKING_NUMBER, trackingNumber);
+        initialValues.put(KEY_RESTAURANT_NAME, name);
+        initialValues.put(KEY_ADDRESS, physicalAddress);
+        initialValues.put(KEY_CITY, physicalCity);
+        initialValues.put(KEY_FAC_TYPE, factype);
+        initialValues.put(KEY_LATITUDE, latitude);
+        initialValues.put(KEY_LONGITUDE, longitude);
 
         // Insert it into the database.
-        return db.insert(DATABASE_TABLE, null, initialValues);
+        return db.insert(DATABASE_TABLE_RESTAURANTS, null, initialValues);
     }
 
-    // Delete a row from the database, by rowId (primary key)
-    public boolean deleteRow(long rowId) {
-        String where = KEY_ROWID + "=" + rowId;
-        return db.delete(DATABASE_TABLE, where, null) != 0;
-    }
-
-    public void deleteAll() {
-        Cursor c = getAllRows();
-        long rowId = c.getColumnIndexOrThrow(KEY_ROWID);
-        if (c.moveToFirst()) {
-            do {
-                deleteRow(c.getLong((int) rowId));
-            } while (c.moveToNext());
-        }
-        c.close();
-    }
 
     // Return all data in the database.
-    public Cursor getAllRows() {
+    public Cursor getAllRestaurantRows() {
         String where = null;
-        Cursor c = db.query(true, DATABASE_TABLE, ALL_KEYS,
+        Cursor c = db.query(true, DATABASE_TABLE_RESTAURANTS, ALL_RESAURANT_KEYS,
                 where, null, null, null, null, null);
         if (c != null) {
             c.moveToFirst();
         }
         return c;
-    }
-
-    // Get a specific row (by rowId)
-    public Cursor getRow(long rowId) {
-        String where = KEY_ROWID + "=" + rowId;
-        Cursor c = db.query(true, DATABASE_TABLE, ALL_KEYS,
-                where, null, null, null, null, null);
-        if (c != null) {
-            c.moveToFirst();
-        }
-        return c;
-    }
-
-    // Change an existing row to be equal to new data.
-    public boolean updateRow(long rowId, String name, int studentNum, String favColour) {
-        String where = KEY_ROWID + "=" + rowId;
-
-        /*
-         * CHANGE 4:
-         */
-        // TODO: Update data in the row with new fields.
-        // TODO: Also change the function's arguments to be what you need!
-        // Create row's data:
-        ContentValues newValues = new ContentValues();
-        newValues.put(KEY_NAME, name);
-        newValues.put(KEY_STUDENTNUM, studentNum);
-        newValues.put(KEY_FAVCOLOUR, favColour);
-
-        // Insert it into the database.
-        return db.update(DATABASE_TABLE, newValues, where, null) != 0;
     }
 
 
@@ -179,7 +153,7 @@ public class DBAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase _db) {
-            _db.execSQL(DATABASE_CREATE_SQL);
+            _db.execSQL(DATABASE_CREATE_RESTAURANTS_SQL);
         }
 
         @Override
@@ -188,7 +162,7 @@ public class DBAdapter {
                     + " to " + newVersion + ", which will destroy all old data!");
 
             // Destroy old database:
-            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
+            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_RESTAURANTS);
 
             // Recreate new database:
             onCreate(_db);

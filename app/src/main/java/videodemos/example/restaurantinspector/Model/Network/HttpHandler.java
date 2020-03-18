@@ -3,13 +3,18 @@ package videodemos.example.restaurantinspector.Model.Network;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
 
 public class HttpHandler {
+
 
 
     private String url;
@@ -17,6 +22,8 @@ public class HttpHandler {
     private OkHttpClient client = new OkHttpClient();
 
     private String body = "";
+
+    private String latestDate = "";
 
 
 
@@ -28,38 +35,49 @@ public class HttpHandler {
         return body;
     }
 
+
+
+    public String getCurrentDateFromServer() throws IOException, JSONException {
+        JSONObject jsonObject = getJsonDataFromUrl();
+        latestDate = getDateFromUrl(jsonObject);
+        return latestDate;
+    }
+
+//    public void getCurrentDateFromServer(){
+//        Thread gettingDataThread = new Thread(new Runnable(){
+//            public void run(){
+//                try{
+//                    JSONObject jsonObject = getJsonDataFromUrl();
+//
+//                    latestDate = getDateFromUrl(jsonObject);
+//
+//                } catch(Exception e){
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//
+//        gettingDataThread.start();
+//        try {
+//            gettingDataThread.join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     public void getData() {
         Thread gettingDataThread = new Thread(new Runnable(){
             public void run(){
                 try{
-                    Request request = new Request.Builder().
-                                          url(url).
-                                          get().build();
 
-                    Response response = client.newCall(request).execute();
-                    String responseFromFirst = response.body().string();
-                    JSONObject jsonObjectFile = new JSONObject(responseFromFirst);
-                    JSONArray jsonArrayResult = jsonObjectFile
-                            .getJSONObject("result")
-                            .getJSONArray("resources");
+                    JSONObject jsonObject = getJsonDataFromUrl();
 
-                    JSONObject jsonObjectResources = jsonArrayResult.getJSONObject(0);
-                    String csvUrl = jsonObjectResources.getString("url");
-                    Log.d("URL", csvUrl);
+                    String date = getDateFromUrl(jsonObject);
+                    Log.d("META_DATE", date);
 
-                    csvUrl = csvUrl.substring(0, 4) + "s" + csvUrl.substring(4, csvUrl.length());
+                    String csvUrl = getCsvDataUrl(jsonObject);
 
-                    Log.d("URL", csvUrl);
-
-                    Request requestCSV = new Request.Builder().
-                            url(csvUrl).
-                            get().build();
-
-                    Response responseCSV = client.newCall(requestCSV).execute();
-                    body = responseCSV.body().string();
-
-
-
+                    body = getCsvBody(csvUrl);
 
                 } catch(Exception e){
                     e.printStackTrace();
@@ -74,5 +92,44 @@ public class HttpHandler {
             e.printStackTrace();
         }
     }
+
+    private JSONObject getJsonDataFromUrl() throws IOException, JSONException {
+        Request request = new Request.Builder().
+                url(url).
+                get().build();
+        Response response = client.newCall(request).execute();
+        String responseFromFirst = response.body().string();
+        return new JSONObject(responseFromFirst);
+    }
+
+    private String getDateFromUrl(JSONObject jsonObject) throws IOException, JSONException {
+        String date = jsonObject
+                .getJSONObject("result")
+                .getString("metadata_modified");
+
+        return date;
+    }
+
+    private String getCsvBody(String csvUrl) throws IOException {
+        Request requestCSV = new Request.Builder().
+                url(csvUrl).
+                get().build();
+
+        Response responseCSV = client.newCall(requestCSV).execute();
+        return responseCSV.body().string();
+    }
+
+    private String getCsvDataUrl(JSONObject jsonObject) throws IOException, JSONException {
+        JSONArray jsonArrayResult = jsonObject
+                .getJSONObject("result")
+                .getJSONArray("resources");
+
+        JSONObject jsonObjectResources = jsonArrayResult.getJSONObject(0);
+        String csvUrl = jsonObjectResources.getString("url");
+
+        return csvUrl.substring(0, 4) + "s" + csvUrl.substring(4, csvUrl.length());
+    }
+
+
 
 }

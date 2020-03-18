@@ -23,7 +23,7 @@ import java.util.List;
 import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
 import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
-import videodemos.example.restaurantinspector.Model.DataHandling.RestaurantManager;
+import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.Model.DataHandling.Violation;
 import videodemos.example.restaurantinspector.Model.DataHandling.ViolationMaps;
 import videodemos.example.restaurantinspector.R;

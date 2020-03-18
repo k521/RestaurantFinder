@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
-import videodemos.example.restaurantinspector.Model.DataHandling.RestaurantManager;
+import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 
 public class RestaurantReportActivity extends AppCompatActivity implements InspectionsAdapter.OnInspectionListener {

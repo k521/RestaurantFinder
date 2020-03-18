@@ -1,24 +1,19 @@
-package videodemos.example.restaurantinspector.Model.DataHandling;
+package videodemos.example.restaurantinspector.Model;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
+import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
-import videodemos.example.restaurantinspector.R;
 
 /**
  * A class that holds and loads the list of restaurants.
@@ -33,6 +28,7 @@ public class RestaurantManager {
 
     public static RestaurantManager instance;
     private List<Restaurant> restaurantList = new ArrayList<>();
+    private DBAdapter dbAdapter;
 
 
     public static RestaurantManager getInstance(Context c) {
@@ -58,112 +54,117 @@ public class RestaurantManager {
 
     public void readFromCSV(Context c) {
 
-        //A016730    ,
-        // North Surrey Secondary School Cafeteria,
-        // 15945 96 Ave,
-        // Surrey
-        // ,Restaurant
-        // ,49.17706626
-        // ,-122.78034
-        //"SWOD-AHZUMF","Lee Yuen Seafood Restaurant","14755 104 Ave","Surrey","Restaurant",49.19166808,-122.8136896
-
-        InputStream is = c.getResources().openRawResource(R.raw.restaurants1);
+//        InputStream is = c.getResources().openRawResource(R.raw.restaurants1);
 //        BufferedReader reader = new BufferedReader(
 //                new InputStreamReader(is, Charset.forName("UTF-8"))
 //        );
-
-
-
-        String line = "";
-        try {
-            HttpHandler httpHandler = new HttpHandler(RESTAURANT_URL);
-            httpHandler.getData();
-            String body = httpHandler.getBody();
-
-            Log.d("RestaurantActivity", "please work" + body);
-            BufferedReader reader = new BufferedReader(new StringReader(body));
-            final int TRACKING_NUM_INDEX = 0;
-            final int SET_NAME_INDEX = 1;
-            final int SET_PHYSICAL_ADDRESS = 2;
-            final int SET_PHYSICALCITY = 3;
-            final int SET_FACT_TYPE = 4;
-            final int SET_LATITUDE_TYPE = 5;
-            final int SET_LONGITUDE= 6;
-
-           // SWOD-AG5UGV,"Green Indian Cuisine, Pizza & Sweets",12565 88 Ave,Surrey,Restaurant,49.16401631,-122.8747815
-
-
-
-            // Step over headers
-            reader.readLine();
-            while ((line = reader.readLine()) != null) {
-
-                // Split by ','
-
+        dbAdapter = new DBAdapter(c);
+        dbAdapter.open();
+        Cursor cursor = dbAdapter.getAllRestaurantRows();
+        if(cursor.moveToFirst()){
+            do{
                 Restaurant restaurant = new Restaurant();
-
-                String []tokensEdge = line.split("\"");
-                if(tokensEdge.length > 1) {
-                    String trackingNum = tokensEdge[0].replaceAll(",", "");
-                    restaurant.setTrackingNumber(trackingNum);
-                    restaurant.setName(tokensEdge[1]);
-
-                    String[] tokensEdgeRest = tokensEdge[2].split(",");
-
-                    restaurant.setPhysicalAddress(tokensEdgeRest[1]);
-
-                    restaurant.setPhysicalCity(tokensEdgeRest[2]);
-
-                    restaurant.setFactype(tokensEdgeRest[3]);
-
-                    restaurant.setLatitude(Double.parseDouble(tokensEdgeRest[4]));
-
-                    restaurant.setLatitude(Double.parseDouble(tokensEdgeRest[5]));
-                }
-                else{
-                    String[] tokens = line.split(",");
-
-                    // Read the data
-
-                    // We first try to see if our name has commas in it
-
-                    restaurant.setTrackingNumber(tokens[TRACKING_NUM_INDEX].
-                            replace("\"", ""));
-
-                    restaurant.setName(tokens[SET_NAME_INDEX].
-                            replace("\"", ""));
-
-                    restaurant.setPhysicalAddress(tokens[SET_PHYSICAL_ADDRESS].
-                            replace("\"", ""));
-
-                    restaurant.setPhysicalCity(tokens[SET_PHYSICALCITY].
-                            replace("\"", ""));
-
-                    restaurant.setFactype(tokens[SET_FACT_TYPE].
-                            replace("\"", ""));
-
-                    if (tokens[SET_LATITUDE_TYPE].length() > 0) {
-                        Log.d("RestaurantManager",tokens[SET_LATITUDE_TYPE]);
-                        Log.d("RestaurantManager","Line is " + line);
-                        restaurant.setLatitude(Double.parseDouble(tokens[SET_LATITUDE_TYPE]));
-                    } else {
-                        restaurant.setLatitude(0);
-                    }
-
-                    if (tokens[SET_LONGITUDE].length() > 0) {
-                        restaurant.setLongitude(Double.parseDouble(tokens[SET_LONGITUDE]));
-                    } else {
-                        restaurant.setLongitude(0);
-                    }
-                }
+                restaurant.setTrackingNumber(cursor.getString(DBAdapter.COL_TRACKING_NUMBER));
+                restaurant.setName(cursor.getString(DBAdapter.COL_RESTAURANT_NAME));
+                restaurant.setFactype(cursor.getString(DBAdapter.COL_FAC_TYPE));
+                restaurant.setLatitude(cursor.getDouble(DBAdapter.COL_LATITUDE));
+                restaurant.setLongitude(cursor.getDouble(DBAdapter.COL_LONGITUDE));
+                restaurant.setPhysicalAddress(cursor.getString(DBAdapter.COL_ADDRESS));
+                restaurant.setPhysicalCity(cursor.getString(DBAdapter.COL_CITY));
 
                 restaurantList.add(restaurant);
-
-            }
-        } catch (Exception e) {
-            Log.wtf("My Activity", "Error reading data file on line " + line, e);
-            e.printStackTrace();
+            }while (cursor.moveToNext());
         }
+//
+//        String line = "";
+//        try {
+//            HttpHandler httpHandler = new HttpHandler(RESTAURANT_URL);
+//            httpHandler.getData();
+//            String body = httpHandler.getBody();
+//
+//            BufferedReader reader = new BufferedReader(new StringReader(body));
+//            final int TRACKING_NUM_INDEX = 0;
+//            final int SET_NAME_INDEX = 1;
+//            final int SET_PHYSICAL_ADDRESS = 2;
+//            final int SET_PHYSICALCITY = 3;
+//            final int SET_FACT_TYPE = 4;
+//            final int SET_LATITUDE_TYPE = 5;
+//            final int SET_LONGITUDE= 6;
+//
+//           // SWOD-AG5UGV,"Green Indian Cuisine, Pizza & Sweets",12565 88 Ave,Surrey,Restaurant,49.16401631,-122.8747815
+//
+//
+//
+//            // Step over headers
+//            reader.readLine();
+//            while ((line = reader.readLine()) != null) {
+//
+//                // Split by ','
+//
+//                Restaurant restaurant = new Restaurant();
+//
+//                String []tokensEdge = line.split("\"");
+//                if(tokensEdge.length > 1) {
+//                    String trackingNum = tokensEdge[0].replaceAll(",", "");
+//                    restaurant.setTrackingNumber(trackingNum);
+//                    restaurant.setName(tokensEdge[1]);
+//
+//                    String[] tokensEdgeRest = tokensEdge[2].split(",");
+//
+//                    restaurant.setPhysicalAddress(tokensEdgeRest[1]);
+//
+//                    restaurant.setPhysicalCity(tokensEdgeRest[2]);
+//
+//                    restaurant.setFactype(tokensEdgeRest[3]);
+//
+//                    restaurant.setLatitude(Double.parseDouble(tokensEdgeRest[4]));
+//
+//                    restaurant.setLatitude(Double.parseDouble(tokensEdgeRest[5]));
+//                }
+//                else{
+//                    String[] tokens = line.split(",");
+//
+//                    // Read the data
+//
+//                    // We first try to see if our name has commas in it
+//
+//                    restaurant.setTrackingNumber(tokens[TRACKING_NUM_INDEX].
+//                            replace("\"", ""));
+//
+//                    restaurant.setName(tokens[SET_NAME_INDEX].
+//                            replace("\"", ""));
+//
+//                    restaurant.setPhysicalAddress(tokens[SET_PHYSICAL_ADDRESS].
+//                            replace("\"", ""));
+//
+//                    restaurant.setPhysicalCity(tokens[SET_PHYSICALCITY].
+//                            replace("\"", ""));
+//
+//                    restaurant.setFactype(tokens[SET_FACT_TYPE].
+//                            replace("\"", ""));
+//
+//                    if (tokens[SET_LATITUDE_TYPE].length() > 0) {
+//                        Log.d("RestaurantManager",tokens[SET_LATITUDE_TYPE]);
+//                        Log.d("RestaurantManager","Line is " + line);
+//                        restaurant.setLatitude(Double.parseDouble(tokens[SET_LATITUDE_TYPE]));
+//                    } else {
+//                        restaurant.setLatitude(0);
+//                    }
+//
+//                    if (tokens[SET_LONGITUDE].length() > 0) {
+//                        restaurant.setLongitude(Double.parseDouble(tokens[SET_LONGITUDE]));
+//                    } else {
+//                        restaurant.setLongitude(0);
+//                    }
+//                }
+//
+//                restaurantList.add(restaurant);
+//
+//            }
+//        } catch (Exception e) {
+//            Log.wtf("My Activity", "Error reading data file on line " + line, e);
+//            e.printStackTrace();
+//        }
     }
 
     public void InspectionReader(Context c) {
@@ -200,7 +201,6 @@ public class RestaurantManager {
             httpHandler.getData();
             String body = httpHandler.getBody();
 
-            Log.d("RestaurantActivity", "please work" + body);
             BufferedReader reader = new BufferedReader(new StringReader(body));
 
             // Step over headers
@@ -209,10 +209,15 @@ public class RestaurantManager {
                 Inspection inspection = new Inspection();
 
                 // Even newer splitting method
+                //NDAA-9DNQLJ,20180924,Follow-Up,0,0,,Low
+                //HCAR-BKDQCL,20200127,Routine,1,0,"302,Critical,Equipment/utensils/food contact surfaces not properly washed and sanitized [s. 17(2)],Not Repeat",Low
                 String [] tokens = line.split("\"");
 
                 String [] tokensFirstHalf = tokens[0].split(",");
 
+                if (tokensFirstHalf.length == 0){
+                    continue;
+                }
                 String trackingNum = tokensFirstHalf[0];
 
                 if(tokens.length > 1){
@@ -268,7 +273,13 @@ public class RestaurantManager {
 
                              inspection.setNumNonCritical(Integer.parseInt(tokensSplit[3]));
                              inspection.setNumCritical(Integer.parseInt(tokensSplit[4]));
-                             inspection.setHazardRating(tokensSplit[6]);
+                             if (tokensSplit.length == 7){
+                                 inspection.setHazardRating(tokensSplit[6]);
+                             } else {
+                                 //csv has no hazard rating
+                                 inspection.setHazardRating("Low");
+                             }
+
 
                              r.addInspection(inspection);
                              break;
