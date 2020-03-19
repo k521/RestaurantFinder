@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,9 +49,12 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         //loadDB();
         loadDBFromServer();
-
+        Toast.makeText(this,"FINISHED", Toast.LENGTH_LONG).show();
+        Log.d("ENDWHILECREATE", "onCreate continues..");
+        
         setupToolbar();
         setupRestaurantManager();
+
         setUpRestaurantsRecylerView();
 
         checkForNewServerData();
@@ -58,8 +62,11 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     }
 
     private void loadDBFromServer() {
+        dbAdapter = new DBAdapter(this);
+        dbAdapter.open();
         loadRestaurantsFromServer();
         loadInspectionsFromServer();
+        dbAdapter.close();
     }
 
     private void loadDB() {
@@ -197,9 +204,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
     public void loadInspectionsFromServer() {
 
-        dbAdapter = new DBAdapter(this);
-        dbAdapter.open();
-
         String line = "";
         try {
 
@@ -259,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
                     }
 
                     long rowId = dbAdapter.insertRow(trackingNum, hazardRating, datetoAdd, inspectionType, numOfCritical, numOfNonCritical);
-                    Log.d("Entry", "" + rowId);
+                    //Log.d("Entry", "" + rowId);
 
                 }
                 else{
@@ -295,14 +299,11 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         }
 
 
-        dbAdapter.close();
+        Log.d("ENDWHILE", "ENDED");
+
     }
 
     public void loadRestaurantsFromServer() {
-
-
-        dbAdapter = new DBAdapter(this);
-        dbAdapter.open();
 
         String line = "";
         try {
@@ -394,7 +395,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
             e.printStackTrace();
         }
 
-        dbAdapter.close();
     }
 
 
