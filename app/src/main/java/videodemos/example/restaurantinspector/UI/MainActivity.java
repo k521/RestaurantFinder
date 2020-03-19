@@ -207,6 +207,8 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
             httpHandler.getData();
             String body = httpHandler.getBody();
 
+            Log.d("BODYY:", body);
+
             BufferedReader reader = new BufferedReader(new StringReader(body));
 
             // Step over headers
@@ -256,8 +258,8 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
                         hazardRating = "Low";
                     }
 
-                    dbAdapter.insertRow(trackingNum, hazardRating, datetoAdd, inspectionType, numOfCritical, numOfNonCritical);
-                    break;
+                    long rowId = dbAdapter.insertRow(trackingNum, hazardRating, datetoAdd, inspectionType, numOfCritical, numOfNonCritical);
+                    Log.d("Entry", "" + rowId);
 
                 }
                 else{
@@ -282,7 +284,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
                      }
 
                     dbAdapter.insertRow(trackingNum, hazardRating, dateToAdd, inspectionType, numOfCritical, numOfNonCritical);
-                    break;
 
                 }
 

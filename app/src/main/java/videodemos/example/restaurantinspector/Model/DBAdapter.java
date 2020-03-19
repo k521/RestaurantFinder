@@ -19,7 +19,7 @@ public class DBAdapter {
     // DB info: it's name, and the table we are using (just one).
     public static final String DATABASE_NAME = "RestaurantInspectorDB";
     // Track DB version if a new version of your app changes the format.
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 10;
 
     /*
      * CHANGE 1:
