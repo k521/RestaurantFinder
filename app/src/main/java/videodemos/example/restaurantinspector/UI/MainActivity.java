@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,21 +46,27 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadDB();
+        //loadDB();
+        loadDBFromServer();
 
         setupToolbar();
         setupRestaurantManager();
-        //loadInspections();
         setUpRestaurantsRecylerView();
 
         checkForNewServerData();
 
     }
 
+    private void loadDBFromServer() {
+        loadRestaurantsFromServer();
+        loadInspectionsFromServer();
+    }
+
     private void loadDB() {
         dbAdapter = new DBAdapter(this);
         dbAdapter.open();
         readFromCSV();
+        loadInspectionsCSVToDB();
         dbAdapter.close();
     }
 
@@ -123,12 +130,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         }
     }
 
-    private void loadInspections() {
-        dbAdapter.open();
-        loadInspectionsCSVToDB();
-        dbAdapter.close();
-    }
-
     public void loadInspectionsCSVToDB() {
 
         InputStream is = getResources().openRawResource(R.raw.inspectionreports);
@@ -146,6 +147,67 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
             final int HAZARD_INDEX = 5;
             final int VIOLATIONS_LUMP_INDEX = 7;
 
+            // Step over headers
+            reader.readLine();
+            while ((line = reader.readLine()) != null) {
+                // Even newer splitting method
+                String[] tokens = line.split("\"");
+                String trackingNum = tokens[TRACKING_NUM_INDEX];
+
+                String dateToAdd = tokens[DATE_INDEX];
+                dateToAdd = dateToAdd.substring(1, dateToAdd.length() - 1);
+
+
+                String inspectionType = tokens[INSPECTION_TYPE_INDEX];
+
+
+                String valuesForCritical = tokens[CRITICAL_INDEX];
+                valuesForCritical = valuesForCritical.replaceAll(",","");
+
+                char charNumNonCrit = valuesForCritical.charAt(0);
+                String numNonCrit = Character.toString(charNumNonCrit);
+
+                char charNumCrit = valuesForCritical.charAt(1);
+                String numCrit = Character.toString(charNumCrit);
+
+
+                String hazardRating = tokens[HAZARD_INDEX];
+
+                if(Integer.parseInt(numNonCrit) + Integer.parseInt(numCrit) > 0){
+                    String[] violations = tokens[VIOLATIONS_LUMP_INDEX].split("\\|");
+
+                    for(String violationPossibility: violations){
+                        String violation = violationPossibility.substring(0, 3);
+                        dbAdapter.insertViolationRow(trackingNum, dateToAdd, Integer.parseInt(violation));
+                    }
+
+                }
+
+                dbAdapter.insertRow(trackingNum, hazardRating, dateToAdd, inspectionType, Integer.parseInt(numCrit), Integer.parseInt(numNonCrit));
+
+            }
+
+        } catch (Exception e) {
+            Log.wtf("My Activity", "Error reading data file on line " + line, e);
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void loadInspectionsFromServer() {
+
+        dbAdapter = new DBAdapter(this);
+        dbAdapter.open();
+
+        String line = "";
+        try {
+
+            HttpHandler httpHandler = new HttpHandler(INSPECTION_URL);
+            httpHandler.getData();
+            String body = httpHandler.getBody();
+
+            BufferedReader reader = new BufferedReader(new StringReader(body));
 
             // Step over headers
             reader.readLine();
@@ -165,69 +227,62 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
                 String trackingNum = tokensFirstHalf[0];
 
                 if(tokens.length > 1){
-                    for(Restaurant r : manager.getRestaurantList()){
-                        if(r.getTrackingNumber().equals(trackingNum)){
-                            String datetoAdd = tokensFirstHalf[1];
 
-                            String inspectionType = tokensFirstHalf[2];
-
-                            int numOfCritical = Integer.parseInt(tokensFirstHalf[3]);
-
-                            int numOfNonCritical = Integer.parseInt(tokensFirstHalf[4]);
-
-                            //not sure how to store the violation array in the database
-                            if(numOfCritical + numOfNonCritical != 0){
-                                String[] violations = tokens[1].split("\\|");
-                                for(String violationPossibility: violations){
-                                    String violation = violationPossibility.substring(0, 3);
-                                    inspection.addViolation(Integer.parseInt(violation));
-                                }
-                            }
-
-                            String hazardLevel = tokens[2];
-                            if(hazardLevel.length() > 1){
-                                inspection.setHazardRating(hazardLevel);
-                            }
-                            else{
-                                inspection.setHazardRating("Low");
-                            }
+                    String datetoAdd = tokensFirstHalf[1];
 
 
-                            r.addInspection(inspection);
-                            break;
+                    String inspectionType = tokensFirstHalf[2];
+
+
+                    int numOfCritical = Integer.parseInt(tokensFirstHalf[3]);
+
+
+                    int numOfNonCritical = Integer.parseInt(tokensFirstHalf[4]);
+
+                    if(numOfCritical + numOfNonCritical != 0){
+                        String[] violations = tokens[1].split("\\|");
+                        for(String violationPossibility: violations){
+                            String violation = violationPossibility.substring(0, 3);
+                            dbAdapter.insertViolationRow(trackingNum, datetoAdd, Integer.parseInt(violation));
                         }
-
                     }
+
+                    String hazardLevel = tokens[2];
+                    String hazardRating;
+                    if(hazardLevel.length() > 1){
+                        hazardRating = hazardLevel;
+                    }
+                    else{
+                        hazardRating = "Low";
+                    }
+
+                    dbAdapter.insertRow(trackingNum, hazardRating, datetoAdd, inspectionType, numOfCritical, numOfNonCritical);
+                    break;
+
                 }
                 else{
 
                     // NDAA-8RNNVR,20181017,Routine,0,0,,Low
                     String [] tokensSplit = tokens[0].split(",");
-                    trackingNum = tokensSplit[0];
-
-                    for(Restaurant r : manager.getRestaurantList()){
-                        if(r.getTrackingNumber().equals(trackingNum)){
-                            String dateToAdd = tokensSplit[1];
-                            inspection.setInspectionDate(dateToAdd);
-
-                            String inspectionType = tokensSplit[2];
-                            inspection.setInspType(inspectionType);
-
-                            inspection.setNumNonCritical(Integer.parseInt(tokensSplit[3]));
-                            inspection.setNumCritical(Integer.parseInt(tokensSplit[4]));
-                            if (tokensSplit.length == 7){
-                                inspection.setHazardRating(tokensSplit[6]);
-                            } else {
-                                //csv has no hazard rating
-                                inspection.setHazardRating("Low");
-                            }
+                     trackingNum = tokensSplit[0];
 
 
-                            r.addInspection(inspection);
-                            break;
+                     String dateToAdd = tokensSplit[1];
 
-                        }
-                    }
+
+                     String inspectionType = tokensSplit[2];
+
+
+                     int numOfNonCritical = Integer.parseInt(tokensSplit[3]);
+                     int numOfCritical = Integer.parseInt(tokensSplit[4]);
+
+                     String hazardRating = "Low";
+                     if (tokensSplit.length == 7){
+                         hazardRating = tokensSplit[6];
+                     }
+
+                    dbAdapter.insertRow(trackingNum, hazardRating, dateToAdd, inspectionType, numOfCritical, numOfNonCritical);
+                    break;
 
                 }
 
@@ -238,6 +293,107 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
             e.printStackTrace();
         }
 
+
+        dbAdapter.close();
+    }
+
+    public void loadRestaurantsFromServer() {
+
+
+        dbAdapter = new DBAdapter(this);
+        dbAdapter.open();
+
+        String line = "";
+        try {
+            HttpHandler httpHandler = new HttpHandler(RESTAURANT_URL);
+            httpHandler.getData();
+            String body = httpHandler.getBody();
+
+            BufferedReader reader = new BufferedReader(new StringReader(body));
+            final int TRACKING_NUM_INDEX = 0;
+            final int SET_NAME_INDEX = 1;
+            final int SET_PHYSICAL_ADDRESS = 2;
+            final int SET_PHYSICALCITY = 3;
+            final int SET_FACT_TYPE = 4;
+            final int SET_LATITUDE_TYPE = 5;
+            final int SET_LONGITUDE= 6;
+
+           // SWOD-AG5UGV,"Green Indian Cuisine, Pizza & Sweets",12565 88 Ave,Surrey,Restaurant,49.16401631,-122.8747815
+
+
+
+            // Step over headers
+            reader.readLine();
+            while ((line = reader.readLine()) != null) {
+
+                // Split by ','
+
+                Restaurant restaurant = new Restaurant();
+
+                String []tokensEdge = line.split("\"");
+                if(tokensEdge.length > 1) {
+                    String trackingNum = tokensEdge[0].replaceAll(",", "");
+
+                    String name = tokensEdge[1];
+
+                    String[] tokensEdgeRest = tokensEdge[2].split(",");
+
+                    String address = tokensEdgeRest[1];
+
+                    String city = tokensEdgeRest[2];
+
+                    String type = tokensEdgeRest[3];
+
+                    Double latitude = Double.parseDouble(tokensEdgeRest[4]);
+
+                    Double longitude = Double.parseDouble(tokensEdgeRest[5]);
+
+                    dbAdapter.insertRow(trackingNum, name, address, city, type, latitude, longitude);
+                }
+                else{
+                    String[] tokens = line.split(",");
+
+                    // Read the data
+
+                    // We first try to see if our name has commas in it
+
+                    String trackingNum = tokens[TRACKING_NUM_INDEX].
+                            replace("\"", "");
+
+                    String name = tokens[SET_NAME_INDEX].
+                            replace("\"", "");
+
+                    String address = tokens[SET_PHYSICAL_ADDRESS].
+                            replace("\"", "");
+
+                    String city = tokens[SET_PHYSICALCITY].
+                            replace("\"", "");
+
+                    String type = tokens[SET_FACT_TYPE].
+                            replace("\"", "");
+
+                    double latitude = 0;
+                    if (tokens[SET_LATITUDE_TYPE].length() > 0) {
+//                        Log.d("RestaurantManager",tokens[SET_LATITUDE_TYPE]);
+//                        Log.d("RestaurantManager","Line is " + line);
+                        latitude = Double.parseDouble(tokens[SET_LATITUDE_TYPE]);
+                    }
+
+                    double longitude = 0;
+                    if (tokens[SET_LONGITUDE].length() > 0) {
+                        longitude = Double.parseDouble(tokens[SET_LONGITUDE]);
+                    }
+
+                    dbAdapter.insertRow(trackingNum, name, address, city, type, latitude, longitude);
+                }
+
+            }
+        } catch (Exception e) {
+            Log.wtf("My Activity", "Error reading data file on line " + line, e);
+            e.printStackTrace();
+        }
+
+        dbAdapter.close();
     }
 
 

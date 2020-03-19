@@ -19,7 +19,7 @@ public class DBAdapter {
     // DB info: it's name, and the table we are using (just one).
     public static final String DATABASE_NAME = "RestaurantInspectorDB";
     // Track DB version if a new version of your app changes the format.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 5;
 
     /*
      * CHANGE 1:
@@ -84,23 +84,26 @@ public class DBAdapter {
 
     public static final String DATABASE_TABLE_INSPECTIONS = "Inspections";
 
-    public static final String KEY_ROWID = "_id";
+    public static final String KEY_INSPECTION_ROW_ID = "_id";
+    public static final String KEY_TRACKING_NUMBER_INSPECTION = "trackingNumber";
     public static final String KEY_HAZARD_RATING = "hazardRating";
     public static final String KEY_INSPECTION_DATE = "inspectionDate";
     public static final String KEY_INSP_TYPE = "inspType";
     public static final String KEY_NUM_CRITICAL = "numCritical";
     public static final String KEY_NUM_NON_CRITICAL = "numNonCritical";
 
-    public static final int COL_ROWID = 0;
-    public static final int COL_HAZARD_RATING = 1;
-    public static final int COL_INSPECTION_DATE = 2;
-    public static final int COL_INSP_TYPE = 3;
-    public static final int COL_NUM_CRITICAL = 4;
-    public static final int COL_NUM_NON_CRITICAL = 5;
+    public static final int COL_INSPECTION_ROW_ID = 0;
+    public static final int COL_TRACKING_NUMBER_INSPECTION = 1;
+    public static final int COL_HAZARD_RATING = 2;
+    public static final int COL_INSPECTION_DATE = 3;
+    public static final int COL_INSP_TYPE = 4;
+    public static final int COL_NUM_CRITICAL = 5;
+    public static final int COL_NUM_NON_CRITICAL = 6;
 
 
     public static final String[] ALL_INSPECTION_KEYS = new String[]{
-            KEY_ROWID,
+            KEY_INSPECTION_ROW_ID,
+            KEY_TRACKING_NUMBER_INSPECTION,
             KEY_HAZARD_RATING,
             KEY_INSPECTION_DATE,
             KEY_INSP_TYPE,
@@ -110,15 +113,46 @@ public class DBAdapter {
 
     private static final String DATABASE_CREATE_INSPECTIONS_SQL =
             "CREATE TABLE " + DATABASE_TABLE_INSPECTIONS
-                    + " (" + KEY_ROWID + " INT primary key autoincrement,"
+                    + " (" + KEY_INSPECTION_ROW_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + KEY_TRACKING_NUMBER_INSPECTION + " TEXT,"
                     + KEY_HAZARD_RATING + " TEXT NOT NULL, "
-                    + KEY_INSPECTION_DATE + " TEXT NOT NULL, "
+                    + KEY_INSPECTION_DATE + " TEXT, "
                     + KEY_INSP_TYPE + " TEXT NOT NULL, "
                     + KEY_NUM_CRITICAL + " INT NOT NULL, "
-                    + KEY_NUM_NON_CRITICAL + " INT NOT NULL "
+                    + KEY_NUM_NON_CRITICAL + " INT NOT NULL, "
+                    + "FOREIGN KEY (" + KEY_TRACKING_NUMBER_INSPECTION + ") REFERENCES " + DATABASE_TABLE_RESTAURANTS + "(" + KEY_TRACKING_NUMBER + ")"
                     + ");";
 
     //endregion Inspection Table Data
+
+    //region Violation Table Data
+    // Violations(trackingNumber, date, violationCode)
+    public static final String DATABASE_TABLE_VIOLATIONS = "Violations";
+
+    public static final String KEY_TRACKING_NUMBER_VIOLATION = "trackingNumber";
+    public static final String KEY_VIOLATION_DATE = "inspectionDate";
+    public static final String KEY_VIOLATION_CODE = "violationCode";
+
+    public static final int COL_TRACKING_NUMBER_VIOLATION = 0;
+    public static final int COL_VIOLATION_DATE = 1;
+    public static final int COL_VIOLATION_CODE = 2;
+
+    public static final String[] ALL_VIOLATION_KEYS = new String[]{
+            KEY_TRACKING_NUMBER_VIOLATION,
+            KEY_VIOLATION_DATE,
+            KEY_VIOLATION_CODE
+    };
+
+    private static final String DATABASE_CREATE_VIOLATIONS_SQL =
+            "CREATE TABLE " + DATABASE_TABLE_VIOLATIONS
+                    + " (" + KEY_TRACKING_NUMBER_VIOLATION + " TEXT,"
+                    + KEY_VIOLATION_DATE + " TEXT, "
+                    + KEY_VIOLATION_CODE + " INT, "
+                    + "PRIMARY KEY (" + KEY_TRACKING_NUMBER_VIOLATION + ", " + KEY_VIOLATION_DATE + ", " + KEY_VIOLATION_CODE + ")"
+                    + ");";
+
+    //endregion Violation Table Data
+
 
     // Context of application who uses us.
     private final Context context;
@@ -179,11 +213,12 @@ public class DBAdapter {
 
 
     // Add a new set of values to the Inspections Table.
-    public long insertRow(String hazardRating, String inspectionDate, String inspType,
+    public long insertRow(String trackingNumber, String hazardRating, String inspectionDate, String inspType,
                           int numCritical, int numNonCritical) {
 
         // Create row's data:
         ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_TRACKING_NUMBER_INSPECTION, trackingNumber);
         initialValues.put(KEY_HAZARD_RATING, hazardRating);
         initialValues.put(KEY_INSPECTION_DATE, inspectionDate);
         initialValues.put(KEY_INSP_TYPE, inspType);
@@ -197,6 +232,30 @@ public class DBAdapter {
     public Cursor getAllInspectionRows() {
         String where = null;
         Cursor c = db.query(true, DATABASE_TABLE_INSPECTIONS, ALL_INSPECTION_KEYS,
+                where, null, null, null, null, null);
+        if (c != null) {
+            c.moveToFirst();
+        }
+        return c;
+    }
+
+    // Add a new set of values to the Inspections Table.
+    public long insertViolationRow(String trackingNumber, String inspectionDate,
+                                   int violationCode) {
+
+        // Create row's data:
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_TRACKING_NUMBER_VIOLATION, trackingNumber);
+        initialValues.put(KEY_VIOLATION_DATE, inspectionDate);
+        initialValues.put(KEY_VIOLATION_CODE, violationCode);
+
+        // Insert it into the database.
+        return db.insert(DATABASE_TABLE_VIOLATIONS, null, initialValues);
+    }
+
+    public Cursor getAllViolationRows() {
+        String where = null;
+        Cursor c = db.query(true, DATABASE_TABLE_VIOLATIONS, ALL_VIOLATION_KEYS,
                 where, null, null, null, null, null);
         if (c != null) {
             c.moveToFirst();
@@ -222,6 +281,7 @@ public class DBAdapter {
         public void onCreate(SQLiteDatabase _db) {
             _db.execSQL(DATABASE_CREATE_RESTAURANTS_SQL);
             _db.execSQL(DATABASE_CREATE_INSPECTIONS_SQL);
+            _db.execSQL(DATABASE_CREATE_VIOLATIONS_SQL);
         }
 
         @Override
@@ -232,6 +292,7 @@ public class DBAdapter {
             // Destroy old database:
             _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_RESTAURANTS);
             _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_INSPECTIONS);
+            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_VIOLATIONS);
 
             // Recreate new database:
             onCreate(_db);

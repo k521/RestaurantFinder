@@ -75,6 +75,7 @@ public class RestaurantManager {
                 restaurantList.add(restaurant);
             }while (cursor.moveToNext());
         }
+        dbAdapter.close();
 //
 //        String line = "";
 //        try {
@@ -170,7 +171,44 @@ public class RestaurantManager {
     public void InspectionReader(Context c) {
 
 
+        dbAdapter = new DBAdapter(c);
+        dbAdapter.open();
+        Cursor cursorInspection = dbAdapter.getAllInspectionRows();
+        Cursor cursorViolation = dbAdapter.getAllViolationRows();
 
+        if(cursorInspection.moveToFirst()){
+            do{
+
+                Inspection inspection = new Inspection();
+                inspection.setHazardRating(cursorInspection.getString(DBAdapter.COL_HAZARD_RATING));
+                inspection.setInspectionDate(cursorInspection.getString(DBAdapter.COL_INSPECTION_DATE));
+                inspection.setInspType(cursorInspection.getString(DBAdapter.COL_INSP_TYPE));
+                inspection.setNumCritical(cursorInspection.getInt(DBAdapter.COL_NUM_CRITICAL));
+                inspection.setNumNonCritical(cursorInspection.getInt(DBAdapter.COL_NUM_NON_CRITICAL));
+
+                String trackingNumInspection = cursorInspection.getString(DBAdapter.COL_TRACKING_NUMBER_INSPECTION);
+                String inpectionDate = cursorInspection.getString(DBAdapter.COL_INSPECTION_DATE);
+
+                if (cursorViolation.moveToFirst()){
+                    do {
+                        String trackingNumViolation = cursorInspection.getString(DBAdapter.COL_TRACKING_NUMBER_VIOLATION);
+                        String violationDate = cursorInspection.getString(DBAdapter.COL_VIOLATION_DATE);
+
+                        if (trackingNumViolation.equals(trackingNumInspection) && violationDate.equals(inpectionDate)) {
+                            inspection.addViolation(cursorViolation.getInt(DBAdapter.COL_VIOLATION_CODE));
+                        }
+                    } while (cursorViolation.moveToNext());
+                }
+
+                for (Restaurant restaurant : restaurantList){
+                    if (restaurant.getTrackingNumber().equals(trackingNumInspection)){
+                        restaurant.addInspection(inspection);
+                    }
+                }
+
+            }while (cursorInspection.moveToNext());
+        }
+        dbAdapter.close();
 
 
 
@@ -178,180 +216,180 @@ public class RestaurantManager {
 //        BufferedReader reader = new BufferedReader(
 //                new InputStreamReader(is, Charset.forName("UTF-8"))
 //        );
-
-        String line = "";
-        try {
-
-
-
-            //   NDAA-8RNNVR,20190412,Routine,0,2,
-            //   "306,Not Critical,Food premises not maintained in a sanitary condition
-            //   [s. 17(1)],Not Repeat|308,Not Critical,Equipment/utensils/food contact surfaces are
-            //   not in good working order [s. 16(b)],Not Repeat",Moderate
-
-            final int TRACKING_NUM_INDEX = 1;
-            final int DATE_INDEX = 2;
-            final int INSPECTION_TYPE_INDEX = 3;
-            final int CRITICAL_INDEX = 4;
-            final int HAZARD_INDEX = 5;
-            final int VIOLATIONS_LUMP_INDEX = 7;
-
-            HttpHandler httpHandler = new HttpHandler(INSPECTION_URL);
-            httpHandler.getData();
-            String body = httpHandler.getBody();
-
-            BufferedReader reader = new BufferedReader(new StringReader(body));
-
-            // Step over headers
-            reader.readLine();
-            while ((line = reader.readLine()) != null) {
-                Inspection inspection = new Inspection();
-
-                // Even newer splitting method
-                //NDAA-9DNQLJ,20180924,Follow-Up,0,0,,Low
-                //HCAR-BKDQCL,20200127,Routine,1,0,"302,Critical,Equipment/utensils/food contact surfaces not properly washed and sanitized [s. 17(2)],Not Repeat",Low
-                String [] tokens = line.split("\"");
-
-                String [] tokensFirstHalf = tokens[0].split(",");
-
-                if (tokensFirstHalf.length == 0){
-                    continue;
-                }
-                String trackingNum = tokensFirstHalf[0];
-
-                if(tokens.length > 1){
-                    for(Restaurant r : restaurantList){
-                        if(r.getTrackingNumber().equals(trackingNum)){
-                            String datetoAdd = tokensFirstHalf[1];
-                            inspection.setInspectionDate(datetoAdd);
-
-                            String inspectionType = tokensFirstHalf[2];
-                            inspection.setInspType(inspectionType);
-
-                            int numOfCritical = Integer.parseInt(tokensFirstHalf[3]);
-                            inspection.setNumCritical(numOfCritical);
-
-                            int numOfNonCritical = Integer.parseInt(tokensFirstHalf[4]);
-                            inspection.setNumNonCritical(numOfNonCritical);
-
-                            if(numOfCritical + numOfNonCritical != 0){
-                                String[] violations = tokens[1].split("\\|");
-                                for(String violationPossibility: violations){
-                                    String violation = violationPossibility.substring(0, 3);
-                                    inspection.addViolation(Integer.parseInt(violation));
-                                }
-                            }
-
-                            String hazardLevel = tokens[2];
-                            if(hazardLevel.length() > 1){
-                                inspection.setHazardRating(hazardLevel);
-                            }
-                            else{
-                                inspection.setHazardRating("Low");
-                            }
-
-                            r.addInspection(inspection);
-                            break;
-                        }
-
-                    }
-                }
-                else{
-
-                    // NDAA-8RNNVR,20181017,Routine,0,0,,Low
-                    String [] tokensSplit = tokens[0].split(",");
-                     trackingNum = tokensSplit[0];
-
-                     for(Restaurant r : restaurantList){
-                         if(r.getTrackingNumber().equals(trackingNum)){
-                             String dateToAdd = tokensSplit[1];
-                             inspection.setInspectionDate(dateToAdd);
-
-                             String inspectionType = tokensSplit[2];
-                             inspection.setInspType(inspectionType);
-
-                             inspection.setNumNonCritical(Integer.parseInt(tokensSplit[3]));
-                             inspection.setNumCritical(Integer.parseInt(tokensSplit[4]));
-                             if (tokensSplit.length == 7){
-                                 inspection.setHazardRating(tokensSplit[6]);
-                             } else {
-                                 //csv has no hazard rating
-                                 inspection.setHazardRating("Low");
-                             }
-
-
-                             r.addInspection(inspection);
-                             break;
-
-                         }
-                     }
-
-                }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//                String[] tokens = line.split("\"");
-//                String trackingNum = tokens[TRACKING_NUM_INDEX];
-//                for(Restaurant r: restaurantList){
-//                    Log.d("Main Activity", " Found right restaurant");
-//                    if(r.getTrackingNumber().equals(trackingNum)){
-//                        String dateToAdd = tokens[DATE_INDEX];
-//                        dateToAdd = dateToAdd.substring(1, dateToAdd.length() - 1);
-//                        inspection.setInspectionDate(dateToAdd);
 //
-//                        String inspectionType = tokens[INSPECTION_TYPE_INDEX];
-//                        inspection.setInspType(inspectionType);
+//        String line = "";
+//        try {
 //
-//                        String valuesForCritical = tokens[CRITICAL_INDEX];
-//                        valuesForCritical = valuesForCritical.replaceAll(",","");
 //
-//                        char charNumNonCrit = valuesForCritical.charAt(0);
-//                        String numNonCrit = Character.toString(charNumNonCrit);
 //
-//                        char charNumCrit = valuesForCritical.charAt(1);
-//                        String numCrit = Character.toString(charNumCrit);
+//            //   NDAA-8RNNVR,20190412,Routine,0,2,
+//            //   "306,Not Critical,Food premises not maintained in a sanitary condition
+//            //   [s. 17(1)],Not Repeat|308,Not Critical,Equipment/utensils/food contact surfaces are
+//            //   not in good working order [s. 16(b)],Not Repeat",Moderate
 //
-//                        inspection.setNumNonCritical(Integer.parseInt(numNonCrit));
-//                        inspection.setNumCritical(Integer.parseInt(numCrit));
+//            final int TRACKING_NUM_INDEX = 1;
+//            final int DATE_INDEX = 2;
+//            final int INSPECTION_TYPE_INDEX = 3;
+//            final int CRITICAL_INDEX = 4;
+//            final int HAZARD_INDEX = 5;
+//            final int VIOLATIONS_LUMP_INDEX = 7;
 //
-//                        String hazardRating = tokens[HAZARD_INDEX];
-//                        inspection.setHazardRating(hazardRating);
+//            HttpHandler httpHandler = new HttpHandler(INSPECTION_URL);
+//            httpHandler.getData();
+//            String body = httpHandler.getBody();
 //
-//                        if(Integer.parseInt(numNonCrit) + Integer.parseInt(numCrit) > 0){
-//                            String[] violations = tokens[VIOLATIONS_LUMP_INDEX].split("\\|");
+//            BufferedReader reader = new BufferedReader(new StringReader(body));
 //
-//                            for(String violationPossibility: violations){
-//                                String violation = violationPossibility.substring(0, 3);
-//                               inspection.addViolation(Integer.parseInt(violation));
+//            // Step over headers
+//            reader.readLine();
+//            while ((line = reader.readLine()) != null) {
+//                Inspection inspection = new Inspection();
+//
+//                // Even newer splitting method
+//                //NDAA-9DNQLJ,20180924,Follow-Up,0,0,,Low
+//                //HCAR-BKDQCL,20200127,Routine,1,0,"302,Critical,Equipment/utensils/food contact surfaces not properly washed and sanitized [s. 17(2)],Not Repeat",Low
+//                String [] tokens = line.split("\"");
+//
+//                String [] tokensFirstHalf = tokens[0].split(",");
+//
+//                if (tokensFirstHalf.length == 0){
+//                    continue;
+//                }
+//                String trackingNum = tokensFirstHalf[0];
+//
+//                if(tokens.length > 1){
+//                    for(Restaurant r : restaurantList){
+//                        if(r.getTrackingNumber().equals(trackingNum)){
+//                            String datetoAdd = tokensFirstHalf[1];
+//                            inspection.setInspectionDate(datetoAdd);
+//
+//                            String inspectionType = tokensFirstHalf[2];
+//                            inspection.setInspType(inspectionType);
+//
+//                            int numOfCritical = Integer.parseInt(tokensFirstHalf[3]);
+//                            inspection.setNumCritical(numOfCritical);
+//
+//                            int numOfNonCritical = Integer.parseInt(tokensFirstHalf[4]);
+//                            inspection.setNumNonCritical(numOfNonCritical);
+//
+//                            if(numOfCritical + numOfNonCritical != 0){
+//                                String[] violations = tokens[1].split("\\|");
+//                                for(String violationPossibility: violations){
+//                                    String violation = violationPossibility.substring(0, 3);
+//                                    inspection.addViolation(Integer.parseInt(violation));
+//                                }
 //                            }
 //
-//                        }
+//                            String hazardLevel = tokens[2];
+//                            if(hazardLevel.length() > 1){
+//                                inspection.setHazardRating(hazardLevel);
+//                            }
+//                            else{
+//                                inspection.setHazardRating("Low");
+//                            }
 //
-//                        r.addInspection(inspection);
+//                            r.addInspection(inspection);
+//                            break;
+//                        }
 //
 //                    }
 //                }
-
-            }
-
-        } catch (Exception e) {
-            Log.wtf("My Activity", "Error reading data file on line " + line, e);
-            e.printStackTrace();
-        }
+//                else{
+//
+//                    // NDAA-8RNNVR,20181017,Routine,0,0,,Low
+//                    String [] tokensSplit = tokens[0].split(",");
+//                     trackingNum = tokensSplit[0];
+//
+//                     for(Restaurant r : restaurantList){
+//                         if(r.getTrackingNumber().equals(trackingNum)){
+//                             String dateToAdd = tokensSplit[1];
+//                             inspection.setInspectionDate(dateToAdd);
+//
+//                             String inspectionType = tokensSplit[2];
+//                             inspection.setInspType(inspectionType);
+//
+//                             inspection.setNumNonCritical(Integer.parseInt(tokensSplit[3]));
+//                             inspection.setNumCritical(Integer.parseInt(tokensSplit[4]));
+//                             if (tokensSplit.length == 7){
+//                                 inspection.setHazardRating(tokensSplit[6]);
+//                             } else {
+//                                 //csv has no hazard rating
+//                                 inspection.setHazardRating("Low");
+//                             }
+//
+//
+//                             r.addInspection(inspection);
+//                             break;
+//
+//                         }
+//                     }
+//
+//                }
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+////                String[] tokens = line.split("\"");
+////                String trackingNum = tokens[TRACKING_NUM_INDEX];
+////                for(Restaurant r: restaurantList){
+////                    Log.d("Main Activity", " Found right restaurant");
+////                    if(r.getTrackingNumber().equals(trackingNum)){
+////                        String dateToAdd = tokens[DATE_INDEX];
+////                        dateToAdd = dateToAdd.substring(1, dateToAdd.length() - 1);
+////                        inspection.setInspectionDate(dateToAdd);
+////
+////                        String inspectionType = tokens[INSPECTION_TYPE_INDEX];
+////                        inspection.setInspType(inspectionType);
+////
+////                        String valuesForCritical = tokens[CRITICAL_INDEX];
+////                        valuesForCritical = valuesForCritical.replaceAll(",","");
+////
+////                        char charNumNonCrit = valuesForCritical.charAt(0);
+////                        String numNonCrit = Character.toString(charNumNonCrit);
+////
+////                        char charNumCrit = valuesForCritical.charAt(1);
+////                        String numCrit = Character.toString(charNumCrit);
+////
+////                        inspection.setNumNonCritical(Integer.parseInt(numNonCrit));
+////                        inspection.setNumCritical(Integer.parseInt(numCrit));
+////
+////                        String hazardRating = tokens[HAZARD_INDEX];
+////                        inspection.setHazardRating(hazardRating);
+////
+////                        if(Integer.parseInt(numNonCrit) + Integer.parseInt(numCrit) > 0){
+////                            String[] violations = tokens[VIOLATIONS_LUMP_INDEX].split("\\|");
+////
+////                            for(String violationPossibility: violations){
+////                                String violation = violationPossibility.substring(0, 3);
+////                               inspection.addViolation(Integer.parseInt(violation));
+////                            }
+////
+////                        }
+////
+////                        r.addInspection(inspection);
+////
+////                    }
+////                }
+//
+//            }
+//
+//        } catch (Exception e) {
+//            Log.wtf("My Activity", "Error reading data file on line " + line, e);
+//            e.printStackTrace();
+//        }
 
     }
 
