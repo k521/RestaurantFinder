@@ -189,7 +189,6 @@ public class RestaurantManager {
             //   [s. 17(1)],Not Repeat|308,Not Critical,Equipment/utensils/food contact surfaces are
             //   not in good working order [s. 16(b)],Not Repeat",Moderate
 
-
             final int TRACKING_NUM_INDEX = 1;
             final int DATE_INDEX = 2;
             final int INSPECTION_TYPE_INDEX = 3;

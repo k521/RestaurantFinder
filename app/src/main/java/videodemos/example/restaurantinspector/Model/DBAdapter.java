@@ -18,17 +18,15 @@ public class DBAdapter {
 
     // DB info: it's name, and the table we are using (just one).
     public static final String DATABASE_NAME = "RestaurantInspectorDB";
-    public static final String DATABASE_TABLE_INSPECTIONS = "Inspections";
     // Track DB version if a new version of your app changes the format.
     public static final int DATABASE_VERSION = 1;
 
     /*
      * CHANGE 1:
      */
-    // TODO: Setup your fields here:
-    /*
-        Restaurant Table
-     */
+
+    // region Restaurant Table Data
+
     public static final String DATABASE_TABLE_RESTAURANTS = "Restaurants";
 
     public static final String KEY_TRACKING_NUMBER = "trackingNumber";
@@ -40,7 +38,6 @@ public class DBAdapter {
     public static final String KEY_LONGITUDE = "longitude";
 
 
-    // TODO: Setup your field numbers here (0 = KEY_ROWID, 1=...)
     public static final int COL_TRACKING_NUMBER = 0;
     public static final int COL_RESTAURANT_NAME = 1;
     public static final int COL_ADDRESS = 2;
@@ -81,6 +78,48 @@ public class DBAdapter {
                     // Rest  of creation:
                     + ");";
 
+    //endregion Restaurant Table Data
+
+    //region Inspection Table Data
+
+    public static final String DATABASE_TABLE_INSPECTIONS = "Inspections";
+
+    public static final String KEY_ROWID = "_id";
+    public static final String KEY_HAZARD_RATING = "hazardRating";
+    public static final String KEY_INSPECTION_DATE = "inspectionDate";
+    public static final String KEY_INSP_TYPE = "inspType";
+    public static final String KEY_NUM_CRITICAL = "numCritical";
+    public static final String KEY_NUM_NON_CRITICAL = "numNonCritical";
+
+    public static final int COL_ROWID = 0;
+    public static final int COL_HAZARD_RATING = 1;
+    public static final int COL_INSPECTION_DATE = 2;
+    public static final int COL_INSP_TYPE = 3;
+    public static final int COL_NUM_CRITICAL = 4;
+    public static final int COL_NUM_NON_CRITICAL = 5;
+
+
+    public static final String[] ALL_INSPECTION_KEYS = new String[]{
+            KEY_ROWID,
+            KEY_HAZARD_RATING,
+            KEY_INSPECTION_DATE,
+            KEY_INSP_TYPE,
+            KEY_NUM_CRITICAL,
+            KEY_NUM_NON_CRITICAL
+    };
+
+    private static final String DATABASE_CREATE_INSPECTIONS_SQL =
+            "CREATE TABLE " + DATABASE_TABLE_INSPECTIONS
+                    + " (" + KEY_ROWID + " INT primary key autoincrement,"
+                    + KEY_HAZARD_RATING + " TEXT NOT NULL, "
+                    + KEY_INSPECTION_DATE + " TEXT NOT NULL, "
+                    + KEY_INSP_TYPE + " TEXT NOT NULL, "
+                    + KEY_NUM_CRITICAL + " INT NOT NULL, "
+                    + KEY_NUM_NON_CRITICAL + " INT NOT NULL "
+                    + ");";
+
+    //endregion Inspection Table Data
+
     // Context of application who uses us.
     private final Context context;
 
@@ -107,7 +146,9 @@ public class DBAdapter {
         myDBHelper.close();
     }
 
-    // Add a new set of values to the database.
+
+
+    // Add a new set of values to the Restaurants Table.
     public long insertRow(String trackingNumber, String name, String physicalAddress,
                           String physicalCity, String factype, double latitude, double longitude) {
 
@@ -125,11 +166,37 @@ public class DBAdapter {
         return db.insert(DATABASE_TABLE_RESTAURANTS, null, initialValues);
     }
 
-
-    // Return all data in the database.
     public Cursor getAllRestaurantRows() {
         String where = null;
         Cursor c = db.query(true, DATABASE_TABLE_RESTAURANTS, ALL_RESAURANT_KEYS,
+                where, null, null, null, null, null);
+        if (c != null) {
+            c.moveToFirst();
+        }
+        return c;
+    }
+
+
+
+    // Add a new set of values to the Inspections Table.
+    public long insertRow(String hazardRating, String inspectionDate, String inspType,
+                          int numCritical, int numNonCritical) {
+
+        // Create row's data:
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_HAZARD_RATING, hazardRating);
+        initialValues.put(KEY_INSPECTION_DATE, inspectionDate);
+        initialValues.put(KEY_INSP_TYPE, inspType);
+        initialValues.put(KEY_NUM_CRITICAL, numCritical);
+        initialValues.put(KEY_NUM_NON_CRITICAL, numNonCritical);
+
+        // Insert it into the database.
+        return db.insert(DATABASE_TABLE_INSPECTIONS, null, initialValues);
+    }
+
+    public Cursor getAllInspectionRows() {
+        String where = null;
+        Cursor c = db.query(true, DATABASE_TABLE_INSPECTIONS, ALL_INSPECTION_KEYS,
                 where, null, null, null, null, null);
         if (c != null) {
             c.moveToFirst();
@@ -154,6 +221,7 @@ public class DBAdapter {
         @Override
         public void onCreate(SQLiteDatabase _db) {
             _db.execSQL(DATABASE_CREATE_RESTAURANTS_SQL);
+            _db.execSQL(DATABASE_CREATE_INSPECTIONS_SQL);
         }
 
         @Override
@@ -163,6 +231,7 @@ public class DBAdapter {
 
             // Destroy old database:
             _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_RESTAURANTS);
+            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_INSPECTIONS);
 
             // Recreate new database:
             onCreate(_db);
