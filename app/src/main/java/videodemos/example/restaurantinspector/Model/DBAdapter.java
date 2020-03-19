@@ -19,7 +19,7 @@ public class DBAdapter {
     // DB info: it's name, and the table we are using (just one).
     public static final String DATABASE_NAME = "RestaurantInspectorDB";
     // Track DB version if a new version of your app changes the format.
-    public static final int DATABASE_VERSION = 15;
+    public static final int DATABASE_VERSION = 18;
 
     /*
      * CHANGE 1:
@@ -129,15 +129,18 @@ public class DBAdapter {
     // Violations(trackingNumber, date, violationCode)
     public static final String DATABASE_TABLE_VIOLATIONS = "Violations";
 
+    public static final String KEY_ROW_ID_VIOLATION = "_id";
     public static final String KEY_TRACKING_NUMBER_VIOLATION = "trackingNumber";
     public static final String KEY_VIOLATION_DATE = "inspectionDate";
     public static final String KEY_VIOLATION_CODE = "violationCode";
 
-    public static final int COL_TRACKING_NUMBER_VIOLATION = 0;
-    public static final int COL_VIOLATION_DATE = 1;
-    public static final int COL_VIOLATION_CODE = 2;
+    public static final int COL_KEY_ROW_ID_VIOLATION  = 0;
+    public static final int COL_TRACKING_NUMBER_VIOLATION = 1;
+    public static final int COL_VIOLATION_DATE = 2;
+    public static final int COL_VIOLATION_CODE = 3;
 
     public static final String[] ALL_VIOLATION_KEYS = new String[]{
+            KEY_ROW_ID_VIOLATION,
             KEY_TRACKING_NUMBER_VIOLATION,
             KEY_VIOLATION_DATE,
             KEY_VIOLATION_CODE
@@ -145,10 +148,11 @@ public class DBAdapter {
 
     private static final String DATABASE_CREATE_VIOLATIONS_SQL =
             "CREATE TABLE " + DATABASE_TABLE_VIOLATIONS
-                    + " (" + KEY_TRACKING_NUMBER_VIOLATION + " TEXT,"
+                    + " (" + KEY_ROW_ID_VIOLATION + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + KEY_TRACKING_NUMBER_VIOLATION + " TEXT,"
                     + KEY_VIOLATION_DATE + " TEXT, "
-                    + KEY_VIOLATION_CODE + " INT, "
-                    + "PRIMARY KEY (" + KEY_TRACKING_NUMBER_VIOLATION + ", " + KEY_VIOLATION_DATE + ", " + KEY_VIOLATION_CODE + ")"
+                    + KEY_VIOLATION_CODE + " INT "
+                   // + "PRIMARY KEY (" + KEY_TRACKING_NUMBER_VIOLATION + ", " + KEY_VIOLATION_DATE + ", " + KEY_VIOLATION_CODE + ")"
                     + ");";
 
     //endregion Violation Table Data
@@ -263,6 +267,16 @@ public class DBAdapter {
         return c;
     }
 
+    public Cursor getViolationRow(String trackingNumber, String date) {
+        String where = KEY_TRACKING_NUMBER_VIOLATION + " = " + trackingNumber + " and "
+                + KEY_VIOLATION_DATE + " = " + date;
+        Cursor c = db.query(true, DATABASE_TABLE_VIOLATIONS, ALL_VIOLATION_KEYS,
+                where, null, null, null, null, null);
+        if (c != null) {
+            c.moveToFirst();
+        }
+        return c;
+    }
 
     /////////////////////////////////////////////////////////////////////
     //	Private Helper Classes:

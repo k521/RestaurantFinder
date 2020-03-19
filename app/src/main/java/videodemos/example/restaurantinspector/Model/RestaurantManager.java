@@ -176,7 +176,6 @@ public class RestaurantManager {
         dbAdapter = new DBAdapter(c);
         dbAdapter.open();
         Cursor cursorInspection = dbAdapter.getAllInspectionRows();
-        Cursor cursorViolation = dbAdapter.getAllViolationRows();
 
         if(cursorInspection.moveToFirst()){
             do{
@@ -188,18 +187,22 @@ public class RestaurantManager {
                 inspection.setNumCritical(cursorInspection.getInt(DBAdapter.COL_NUM_CRITICAL));
                 inspection.setNumNonCritical(cursorInspection.getInt(DBAdapter.COL_NUM_NON_CRITICAL));
 
+
                 String trackingNumInspection = cursorInspection.getString(DBAdapter.COL_TRACKING_NUMBER_INSPECTION);
-                String inpectionDate = cursorInspection.getString(DBAdapter.COL_INSPECTION_DATE);
+                String inspectionDate = cursorInspection.getString(DBAdapter.COL_INSPECTION_DATE);
+                Cursor cursorViolation = dbAdapter.getViolationRow(trackingNumInspection,inspectionDate);
+
 
                 if (cursorViolation.moveToFirst()){
                     do {
                         String trackingNumViolation = cursorInspection.getString(DBAdapter.COL_TRACKING_NUMBER_VIOLATION);
                         String violationDate = cursorInspection.getString(DBAdapter.COL_VIOLATION_DATE);
 
-                        if (trackingNumViolation.equals(trackingNumInspection) && violationDate.equals(inpectionDate)) {
+                        if (trackingNumViolation.equals(trackingNumInspection) && violationDate.equals(inspectionDate)) {
                             inspection.addViolation(cursorViolation.getInt(DBAdapter.COL_VIOLATION_CODE));
                         }
                         Log.d("ADDING_VIOLATIONS", cursorInspection.getString(DBAdapter.COL_TRACKING_NUMBER_VIOLATION));
+                        Log.d("ADDING_VIOLATIONS BRUH", cursorInspection.getString(DBAdapter.COL_KEY_ROW_ID_VIOLATION));
                     } while (cursorViolation.moveToNext());
                 }
 
@@ -209,7 +212,7 @@ public class RestaurantManager {
                     }
                 }
 
-                Log.d("ADDING_INSPECTION", cursorInspection.getString(DBAdapter.COL_INSPECTION_DATE));
+                Log.d("ADDING_INSPECTION", cursorViolation.getString(DBAdapter.COL_INSPECTION_DATE));
             }while (cursorInspection.moveToNext());
         }
 

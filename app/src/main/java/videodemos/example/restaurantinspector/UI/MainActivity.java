@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         loadDBFromServer();
         Toast.makeText(this,"FINISHED", Toast.LENGTH_LONG).show();
         Log.d("ENDWHILECREATE", "onCreate continues..");
+
+        printViolationDb();
         
         setupToolbar();
         setupRestaurantManager();
@@ -59,6 +61,22 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         checkForNewServerData();
 
+    }
+
+    private void printViolationDb() {
+        dbAdapter.open();
+
+        Cursor cursor = dbAdapter.getAllViolationRows();
+
+        if(cursor.moveToFirst()){
+            do{
+
+                Log.d("Violation:" ,cursor.getString(DBAdapter.COL_TRACKING_NUMBER_VIOLATION)
+                        + cursor.getString(DBAdapter.COL_VIOLATION_DATE) + cursor.getString(DBAdapter.COL_VIOLATION_CODE));
+
+            }while(cursor.moveToNext());
+        }
+        dbAdapter.close();
     }
 
     private void loadDBFromServer() {
@@ -211,6 +229,14 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
             httpHandler.getData();
             String body = httpHandler.getBody();
 
+
+            //TRACKINGNUMBER,INSPECTIONDATE,INSPTYPE,NUMCRITICAL,NUMNONCRITICAL,VIOLLUMP,HAZARDRATING
+            //SWOD-APSP3X,20190830,Routine,1,0,"205,Critical,Cold potentially hazardous food stored/displayed above 4 �C. [s. 14(2)],Not Repeat",Low
+            //SWOD-APSP3X,20190305,Routine,0,2,"306,Not Critical,Food premises not maintained in a sanitary condition [s. 17(1)],Not Repeat|403,Not Critical,Employee lacks good personal hygiene, clean clothing and hair control [s. 21(1)],Not Repeat",Low
+            //SWOD-APSP3X,20180625,Routine,2,3,"209,Not Critical,Food not protected from contamination [s. 12(a)],Not Repeat|303,Critical,Equipment/facilities/hot & cold water for sanitary maintenance not adequate [s. 17(3); s. 4(1)(f)],Not Repeat|308,Not Critical,Equipment/utensils/food contact surfaces are not in good working order [s. 16(b)],Not Repeat|311,Not Critical,Premises not maintained as per approved plans [s. 6(1)(b)],Not Repeat|402,Critical,Employee does not wash hands properly or at adequate frequency [s. 21(3)],Not Repeat",Moderate
+            //SWOD-APSP3X,20180103,Routine,0,2,"209,Not Critical,Food not protected from contamination [s. 12(a)],Not Repeat|307,Not Critical,Equipment/utensils/food contact surfaces are not of suitable design/material [s. 16; s. 19],Not Repeat",Low
+            //SWOD-APSP3X,20171011,Follow-Up,0,0,,Low
+
             Log.d("BODYY:", body);
 
             BufferedReader reader = new BufferedReader(new StringReader(body));
@@ -290,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
                     dbAdapter.insertRow(trackingNum, hazardRating, dateToAdd, inspectionType, numOfCritical, numOfNonCritical);
 
                 }
-
+                Log.d("Load", "Still going");
             }
 
         } catch (Exception e) {
