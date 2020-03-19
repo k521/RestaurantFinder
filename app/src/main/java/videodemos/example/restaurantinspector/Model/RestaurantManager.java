@@ -198,11 +198,12 @@ public class RestaurantManager {
                         String trackingNumViolation = cursorInspection.getString(DBAdapter.COL_TRACKING_NUMBER_VIOLATION);
                         String violationDate = cursorInspection.getString(DBAdapter.COL_VIOLATION_DATE);
 
-                        if (trackingNumViolation.equals(trackingNumInspection) && violationDate.equals(inspectionDate)) {
-                            inspection.addViolation(cursorViolation.getInt(DBAdapter.COL_VIOLATION_CODE));
-                        }
-                        Log.d("ADDING_VIOLATIONS", cursorInspection.getString(DBAdapter.COL_TRACKING_NUMBER_VIOLATION));
-                        Log.d("ADDING_VIOLATIONS BRUH", cursorInspection.getString(DBAdapter.COL_KEY_ROW_ID_VIOLATION));
+                       // if (trackingNumViolation.equals(trackingNumInspection) && violationDate.equals(inspectionDate)) {
+                        inspection.addViolation(cursorViolation.getInt(DBAdapter.COL_VIOLATION_CODE));
+                        Log.d("VIOLATION_ADDED", cursorInspection.getString(DBAdapter.COL_TRACKING_NUMBER_VIOLATION));
+                        //}
+
+                        //Log.d("ADDING_VIOLATIONS BRUH", cursorInspection.getString(DBAdapter.COL_KEY_ROW_ID_VIOLATION));
                     } while (cursorViolation.moveToNext());
                 }
 
@@ -212,7 +213,6 @@ public class RestaurantManager {
                     }
                 }
 
-                Log.d("ADDING_INSPECTION", cursorViolation.getString(DBAdapter.COL_INSPECTION_DATE));
             }while (cursorInspection.moveToNext());
         }
 

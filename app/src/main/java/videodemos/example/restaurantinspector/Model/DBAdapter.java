@@ -19,7 +19,7 @@ public class DBAdapter {
     // DB info: it's name, and the table we are using (just one).
     public static final String DATABASE_NAME = "RestaurantInspectorDB";
     // Track DB version if a new version of your app changes the format.
-    public static final int DATABASE_VERSION = 18;
+    public static final int DATABASE_VERSION = 22;
 
     /*
      * CHANGE 1:
@@ -268,8 +268,8 @@ public class DBAdapter {
     }
 
     public Cursor getViolationRow(String trackingNumber, String date) {
-        String where = KEY_TRACKING_NUMBER_VIOLATION + " = " + trackingNumber + " and "
-                + KEY_VIOLATION_DATE + " = " + date;
+        String where = KEY_TRACKING_NUMBER_VIOLATION + " = '" + trackingNumber + "' and "
+                + KEY_VIOLATION_DATE + " = '" + date + "'";
         Cursor c = db.query(true, DATABASE_TABLE_VIOLATIONS, ALL_VIOLATION_KEYS,
                 where, null, null, null, null, null);
         if (c != null) {
