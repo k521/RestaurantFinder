@@ -27,18 +27,25 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import videodemos.example.restaurantinspector.Model.ClusterMarker;
 import videodemos.example.restaurantinspector.Model.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
+import videodemos.example.restaurantinspector.Utilities.MyClusterManagerRenderer;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -117,6 +124,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    private ClusterManager mClusterManager;
+    private MyClusterManagerRenderer mClusterManagerRenderer;
+    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -125,13 +135,83 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        for(Restaurant restaurant: manager.getRestaurantList()){
-            double longitude = restaurant.getLongitude();
-            double latitude = restaurant.getLatitude();
-            LatLng vancouver = new LatLng(latitude, longitude);
-            mMap.addMarker(new MarkerOptions().position(vancouver).title(restaurant.getName()));
+//        for(Restaurant restaurant: manager.getRestaurantList()){
+//            double longitude = restaurant.getLongitude();
+//            double latitude = restaurant.getLatitude();
+//            LatLng vancouver = new LatLng(latitude, longitude);
+//            MarkerOptions marker = new MarkerOptions().position(vancouver).title(restaurant.getName());
+//
+//
+//            if(restaurant.getInspections().get(0).getHazardRating() == "Low"){
+//                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.));
+//            }
+//            else if(restaurant.getInspections().get(0).getHazardRating() == "Moderate"){
+//                marker.icon(BitmapDescriptorFactory.fromResource());
+//            }
+//            else{
+//                marker.icon(BitmapDescriptorFactory.fromResource());
+//            }
+//            mMap.addMarker(marker);
+//
+//        }
 
+
+
+
+        if(mMap != null){
+
+            if(mClusterManager == null){
+                mClusterManager = new ClusterManager<ClusterMarker>(this.getApplicationContext(), mMap);
+            }
+
+            if(mClusterManagerRenderer == null ){
+                mClusterManagerRenderer = new MyClusterManagerRenderer(
+                      this,
+                      mMap,
+                      mClusterManager
+                );
+                mClusterManager.setRenderer(mClusterManagerRenderer);
+            }
+
+            for(Restaurant restaurant: manager.getRestaurantList()){
+                int markerID;
+                String hazardRating;
+                if(restaurant.getInspections() == null) {
+                    hazardRating = "No hazards";
+                }
+//                else{
+//                    hazardRating = restaurant.getInspections().get(0).getHazardRating();
+//                }
+
+//                if(hazardRating == "Low"){
+//                    markerID = R.id.nonCriticalIssues;
+//                }
+//                else if(hazardRating == "Moderate"){
+//                    markerID = R.id.criticalIssues;
+//                }
+//                else{
+//                    markerID = R.id.criticalIssues;
+//                }
+//                ClusterMarker newClusterMarker = new ClusterMarker(
+//
+//                        new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+//                        restaurant.getName(),
+//                        "snippet",
+//                        markerID,
+//                        restaurant
+//                );
+//                mClusterManager.addItem(newClusterMarker);
+//                mClusterMarkers.add(newClusterMarker);
+            }
         }
+
+//        mClusterManager.cluster();
+
+
+
+
+
+
         LatLng surrey = new LatLng(49.0, -122.0);
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(surrey));
 
@@ -148,6 +228,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             init();
         }
     }
+
+
 
     private static final String TAG = "MapActivity";
 
