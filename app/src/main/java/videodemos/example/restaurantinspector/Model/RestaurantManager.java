@@ -48,8 +48,8 @@ public class RestaurantManager {
     }
 
     private RestaurantManager(Context c) {
-       readFromCSV(c);
-        sortByRestaurantName();
+//        readFromCSV(c);
+//        sortByRestaurantName();
     }
 
     public void readFromCSV(Context c) {
@@ -58,6 +58,7 @@ public class RestaurantManager {
 //        BufferedReader reader = new BufferedReader(
 //                new InputStreamReader(is, Charset.forName("UTF-8"))
 //        );
+        restaurantList = new ArrayList<>();
         dbAdapter = new DBAdapter(c);
         dbAdapter.open();
         Cursor cursor = dbAdapter.getAllRestaurantRows();
@@ -76,7 +77,10 @@ public class RestaurantManager {
             }while (cursor.moveToNext());
         }
 
+        cursor.close();
         dbAdapter.close();
+
+        Log.d("RestaurantFinished", "Finished!");
 //
 //        String line = "";
 //        try {
@@ -171,7 +175,6 @@ public class RestaurantManager {
 
     public void InspectionReader(Context c) {
 
-
         dbAdapter = new DBAdapter(c);
         dbAdapter.open();
         Cursor cursorInspection = dbAdapter.getAllInspectionRows();
@@ -212,10 +215,11 @@ public class RestaurantManager {
                     }
                 }
 
+                cursorViolation.close();
             }while (cursorInspection.moveToNext());
         }
 
-
+        cursorInspection.close();
         dbAdapter.close();
 
 
@@ -403,7 +407,7 @@ public class RestaurantManager {
 
 
 
-    private void sortByRestaurantName() {
+    public void sortByRestaurantName() {
         Comparator<Restaurant> comparatorName = new Comparator<Restaurant>() {
             @Override
             public int compare(Restaurant r1, Restaurant r2) {

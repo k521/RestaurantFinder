@@ -11,6 +11,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.joda.time.Minutes;
+import org.joda.time.Seconds;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -50,6 +51,7 @@ public class DateCalculations {
 
     public int hoursInBetween(String dateInput){
         DateTime dateTimeToday = new DateTime();
+        Log.d("TIMES:", "Today: " + dateTimeToday.toString() + " Last Update: " + dateInput);
         int hours = Hours.hoursBetween(DateTime.parse(dateInput), dateTimeToday).getHours();
         return hours;
     }
@@ -58,6 +60,12 @@ public class DateCalculations {
         DateTime dateTimeToday = new DateTime();
         int minutes = Minutes.minutesBetween(DateTime.parse(dateInput), dateTimeToday).getMinutes();
         return minutes;
+    }
+
+    public int secondsInBetween(String dateInput){
+        DateTime dateTimeToday = new DateTime();
+        int seconds = Seconds.secondsBetween(DateTime.parse(dateInput), dateTimeToday).getSeconds();
+        return seconds;
     }
 
     private void populateMonths() {

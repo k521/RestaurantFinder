@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     private final int HOURS_FOR_UPDATE = 1;
     private final String PREFERENCES = "data";
     private final String TAG_UPDATE_DATE = "last_update_date";
+    private final String TAG_SERVER_METADATA_DATE = "last_server_date";
 
     private RestaurantManager manager;
     private DBAdapter dbAdapter = new DBAdapter(this);
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d("DEBUG" , "STARTED");
+        Log.d("A" , "STARTED");
 
 
         // First check the dates. If there is a new update then proceed as follows
@@ -92,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
             dbAdapter.close();
             cursor.close();
 
+            Boolean timeForUpdate = isTimeForUpdate(getLastUpdateDate());
+            Log.d("ISTIMEFORUPDATE:", timeForUpdate.toString());
             if (isTimeForUpdate(getLastUpdateDate())){
                 checkForNewServerData();
             }
@@ -109,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
             System.out.println(dateTime.toString());
             String updatedDate = formatter.print(dateTime);
             Log.d("UPDATEDDATE", updatedDate);
-            updateLastUpdateDate(updatedDate);
+            updateLastUpdateDate(dateTime.toString());
         }
     }
 
@@ -135,8 +139,11 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         //dbAdapter = new DBAdapter(this);
         dbAdapter.open();
+        dbAdapter.startTransaction();
+        //dbAdapter.dropTables();
         loadRestaurantsFromServer();
         loadInspectionsFromServer();
+        dbAdapter.commitTransaction();
         dbAdapter.close();
     }
 
@@ -468,6 +475,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
                     dbAdapter.insertRow(trackingNum, name, address, city, type, latitude, longitude);
                 }
 
+                Log.d("DEBUG:", "still going..");
             }
         } catch (Exception e) {
             Log.wtf("My Activity", "Error reading data file on line " + line, e);
@@ -483,18 +491,20 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
                 try{
                     HttpHandler httpHandler = new HttpHandler(RESTAURANT_URL);
                     String latestDate = httpHandler.getCurrentDateFromServer();
-                    latestDate = latestDate.replace("T", " ");
-                    latestDate = latestDate.split(".")[0];
-                    Log.d("LATESTDATE:", latestDate);
-                    String lastUpdateDate = getLastUpdateDate();
-                    if (isNewDataAvailable(lastUpdateDate, latestDate)){
+                    String lastServerDate = getLastServerDate();
+                    Log.d("CHECKDATES:", "Server Date: " + lastServerDate + " Latest Date: " + latestDate);
+                    if (isNewDataAvailable(lastServerDate, latestDate)){
                         // ask user in dialog
 
                         // update database
                         loadDBFromServer();
 
+                        DateTime dateTime = new DateTime();
+                        updateLastUpdateDate(dateTime.toString());
+                        updateLastServerDate(latestDate);
 
-                        updateLastUpdateDate(latestDate);
+                        finish();
+                        startActivity(getIntent());
                         Log.d("DATEWORKS", "Nice");
                     }else {
                         Log.d("DATEWORKS", "Nah");
@@ -517,9 +527,24 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         editor.apply();
     }
 
+    private String getLastServerDate(){
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        String date = preferences.getString(TAG_SERVER_METADATA_DATE, "empty");
+        return date;
+    }
+
+    private void updateLastServerDate(String newServerDate){
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        editor.putString(TAG_SERVER_METADATA_DATE, newServerDate);
+        editor.apply();
+    }
+
     private String getLastUpdateDate(){
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         String date = preferences.getString(TAG_UPDATE_DATE, "empty");
+        //Toast.makeText(this, "SP Date: " + date, Toast.LENGTH_LONG).show();
         return date;
     }
 
@@ -532,7 +557,9 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         DateCalculations dateCalculations = new DateCalculations();
 
 
-        return dateCalculations.minutesInBetween(latestDate) >= HOURS_FOR_UPDATE;
+        Boolean hasPassed = dateCalculations.secondsInBetween(latestDate) >= HOURS_FOR_UPDATE;
+
+        return dateCalculations.secondsInBetween(latestDate) >= HOURS_FOR_UPDATE;
     }
 
     private void setupToolbar() {
@@ -551,6 +578,8 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
     private void setupRestaurantManager(){
         manager = RestaurantManager.getInstance(this);
+        manager.readFromCSV(this);
+        manager.sortByRestaurantName();
         manager.InspectionReader(this);
         manager.sortInspections();
     }
@@ -567,6 +596,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
         restaurantsRecyclerView.setAdapter(restaurantsAdapter);
+
     }
 
     @Override

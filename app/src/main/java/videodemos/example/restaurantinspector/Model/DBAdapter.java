@@ -204,6 +204,17 @@ public class DBAdapter {
         return db.insert(DATABASE_TABLE_RESTAURANTS, null, initialValues);
     }
 
+    public boolean isRestaurantInRestaurantsTable(String trackingNumber) {
+        String where = KEY_TRACKING_NUMBER + " = '" + trackingNumber + "'";
+        Cursor c = db.query(true, DATABASE_TABLE_RESTAURANTS, ALL_RESAURANT_KEYS,
+                where, null, null, null, null, null);
+        if (c != null) {
+            c.moveToFirst();
+            return true;
+        }
+        return false;
+    }
+
     public Cursor getAllRestaurantRows() {
         String where = null;
         Cursor c = db.query(true, DATABASE_TABLE_RESTAURANTS, ALL_RESAURANT_KEYS,
@@ -232,6 +243,7 @@ public class DBAdapter {
         // Insert it into the database.
         return db.insert(DATABASE_TABLE_INSPECTIONS, null, initialValues);
     }
+
 
     public Cursor getAllInspectionRows() {
         String where = null;
@@ -278,6 +290,21 @@ public class DBAdapter {
         return c;
     }
 
+    public void startTransaction(){
+        db.beginTransaction();
+    }
+
+    public void commitTransaction(){
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void dropTables(){
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_RESTAURANTS);
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_INSPECTIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_VIOLATIONS);
+    }
+
     /////////////////////////////////////////////////////////////////////
     //	Private Helper Classes:
     /////////////////////////////////////////////////////////////////////
@@ -293,9 +320,6 @@ public class DBAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase _db) {
-            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_RESTAURANTS);
-            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_INSPECTIONS);
-            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_VIOLATIONS);
 
             _db.execSQL(DATABASE_CREATE_RESTAURANTS_SQL);
             _db.execSQL(DATABASE_CREATE_INSPECTIONS_SQL);
