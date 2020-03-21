@@ -40,15 +40,39 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     private final int HOURS_FOR_UPDATE = 300000000;
 
     private RestaurantManager manager;
-    private DBAdapter dbAdapter;
+    private DBAdapter dbAdapter = new DBAdapter(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
+        // First check the dates. If there is a new update then proceed as follows
+
+
+        // If there is no update then
+        //
+        // if the database is empty. If it empty then load from initial csv files
+        // Databse is empty iff we have no restaurants.
+
+        dbAdapter.open();
+        Cursor cursor = dbAdapter.getAllRestaurantRows();
+        if (cursor.moveToFirst())
+        {
+
+            // DO SOMETHING WITH CURSOR
+            // so load from the database.
+
+        } else
+        {
+            // I AM EMPTY
+            // So we load from the csv file
+        }
+
+
         //loadDB();
-        loadDBFromServer();
         Toast.makeText(this,"FINISHED", Toast.LENGTH_LONG).show();
         Log.d("ENDWHILECREATE", "onCreate continues..");
 
@@ -60,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         setUpRestaurantsRecylerView();
 
         checkForNewServerData();
+
+
 
     }
 
@@ -80,7 +106,9 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     }
 
     private void loadDBFromServer() {
-        dbAdapter = new DBAdapter(this);
+
+
+        //dbAdapter = new DBAdapter(this);
         dbAdapter.open();
         loadRestaurantsFromServer();
         loadInspectionsFromServer();
@@ -88,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     }
 
     private void loadDB() {
-        dbAdapter = new DBAdapter(this);
+        //dbAdapter = new DBAdapter(this);
         dbAdapter.open();
         readFromCSV();
         loadInspectionsCSVToDB();
