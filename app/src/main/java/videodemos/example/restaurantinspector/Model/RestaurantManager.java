@@ -72,11 +72,10 @@ public class RestaurantManager {
                 restaurant.setPhysicalAddress(cursor.getString(DBAdapter.COL_ADDRESS));
                 restaurant.setPhysicalCity(cursor.getString(DBAdapter.COL_CITY));
 
-                Log.d("ADD_INGRESTAURANT", cursor.getString(DBAdapter.COL_TRACKING_NUMBER));
                 restaurantList.add(restaurant);
             }while (cursor.moveToNext());
         }
-        Log.d("FINISHED_RESTAURANTS", "FINISHED");
+
         dbAdapter.close();
 //
 //        String line = "";
@@ -200,7 +199,7 @@ public class RestaurantManager {
 
                        // if (trackingNumViolation.equals(trackingNumInspection) && violationDate.equals(inspectionDate)) {
                         inspection.addViolation(cursorViolation.getInt(DBAdapter.COL_VIOLATION_CODE));
-                        Log.d("VIOLATION_ADDED", cursorInspection.getString(DBAdapter.COL_TRACKING_NUMBER_VIOLATION));
+
                         //}
 
                         //Log.d("ADDING_VIOLATIONS BRUH", cursorInspection.getString(DBAdapter.COL_KEY_ROW_ID_VIOLATION));
@@ -216,7 +215,7 @@ public class RestaurantManager {
             }while (cursorInspection.moveToNext());
         }
 
-        Log.d("FINISHED_INSPECTIONS", ":)");
+
         dbAdapter.close();
 
 

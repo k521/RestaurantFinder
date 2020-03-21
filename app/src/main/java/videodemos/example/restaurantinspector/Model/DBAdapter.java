@@ -19,7 +19,7 @@ public class DBAdapter {
     // DB info: it's name, and the table we are using (just one).
     public static final String DATABASE_NAME = "RestaurantInspectorDB";
     // Track DB version if a new version of your app changes the format.
-    public static final int DATABASE_VERSION = 22;
+    public static final int DATABASE_VERSION = 24;
 
     /*
      * CHANGE 1:
@@ -293,6 +293,10 @@ public class DBAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase _db) {
+            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_RESTAURANTS);
+            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_INSPECTIONS);
+            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_VIOLATIONS);
+
             _db.execSQL(DATABASE_CREATE_RESTAURANTS_SQL);
             _db.execSQL(DATABASE_CREATE_INSPECTIONS_SQL);
             _db.execSQL(DATABASE_CREATE_VIOLATIONS_SQL);

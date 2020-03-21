@@ -5,14 +5,17 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.util.Date;
 
 import videodemos.example.restaurantinspector.Model.DBAdapter;
 import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
@@ -37,56 +41,76 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
     private final String RESTAURANT_URL = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
     private final String INSPECTION_URL = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
-    private final int HOURS_FOR_UPDATE = 300000000;
+    private final int HOURS_FOR_UPDATE = 1;
+    private final String PREFERENCES = "data";
+    private final String TAG_UPDATE_DATE = "last_update_date";
 
     private RestaurantManager manager;
     private DBAdapter dbAdapter = new DBAdapter(this);
+
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d("DEBUG" , "STARTED");
 
 
         // First check the dates. If there is a new update then proceed as follows
 
 
-        // If there is no update then
-        //
-        // if the database is empty. If it empty then load from initial csv files
-        // Databse is empty iff we have no restaurants.
-
-        dbAdapter.open();
-        Cursor cursor = dbAdapter.getAllRestaurantRows();
-        if (cursor.moveToFirst())
-        {
-
-            // DO SOMETHING WITH CURSOR
-            // so load from the database.
-
-        } else
-        {
-            // I AM EMPTY
-            // So we load from the csv file
-        }
-
-
-        //loadDB();
-        Toast.makeText(this,"FINISHED", Toast.LENGTH_LONG).show();
-        Log.d("ENDWHILECREATE", "onCreate continues..");
-
-        printViolationDb();
+        checkDB();
         
         setupToolbar();
         setupRestaurantManager();
 
         setUpRestaurantsRecylerView();
 
-        checkForNewServerData();
 
 
 
+
+    }
+
+    private void checkDB() {
+        // If there is no update then
+        //
+        // if the database is empty. If it empty then load from initial csv files
+        // Databse is empty iff we have no restaurants.
+
+        Log.d("DEBUG", "Entered checkDB()");
+
+        dbAdapter.open();
+        Cursor cursor = dbAdapter.getAllRestaurantRows();
+        if (cursor.moveToFirst())
+        {
+            Log.d("DEBUG", "DB not empty");
+            // DO SOMETHING WITH CURSOR
+            // so load from the database.
+            dbAdapter.close();
+            cursor.close();
+
+            if (isTimeForUpdate(getLastUpdateDate())){
+                checkForNewServerData();
+            }
+
+        } else
+        {
+            // I AM EMPTY
+            // So we load from the csv file
+            Log.d("DEBUG", "Empty DB");
+            dbAdapter.close();
+            cursor.close();
+            loadDBFromCSV();
+            DateTime dateTime = new DateTime();
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+            System.out.println(dateTime.toString());
+            String updatedDate = formatter.print(dateTime);
+            Log.d("UPDATEDDATE", updatedDate);
+            updateLastUpdateDate(updatedDate);
+        }
     }
 
     private void printViolationDb() {
@@ -102,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
             }while(cursor.moveToNext());
         }
+        cursor.close();
         dbAdapter.close();
     }
 
@@ -115,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         dbAdapter.close();
     }
 
-    private void loadDB() {
+    private void loadDBFromCSV() {
         //dbAdapter = new DBAdapter(this);
         dbAdapter.open();
         readFromCSV();
@@ -458,11 +483,18 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
                 try{
                     HttpHandler httpHandler = new HttpHandler(RESTAURANT_URL);
                     String latestDate = httpHandler.getCurrentDateFromServer();
-                    if (isNewDataAvailable(latestDate)){
+                    latestDate = latestDate.replace("T", " ");
+                    latestDate = latestDate.split(".")[0];
+                    Log.d("LATESTDATE:", latestDate);
+                    String lastUpdateDate = getLastUpdateDate();
+                    if (isNewDataAvailable(lastUpdateDate, latestDate)){
                         // ask user in dialog
 
                         // update database
+                        loadDBFromServer();
 
+
+                        updateLastUpdateDate(latestDate);
                         Log.d("DATEWORKS", "Nice");
                     }else {
                         Log.d("DATEWORKS", "Nah");
@@ -477,10 +509,30 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         gettingDataThread.start();
     }
 
-    public boolean isNewDataAvailable(String latestDate){
+    private void updateLastUpdateDate(String newUpdateDate){
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        editor.putString(TAG_UPDATE_DATE, newUpdateDate);
+        editor.apply();
+    }
+
+    private String getLastUpdateDate(){
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        String date = preferences.getString(TAG_UPDATE_DATE, "empty");
+        return date;
+    }
+
+    public boolean isNewDataAvailable(String lastUpdateDate, String serverDate){
+        return !lastUpdateDate.equals(serverDate);
+    }
+
+
+    public boolean isTimeForUpdate(String latestDate){
         DateCalculations dateCalculations = new DateCalculations();
 
-        return dateCalculations.hoursInBetween(latestDate) >= HOURS_FOR_UPDATE;
+
+        return dateCalculations.minutesInBetween(latestDate) >= HOURS_FOR_UPDATE;
     }
 
     private void setupToolbar() {
