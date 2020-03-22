@@ -5,6 +5,9 @@ import android.database.Cursor;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,11 +61,12 @@ public class RestaurantManager {
     }
 
     public void readRestaurantFromNewCSV(Context c) {
+        restaurantList = new ArrayList<>();
+        //InputStream is = c.getResources().openRawResource(R.raw.restaurants);
 
-        InputStream is = c.getResources().openRawResource(R.raw.restaurants);
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("UTF-8"))
-        );
+        File path = c.getFilesDir();
+        File file = new File(path, "restaurants.csv");
+
 
 
         String line = "";
@@ -76,12 +80,31 @@ public class RestaurantManager {
             final int SET_LATITUDE_TYPE = 5;
             final int SET_LONGITUDE= 6;
 
+            int length = (int) file.length();
+            byte[] bytes = new byte[length];
+
+            FileInputStream in = new FileInputStream(file);
+            try {
+                in.read(bytes);
+            } finally {
+                in.close();
+            }
+
+            String contents = new String(bytes);
+            InputStream is = new ByteArrayInputStream(bytes);
+//            Log.d("CONTENTS_RESTAURANTS", " size" + contents.length());
+//            Log.d("CONTENTS_RESTAURANTS", contents);
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(is, Charset.forName("UTF-8"))
+            );
+
+
            // SWOD-AG5UGV,"Green Indian Cuisine, Pizza & Sweets",12565 88 Ave,Surrey,Restaurant,49.16401631,-122.874781
 
             // Step over headers
             reader.readLine();
             while ((line = reader.readLine()) != null) {
-
                 // Split by ','
 
                 Restaurant restaurant = new Restaurant();
@@ -153,10 +176,9 @@ public class RestaurantManager {
     public void readInspectionsFromNewCSV(Context c) {
 
 
-        InputStream is = c.getResources().openRawResource(R.raw.inspectionreports);
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("UTF-8"))
-        );
+        //InputStream is = c.getResources().openRawResource(R.raw.inspectionreports);
+        File path = c.getFilesDir();
+        File file = new File(path, "inspectionreports.csv");
 
         String line = "";
         try {
@@ -173,6 +195,27 @@ public class RestaurantManager {
             final int CRITICAL_INDEX = 4;
             final int HAZARD_INDEX = 5;
             final int VIOLATIONS_LUMP_INDEX = 7;
+
+            int length = (int) file.length();
+
+            byte[] bytes = new byte[length];
+
+            FileInputStream in = new FileInputStream(file);
+            try {
+                in.read(bytes);
+            } finally {
+                in.close();
+            }
+
+            String contents = new String(bytes);
+            InputStream is = new ByteArrayInputStream(bytes);
+//            Log.d("CONTENTS_INSPECTIONS", " size" + contents.length());
+//            Log.d("CONTENTS_INSPECTIONS", contents);
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(is, Charset.forName("UTF-8"))
+            );
+
 
             // Step over headers
             reader.readLine();
@@ -215,6 +258,7 @@ public class RestaurantManager {
                             }
 
                             String hazardLevel = tokens[2];
+                            hazardLevel = hazardLevel.replace(",", "");
                             if(hazardLevel.length() > 1){
                                 inspection.setHazardRating(hazardLevel);
                             }
