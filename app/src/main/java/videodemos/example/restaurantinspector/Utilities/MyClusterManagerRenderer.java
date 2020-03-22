@@ -47,6 +47,6 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
 
     @Override // Lets multiple restaurants be clustered
     protected boolean shouldRenderAsCluster(Cluster<ClusterMarker> cluster) {
-        return true;
+        return false;
     }
 }

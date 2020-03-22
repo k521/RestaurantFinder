@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.io.IOException;
@@ -59,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getLocationPermission();
         mSearchText = findViewById(R.id.input_search);
         mGps = findViewById(R.id.ic_gps);
+
 
 
     }
@@ -134,27 +136,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-//        for(Restaurant restaurant: manager.getRestaurantList()){
-//            double longitude = restaurant.getLongitude();
-//            double latitude = restaurant.getLatitude();
-//            LatLng vancouver = new LatLng(latitude, longitude);
-//            MarkerOptions marker = new MarkerOptions().position(vancouver).title(restaurant.getName());
-//
-//
-//            if(restaurant.getInspections().get(0).getHazardRating() == "Low"){
-//                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.));
-//            }
-//            else if(restaurant.getInspections().get(0).getHazardRating() == "Moderate"){
-//                marker.icon(BitmapDescriptorFactory.fromResource());
-//            }
-//            else{
-//                marker.icon(BitmapDescriptorFactory.fromResource());
-//            }
-//            mMap.addMarker(marker);
-//
-//        }
-
 
 
 
@@ -176,44 +157,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             for(Restaurant restaurant: manager.getRestaurantList()){
                 int markerID;
                 String hazardRating;
-                if(restaurant.getInspections() == null) {
+                if(restaurant.getInspections().isEmpty()) {
                     hazardRating = "No hazards";
                 }
-//                else{
-//                    hazardRating = restaurant.getInspections().get(0).getHazardRating();
-//                }
+                else{
+                    hazardRating = restaurant.getInspections().get(0).getHazardRating();
+                }
 
-//                if(hazardRating == "Low"){
-//                    markerID = R.id.nonCriticalIssues;
-//                }
-//                else if(hazardRating == "Moderate"){
-//                    markerID = R.id.criticalIssues;
-//                }
-//                else{
-//                    markerID = R.id.criticalIssues;
-//                }
-//                ClusterMarker newClusterMarker = new ClusterMarker(
-//
-//                        new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
-//                        restaurant.getName(),
-//                        "snippet",
-//                        markerID,
-//                        restaurant
-//                );
-//                mClusterManager.addItem(newClusterMarker);
-//                mClusterMarkers.add(newClusterMarker);
+                if(hazardRating == "Low"){
+                    markerID = R.drawable.cold_icon;
+                }
+                else if(hazardRating == "Moderate"){
+                    markerID = R.drawable.critical_icon;
+                }
+                else{
+                    markerID = R.drawable.critical_icon;
+                }
+                ClusterMarker newClusterMarker = new ClusterMarker(
+
+                        new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+                        restaurant.getName(),
+                        restaurant.getPhysicalAddress(),
+                        markerID,
+                        restaurant
+                );
+
+
+                mClusterManager.addItem(newClusterMarker);
+                mClusterMarkers.add(newClusterMarker);
             }
         }
 
-//        mClusterManager.cluster();
+
+
+        mClusterManager.cluster();
 
 
 
 
 
-
-        LatLng surrey = new LatLng(49.0, -122.0);
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(surrey));
 
         if(mLocationPermissionsGranted){
             Log.d(TAG, "Executing: getDeviceLocation() function");
@@ -332,6 +314,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void moveCamera(LatLng latLng, float zoom, String title){
         Log.d(TAG, "moveCamera: moving the camera to: lat:" + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+
+
 
         if (!title.equals("My location") ){
             MarkerOptions options = new MarkerOptions()
