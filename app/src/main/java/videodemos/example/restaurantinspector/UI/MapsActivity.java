@@ -164,20 +164,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     hazardRating = restaurant.getInspections().get(0).getHazardRating();
                 }
 
-                if(hazardRating == "Low"){
-                    markerID = R.drawable.cold_icon;
+                if(hazardRating.equals("Low")){
+                    markerID = R.drawable.critical_icon;
                 }
-                else if(hazardRating == "Moderate"){
+                else if(hazardRating.equals("Moderate")){
                     markerID = R.drawable.critical_icon;
                 }
                 else{
-                    markerID = R.drawable.critical_icon;
+                    markerID = R.drawable.app_logo;
                 }
                 ClusterMarker newClusterMarker = new ClusterMarker(
 
                         new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
-                        restaurant.getName(),
-                        restaurant.getPhysicalAddress(),
+                        restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                        "blank",
                         markerID,
                         restaurant
                 );
@@ -191,6 +191,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         mClusterManager.cluster();
+
 
 
 
@@ -314,6 +315,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void moveCamera(LatLng latLng, float zoom, String title){
         Log.d(TAG, "moveCamera: moving the camera to: lat:" + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                View v = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+                TextView tLocation = v.findViewById(R.id.infoAddress);
+                tLocation.setText(marker.getTitle());
+                return v;
+            }
+        });
 
 
 
