@@ -1,4 +1,4 @@
-package videodemos.example.restaurantinspector.Model;
+package videodemos.example.restaurantinspector.Model.DataHandling;
 
 /**
 * A way to classify all violations , if any , in a particular inspection

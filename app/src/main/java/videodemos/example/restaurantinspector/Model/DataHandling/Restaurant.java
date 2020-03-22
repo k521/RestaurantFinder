@@ -1,9 +1,11 @@
-package videodemos.example.restaurantinspector.Model;
+package videodemos.example.restaurantinspector.Model.DataHandling;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
 
 /**
  * Class to hold restaurant information.
