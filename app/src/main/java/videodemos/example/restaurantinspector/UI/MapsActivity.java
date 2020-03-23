@@ -1,10 +1,5 @@
 package videodemos.example.restaurantinspector.UI;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -21,20 +16,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -43,12 +40,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import videodemos.example.restaurantinspector.Model.ClusterMarker;
-import videodemos.example.restaurantinspector.Model.Restaurant;
+import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.Utilities.MyClusterManagerRenderer;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+
+    public GoogleMap getMap() {
+        return mMap;
+    }
 
     private GoogleMap mMap;
 
@@ -126,9 +127,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    private ClusterManager mClusterManager;
-    private MyClusterManagerRenderer mClusterManagerRenderer;
-    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
+    private ClusterManager <MyItem>  mClusterManager = new ClusterManager<MyItem>(this,getMap());
+
+    private void setUpClusterer() {
+        // Position the map.
+        // getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 10));
+
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        // mClusterManager = new ClusterManager<MyItem>(this, getMap());
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        getMap().setOnCameraIdleListener(mClusterManager);
+        getMap().setOnMarkerClickListener(mClusterManager);
+
+        // Add cluster items (markers) to the cluster manager.
+        addItems();
+    }
+
+    private void addItems(MyItem itemToAdd) {
+
+        mClusterManager.addItem(itemToAdd);
+    }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -136,13 +158,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap = googleMap;
 
-
-
-
         if(mMap != null){
 
             if(mClusterManager == null){
-                mClusterManager = new ClusterManager<ClusterMarker>(this.getApplicationContext(), mMap);
+                mClusterManager = new ClusterManager<MyItem>();
             }
 
             if(mClusterManagerRenderer == null ){
@@ -173,14 +192,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 else{
                     markerID = R.drawable.app_logo;
                 }
-                ClusterMarker newClusterMarker = new ClusterMarker(
 
-                        new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
-                        restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
-                        "blank",
-                        markerID,
-                        restaurant
-                );
+                double lat = restaurant.getLatitude();
+                double longlat = restaurant.getLongitude();
+
+                ClusterMarker newClusterMarker = new ClusterMarker(new LatLng(lat,longlat));
+//                ClusterMarker newClusterMarker = new
+//                        ClusterMarker(
+//                        new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+//                        restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+//                        "blank",
+//                        markerID,
+//                        restaurant
+//                );
 
 
                 mClusterManager.addItem(newClusterMarker);
@@ -211,6 +235,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             init();
         }
     }
+
+//    private class MyItem implements ClusterItem {
+//        private final LatLng mPosition;
+//        private final String mTitle;
+//        private final String mSnippet ;
+//
+//        public MyItem(double lat, double lng){
+//            mPosition = new LatLng(lat,lng);
+//        }
+//
+//        public MyItem(double lat, double lng, String title, String snippet){
+//            mPosition = new LatLng(lat,lng);
+//            mTitle = title;
+//            mSnippet = snippet;
+//        }
+//
+//        @Override
+//        public LatLng getPosition(){
+//            return mPosition;
+//        }
+//
+//        @Override
+//        public String getTitle(){
+//            return mTitle;
+//        }
+//
+//        @Override
+//        public String getSnippet(){
+//            return mSnippet;
+//        }
+//    }
 
 
 

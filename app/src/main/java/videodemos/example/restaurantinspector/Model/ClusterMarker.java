@@ -4,6 +4,8 @@ package videodemos.example.restaurantinspector.Model;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
+import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
+
 public class ClusterMarker implements ClusterItem {
 
 

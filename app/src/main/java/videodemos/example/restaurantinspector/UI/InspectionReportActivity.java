@@ -20,12 +20,12 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import videodemos.example.restaurantinspector.Model.DateCalculations;
-import videodemos.example.restaurantinspector.Model.Inspection;
-import videodemos.example.restaurantinspector.Model.Restaurant;
+import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
+import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
+import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
-import videodemos.example.restaurantinspector.Model.Violation;
-import videodemos.example.restaurantinspector.Model.ViolationMaps;
+import videodemos.example.restaurantinspector.Model.DataHandling.Violation;
+import videodemos.example.restaurantinspector.Model.DataHandling.ViolationMaps;
 import videodemos.example.restaurantinspector.R;
 
 /**

@@ -163,5 +163,7 @@
     <string name="november">November</string>
     <string name="december">December</string>
     <string name="title_activity_maps">Map</string>
+    <string name="new_data_available">There is a new update available.\nWould you like to download it now?</string>
+    <string name="downloading">Please Wait\nDownloading..</string>
 
 </resources>
