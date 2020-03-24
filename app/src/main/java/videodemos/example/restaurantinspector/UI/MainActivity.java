@@ -263,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         return dateCalculations.secondsInBetween(latestDate) >= HOURS_FOR_UPDATE;
     }
 
+
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.restaurant_list_toolbar);
         setSupportActionBar(toolbar);

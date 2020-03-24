@@ -49,7 +49,7 @@ import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.Utilities.MyClusterManagerRenderer;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener{
 
     public GoogleMap getMap() {
         return mMap;
@@ -220,6 +220,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         mClusterManager.cluster();
+
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Log.d("MapsActivity","Info window clicked");
+                Toast.makeText(MapsActivity.this, "Infowindow clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Log.d("MapsActivity","Marker clicked");
+                Toast.makeText(MapsActivity.this, "Marker Clicked", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
         if(mLocationPermissionsGranted){
             Log.d(TAG, "Executing: getDeviceLocation() function");
             getDeviceLocation();
@@ -397,5 +413,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void hideSoftKeyboard()
     {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Toast.makeText(this,"Window clicked",Toast.LENGTH_LONG).show();
     }
 }

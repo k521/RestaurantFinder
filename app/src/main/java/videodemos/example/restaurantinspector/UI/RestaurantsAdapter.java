@@ -2,6 +2,7 @@ package videodemos.example.restaurantinspector.UI;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         TextView lastInspection;
         ImageView hazardIcon;
         CardView cardViewBackground;
+        ImageView restaurantIcon;
         OnRestaurantListener onRestaurantListener;
 
         public RestaurantsViewHolder(View itemView, OnRestaurantListener onRestaurantListener) {
@@ -45,6 +47,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             lastInspection = itemView.findViewById(R.id.tv_card_last_inspection);
             cardViewBackground = itemView.findViewById(R.id.cv_restaurant_card);
             hazardIcon = itemView.findViewById(R.id.iv_card_hazard_icon);
+            restaurantIcon = itemView.findViewById(R.id.iv_restaurant_icon);
             this.onRestaurantListener = onRestaurantListener;
 
             itemView.setOnClickListener(this);
@@ -127,6 +130,19 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         } else {
             holder.lastInspection.setText(context.getResources().getString(R.string.no_inspections_so_far));
             holder.numOfIssues.setText(context.getResources().getString(R.string.number_of_issues, 0));
+        }
+
+
+        String[] restaurantsWithCustomIcons = context.getResources().getStringArray(R.array.restaurants_with_custom_icons);
+        String[] restaurantsIconIds = context.getResources().getStringArray(R.array.restaurants_image_ids);
+        holder.restaurantIcon.setImageResource(R.drawable.ic_restaurant_white_24dp);
+        for (int i = 0; i < restaurantsWithCustomIcons.length; i++){
+            if (restaurantInQuestion.getName().contains(restaurantsWithCustomIcons[i])){
+                String idName = restaurantsIconIds[i];
+                int id = context.getResources().getIdentifier(idName, "drawable", context.getPackageName());
+                holder.restaurantIcon.setImageResource(id);
+                break;
+            }
         }
 
     }
