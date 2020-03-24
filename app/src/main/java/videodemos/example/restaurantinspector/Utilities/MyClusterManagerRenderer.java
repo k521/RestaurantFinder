@@ -13,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
@@ -126,5 +127,13 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
         return cluster.getSize() > 1;
     }
 
+    @Override
+    protected void onClusterItemUpdated(ClusterMarker item, Marker marker) {
+        if (marker.getSnippet() == null){
+            marker.setSnippet("not null");
+            return;
+        }
+        super.onClusterItemUpdated(item, marker);
+    }
 }
 
