@@ -10,8 +10,8 @@ public class ClusterMarker implements ClusterItem {
 
 
     private LatLng position;
-    private String title;
-    private String snippet;
+    private String title = "";
+    private String snippet = "";
     private int iconPicture;
     private Restaurant restaurant;
 

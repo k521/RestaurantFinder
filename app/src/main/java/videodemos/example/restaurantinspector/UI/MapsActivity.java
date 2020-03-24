@@ -3,7 +3,6 @@ package videodemos.example.restaurantinspector.UI;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -33,12 +32,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.ClusterRenderer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +52,9 @@ import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.Utilities.MyClusterManagerRenderer;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+        ClusterManager.OnClusterClickListener<ClusterMarker>, ClusterManager.OnClusterInfoWindowClickListener<ClusterMarker>,
+        ClusterManager.OnClusterItemClickListener<ClusterMarker>, ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker>{
 
     private GoogleMap mMap;
 
@@ -152,7 +156,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      */
     //private ClusterManager mClusterManager;
-     private MyClusterManagerRenderer mClusterManagerRenderer;
+    //  private MyClusterManagerRenderer mClusterManagerRenderer;
 //    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
 
     private ClusterManager<ClusterMarker> mClusterManager;
@@ -167,12 +171,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         RestaurantManager manager = RestaurantManager.getInstance(this);
 
         mMap = googleMap;
+//
+//        mClusterManager = new ClusterManager<>(this, getMap());
+//
+//        mMap.setOnCameraIdleListener(mClusterManager);
 
-        mClusterManager = new ClusterManager<>(this, getMap());
 
+        mClusterManager = new ClusterManager<ClusterMarker>(this, getMap());
+        mClusterManager.setRenderer(new MyClusterManagerRenderer(this,mMap,mClusterManager));
         getMap().setOnCameraIdleListener(mClusterManager);
+        getMap().setOnMarkerClickListener(mClusterManager);
+        getMap().setOnInfoWindowClickListener(mClusterManager);
+        mClusterManager.setOnClusterClickListener(this);
+        mClusterManager.setOnClusterInfoWindowClickListener(this);
+        mClusterManager.setOnClusterItemClickListener(this);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
 
         readItems();
+
+       // getMap().setOnCameraIdleListener(mClusterManager);
+
 
 //        if(mMap != null){
 //
@@ -228,21 +246,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mClusterManager.cluster();
 
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                Log.d("MapsActivity","Info window clicked");
-                Toast.makeText(MapsActivity.this, "Infowindow clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
-        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                Log.d("MapsActivity","Marker clicked");
-                Toast.makeText(MapsActivity.this, "Marker Clicked", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
+//        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+//            @Override
+//            public void onInfoWindowClick(Marker marker) {
+//                Log.d("MapsActivity","Info window clicked");
+//                Toast.makeText(MapsActivity.this, "Infowindow clicked", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//            @Override
+//            public boolean onMarkerClick(Marker marker) {
+//                Log.d("MapsActivity","Marker clicked");
+//                Toast.makeText(MapsActivity.this, "Marker Clicked", Toast.LENGTH_SHORT).show();
+//                return false;
+//            }
+//        });
         if(mLocationPermissionsGranted){
             Log.d(TAG, "Executing: getDeviceLocation() function");
             getDeviceLocation();
@@ -256,9 +274,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             init();
         }
     }
-
     private void readItems() {
-        mClusterManager.setRenderer(mClusterManagerRenderer);
+        //mClusterManager.setRenderer(mClusterManagerRenderer);
         RestaurantManager manager = RestaurantManager.getInstance(this);
         for (Restaurant restaurant : manager.getRestaurantList()) {
             int markerID;
@@ -270,11 +287,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             if (hazardRating.equals("Low")) {
-                markerID = R.drawable.critical_icon;
+                markerID = R.drawable.criticality_low_icon;
             } else if (hazardRating.equals("Moderate")) {
-                markerID = R.drawable.critical_icon;
+                markerID = R.drawable.criticality_medium_icon;
             } else {
-                markerID = R.drawable.app_logo;
+                markerID = R.drawable.criticality_high_icon;
             }
             ClusterMarker newClusterMarker = new ClusterMarker(
 
@@ -424,6 +441,64 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
+
+    @Override
+    public void onClusterInfoWindowClick(Cluster<ClusterMarker> cluster) {
+
+    }
+
+    @Override
+    public boolean onClusterItemClick(ClusterMarker item) {
+
+        return false;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(ClusterMarker item) {
+        RestaurantManager manager = RestaurantManager.getInstance(this);
+        Restaurant r = item.getRestaurant();
+        int index = 0;
+        for(int i = 0; i < manager.getRestaurantList().size();i++){
+            Restaurant rInQuestion = manager.getRestaurant(i);
+            if(rInQuestion.getTrackingNumber().equals(r.getTrackingNumber())){
+                index = i;
+                break;
+            }
+        }
+
+        Intent intent = RestaurantReportActivity.makeIntent(this, index);
+        startActivity(intent);
+
+    }
+
+
+    @Override
+    public boolean onClusterClick(Cluster<ClusterMarker> cluster) {
+        // Show a toast with some info when the cluster is clicked.
+        String firstName = cluster.getItems().iterator().next().getRestaurant().getName();
+        // Toast.makeText(this, cluster.getSize() + " (including " + firstName + ")", Toast.LENGTH_SHORT).show();
+
+        // Zoom in the cluster. Need to create LatLngBounds and including all the cluster items
+        // inside of bounds, then animate to center of the bounds.
+
+        // Create the builder to collect all essential cluster items for the bounds.
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        for (ClusterItem item : cluster.getItems()) {
+            builder.include(item.getPosition());
+        }
+        // Get the LatLngBounds
+        final LatLngBounds bounds = builder.build();
+
+        // Animate camera to the bounds
+        try {
+            getMap().animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
 //    @Override
 //    public void onInfoWindowClick(Marker marker) {
 //        int index = 0;
@@ -436,4 +511,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        Intent intent = new Intent(MapsActivity.this, RestaurantReportActivity.class);
 //        startActivity(intent);
 //    }
+
+
 }

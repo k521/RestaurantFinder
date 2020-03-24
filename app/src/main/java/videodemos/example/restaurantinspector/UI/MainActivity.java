@@ -338,9 +338,14 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onBackPressed() {
         manager.getRestaurantList().clear();
+//        Log.d("CDA", "onBackPressed Called");
+//        Intent setIntent = new Intent(Intent.ACTION_MAIN);
+//        setIntent.addCategory(Intent.CATEGORY_HOME);
+//        setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(setIntent);
+            finish();
     }
 
     private void setupMapButton() {
