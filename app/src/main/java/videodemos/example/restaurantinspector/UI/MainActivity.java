@@ -58,8 +58,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d("A" , "STARTED");
-
         checkIfTimeToUpdate();
 
         setupToolbar();
@@ -239,7 +237,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         return !lastUpdateDate.equals(serverDate);
     }
 
-
     public boolean isTimeForUpdate(String latestDate){
         if (latestDate.isEmpty()){
             DateTime today = new DateTime();
@@ -249,13 +246,9 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         DateCalculations dateCalculations = new DateCalculations();
 
-
-        Boolean hasPassed = dateCalculations.secondsInBetween(latestDate) >= HOURS_FOR_UPDATE;
-
-        Log.d("latestDate:", latestDate);
-
         return dateCalculations.hoursInBetween(latestDate) >= HOURS_FOR_UPDATE;
     }
+
 
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.restaurant_list_toolbar);

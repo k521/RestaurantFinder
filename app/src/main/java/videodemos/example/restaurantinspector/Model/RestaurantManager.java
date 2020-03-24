@@ -507,6 +507,17 @@ public class RestaurantManager {
         Collections.sort(restaurantList, comparatorName);
     }
 
+    public void sortByRestaurantNameDescending() {
+        Comparator<Restaurant> comparatorName = new Comparator<Restaurant>() {
+            @Override
+            public int compare(Restaurant r1, Restaurant r2) {
+                return r2.getName().compareTo(r1.getName());
+            }
+        };
+
+        Collections.sort(restaurantList, comparatorName);
+    }
+
     public void sortInspections() {
         for (Restaurant r : restaurantList) {
             r.sortByInspectionDate();
