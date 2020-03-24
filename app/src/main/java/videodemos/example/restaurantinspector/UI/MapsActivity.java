@@ -1,6 +1,8 @@
 package videodemos.example.restaurantinspector.UI;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -11,10 +13,12 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -49,6 +53,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public GoogleMap getMap() {
         return mMap;
+    }
+
+    public static Intent makeIntent(Context c){
+        Intent intent = new Intent(c,MapsActivity.class);
+        return intent;
     }
 
     private GoogleMap mMap;
@@ -91,6 +100,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         hideSoftKeyboard();
+
+        ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Intent mainActivity = MainActivity.makeIntent(MapsActivity.this);
+                    startActivity(mainActivity);
+                    finish();
+                    // The toggle is enabled
+                } else {
+                    // The toggle is disabled
+                }
+            }
+        });
     }
 
     private void geoLocate() {

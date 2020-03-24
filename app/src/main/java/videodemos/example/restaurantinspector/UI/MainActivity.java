@@ -1,14 +1,17 @@
 package videodemos.example.restaurantinspector.UI;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -26,7 +29,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import videodemos.example.restaurantinspector.Model.DBAdapter;
-import videodemos.example.restaurantinspector.Model.DataDownloader;
 import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
 import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
@@ -57,9 +59,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         setContentView(R.layout.activity_main);
 
         Log.d("A" , "STARTED");
-
-        DataDownloader dataDownloader = new DataDownloader();
-
 
         checkIfTimeToUpdate();
 
@@ -339,17 +338,26 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     }
 
     private void setupMapButton() {
-
-        Button btn = findViewById(R.id.button);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent= new Intent (MainActivity.this, MapsActivity.class);
-                startActivity(intent);
+        ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Intent mapsActivity = MapsActivity.makeIntent(MainActivity.this);
+                    startActivity(mapsActivity);
+                    finish();
+                    // The toggle is enabled
+                } else {
+                    // The toggle is disabled
+                }
             }
         });
 
 
+    }
+
+    public static Intent makeIntent(Context c){
+        Intent intent = new Intent(c,MainActivity.class);
+        return intent;
     }
 
 
