@@ -126,66 +126,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    private ClusterManager mClusterManager;
-    private MyClusterManagerRenderer mClusterManagerRenderer;
-    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
+    //private ClusterManager mClusterManager;
+//    private MyClusterManagerRenderer mClusterManagerRenderer;
+//    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
+
+    private ClusterManager<ClusterMarker> mClusterManager;
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         RestaurantManager manager = RestaurantManager.getInstance(this);
 
         mMap = googleMap;
-        if(mMap != null){
 
-            if(mClusterManager == null){
-                mClusterManager = new ClusterManager<ClusterMarker>(this.getApplicationContext(), mMap);
-            }
+        mClusterManager = new ClusterManager<>(this, getMap());
 
-            if(mClusterManagerRenderer == null ){
-                mClusterManagerRenderer = new MyClusterManagerRenderer(
-                        this,
-                        mMap,
-                        mClusterManager
-                );
-                mClusterManager.setRenderer(mClusterManagerRenderer);
-            }
+        getMap().setOnCameraIdleListener(mClusterManager);
 
-            Log.d("MapActivity", "Begin clustering");
-
-            for(Restaurant restaurant: manager.getRestaurantList()){
-                int markerID;
-                String hazardRating;
-                if(restaurant.getInspections().isEmpty()) {
-                    hazardRating = "No hazards";
-                }
-                else{
-                    hazardRating = restaurant.getInspections().get(0).getHazardRating();
-                }
-
-                if(hazardRating.equals("Low")){
-                    markerID = R.drawable.critical_icon;
-                }
-                else if(hazardRating.equals("Moderate")){
-                    markerID = R.drawable.critical_icon;
-                }
-                else{
-                    markerID = R.drawable.app_logo;
-                }
-                ClusterMarker newClusterMarker = new ClusterMarker(
-
-                        new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
-                        restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
-                        "blank",
-                        markerID,
-                        restaurant
-                );
-
-
-                mClusterManager.addItem(newClusterMarker);
-                mClusterMarkers.add(newClusterMarker);
-            }
-        }
-
+            readItems();
+//        if(mMap != null){
+//
+//            if(mClusterManager == null){
+//                mClusterManager = new ClusterManager<ClusterMarker>(this.getApplicationContext(), mMap);
+//            }
+//
+//            if(mClusterManagerRenderer == null ){
+//                mClusterManagerRenderer = new MyClusterManagerRenderer(
+//                        this,
+//                        mMap,
+//                        mClusterManager
+//                );
+//                mClusterManager.setRenderer(mClusterManagerRenderer);
+//            }
+//
+//            Log.d("MapActivity", "Begin clustering");
+//
+//            for(Restaurant restaurant: manager.getRestaurantList()){
+//                int markerID;
+//                String hazardRating;
+//                if(restaurant.getInspections().isEmpty()) {
+//                    hazardRating = "No hazards";
+//                }
+//                else{
+//                    hazardRating = restaurant.getInspections().get(0).getHazardRating();
+//                }
+//
+//                if(hazardRating.equals("Low")){
+//                    markerID = R.drawable.critical_icon;
+//                }
+//                else if(hazardRating.equals("Moderate")){
+//                    markerID = R.drawable.critical_icon;
+//                }
+//                else{
+//                    markerID = R.drawable.app_logo;
+//                }
+//                ClusterMarker newClusterMarker = new ClusterMarker(
+//
+//                        new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+//                        restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+//                        "blank",
+//                        markerID,
+//                        restaurant
+//                );
+//
+//
+//                mClusterManager.addItem(newClusterMarker);
+//                mClusterMarkers.add(newClusterMarker);
+//            }
+//        }
 
 
         mClusterManager.cluster();
@@ -203,8 +211,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void readItems() {
+        RestaurantManager manager = RestaurantManager.getInstance(this);
+        for (Restaurant restaurant : manager.getRestaurantList()) {
+            int markerID;
+            String hazardRating;
+            if (restaurant.getInspections().isEmpty()) {
+                hazardRating = "No hazards";
+            } else {
+                hazardRating = restaurant.getInspections().get(0).getHazardRating();
+            }
 
+            if (hazardRating.equals("Low")) {
+                markerID = R.drawable.critical_icon;
+            } else if (hazardRating.equals("Moderate")) {
+                markerID = R.drawable.critical_icon;
+            } else {
+                markerID = R.drawable.app_logo;
+            }
+            ClusterMarker newClusterMarker = new ClusterMarker(
 
+                    new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+                    restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                    "blank",
+                    markerID,
+                    restaurant
+            );
+
+            mClusterManager.addItem(newClusterMarker);
+        }
+
+    }
 
     private static final String TAG = "MapActivity";
 

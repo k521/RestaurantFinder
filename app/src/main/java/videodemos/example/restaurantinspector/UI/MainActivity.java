@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import videodemos.example.restaurantinspector.Model.DBAdapter;
+import videodemos.example.restaurantinspector.Model.DataDownloader;
 import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
 import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
     private final String RESTAURANT_URL = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
     private final String INSPECTION_URL = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
-    private final int HOURS_FOR_UPDATE = 20;
+    private final int HOURS_FOR_UPDATE = 1;
     private final String PREFERENCES = "data";
     private final String TAG_UPDATE_DATE = "last_update_date";
     private final String TAG_SERVER_METADATA_DATE = "last_server_date";
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     private final String TAG_DIALOG = "new data dialog tag";
 
     private RestaurantManager manager;
-    private DBAdapter dbAdapter = new DBAdapter(this);
 
     private SharedPreferences preferences;
 
@@ -57,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         setContentView(R.layout.activity_main);
 
         Log.d("A" , "STARTED");
+
+        DataDownloader dataDownloader = new DataDownloader();
+
 
         checkIfTimeToUpdate();
 
@@ -258,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         Log.d("latestDate:", latestDate);
 
-        return dateCalculations.hoursInBetween(latestDate) >= HOURS_FOR_UPDATE;
+        return dateCalculations.secondsInBetween(latestDate) >= HOURS_FOR_UPDATE;
     }
 
     private void setupToolbar() {
