@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -48,7 +49,7 @@ import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.Utilities.MyClusterManagerRenderer;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
 
@@ -60,6 +61,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getLocationPermission();
         mSearchText = findViewById(R.id.input_search);
         mGps = findViewById(R.id.ic_gps);
+
+
 
 
 
@@ -154,7 +157,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mClusterManager.setRenderer(mClusterManagerRenderer);
             }
 
+            int i = 0;
             for(Restaurant restaurant: manager.getRestaurantList()){
+
                 int markerID;
                 String hazardRating;
                 if(restaurant.getInspections().isEmpty()) {
@@ -177,7 +182,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
                         restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
-                        "blank",
+                        Integer.toString(i),
                         markerID,
                         restaurant
                 );
@@ -185,16 +190,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 mClusterManager.addItem(newClusterMarker);
                 mClusterMarkers.add(newClusterMarker);
+                i++;
             }
+
         }
 
-
-
         mClusterManager.cluster();
-
-
-
-
 
 
 
@@ -210,6 +211,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             init();
         }
+
+        mMap.setOnInfoWindowClickListener(this);
+
     }
 
 
@@ -345,5 +349,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void hideSoftKeyboard()
     {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        int index = 0;
+        for(int i = 0; i < mClusterMarkers.size(); i++){
+            if(marker.getTitle().equals(mClusterMarkers.get(i).getTitle())){
+                index = i;
+                i = mClusterMarkers.size() + 1;
+            }
+        }
+        Intent intent = new Intent(MapsActivity.this, RestaurantReportActivity.class);
+        startActivity(intent);
+
     }
 }
