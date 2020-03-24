@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="restaurants_with_custom_icons">
+        <item>7-Eleven</item>
+        <item>Tim Hortons</item>
+        <item>Subway</item>
+        <item>Starbucks</item>
+        <item>Save On Foods</item>
+        <item>Pizza Hut</item>
+        <item>Panago</item>
+        <item>McDonald</item>
+        <item>Lee Yuen Seafood Restaurant</item>
+        <item>Blenz</item>
+        <item>A&amp;W</item>
+        <item>A &amp; W</item>
+    </string-array>
+
+    <string-array name="restaurants_image_ids">
+        <item>seven_eleven</item>
+        <item>tim_hortons</item>
+        <item>subway</item>
+        <item>starbucks</item>
+        <item>save_on_foods</item>
+        <item>pizza_hut</item>
+        <item>panago</item>
+        <item>macdonalds</item>
+        <item>lee_yuen_seafood_restaurant</item>
+        <item>blenz</item>
+        <item>a_and_w</item>
+        <item>a_and_w</item>
+    </string-array>
+
+</resources>
