@@ -50,7 +50,7 @@ import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.Utilities.MyClusterManagerRenderer;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap;
 
@@ -172,6 +172,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getMap().setOnCameraIdleListener(mClusterManager);
 
         readItems();
+
 //        if(mMap != null){
 //
 //            if(mClusterManager == null){
@@ -407,7 +408,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-
         if (!title.equals("My location") ){
             MarkerOptions options = new MarkerOptions()
                     .position(latLng)
@@ -422,17 +422,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-        int index = 0;
-        for(int i = 0; i <mClusterMarkers.size(); i++){
-            if(marker.getTitle().equals(mClusterMarkers.get(i).getTitle())){
-                index = i;
-                i = mClusterMarkers.size() + 1;
-            }
-        }
-        Intent intent = new Intent(MapsActivity.this, RestaurantReportActivity.class);
-        startActivity(intent);
-
-    }
+//    @Override
+//    public void onInfoWindowClick(Marker marker) {
+//        int index = 0;
+//        for(int i = 0; i <mClusterMarkers.size(); i++){
+//            if(marker.getTitle().equals(mClusterMarkers.get(i).getTitle())){
+//                index = i;
+//                i = mClusterMarkers.size() + 1;
+//            }
+//        }
+//        Intent intent = new Intent(MapsActivity.this, RestaurantReportActivity.class);
+//        startActivity(intent);
+//    }
 }

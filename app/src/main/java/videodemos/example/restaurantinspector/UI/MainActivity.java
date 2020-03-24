@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
     private final String RESTAURANT_URL = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
     private final String INSPECTION_URL = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
-    private final int HOURS_FOR_UPDATE = 1;
+    private final int HOURS_FOR_UPDATE = 20;
     private final String PREFERENCES = "data";
     private final String TAG_UPDATE_DATE = "last_update_date";
     private final String TAG_SERVER_METADATA_DATE = "last_server_date";
@@ -250,17 +250,16 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
         if (latestDate.isEmpty()){
             DateTime today = new DateTime();
             updateLastUpdateDate(today.toString());
-            return false;
+            return true;
+        }
+
+        if(isDataDefaultVersion()){
+            return true;
         }
 
         DateCalculations dateCalculations = new DateCalculations();
 
-
-        Boolean hasPassed = dateCalculations.secondsInBetween(latestDate) >= HOURS_FOR_UPDATE;
-
-        Log.d("latestDate:", latestDate);
-
-        return dateCalculations.secondsInBetween(latestDate) >= HOURS_FOR_UPDATE;
+        return dateCalculations.hoursInBetween(latestDate) >= HOURS_FOR_UPDATE;
     }
 
 
@@ -336,6 +335,12 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
             Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
         }
         return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        manager.getRestaurantList().clear();
     }
 
     private void setupMapButton() {
