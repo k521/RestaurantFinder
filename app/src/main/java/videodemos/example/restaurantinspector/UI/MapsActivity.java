@@ -152,7 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      */
     //private ClusterManager mClusterManager;
-//    private MyClusterManagerRenderer mClusterManagerRenderer;
+     private MyClusterManagerRenderer mClusterManagerRenderer;
 //    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
 
     private ClusterManager<ClusterMarker> mClusterManager;
@@ -163,6 +163,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d("MapActivity","onMapReadyCalled");
         RestaurantManager manager = RestaurantManager.getInstance(this);
 
         mMap = googleMap;
@@ -257,6 +258,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void readItems() {
+        mClusterManager.setRenderer(mClusterManagerRenderer);
         RestaurantManager manager = RestaurantManager.getInstance(this);
         for (Restaurant restaurant : manager.getRestaurantList()) {
             int markerID;
