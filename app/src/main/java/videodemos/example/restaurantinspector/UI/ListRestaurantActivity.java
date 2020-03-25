@@ -69,6 +69,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
             public void onClick(View view) {
                 Intent mapsActivity = MapsActivity.makeIntent(ListRestaurantActivity.this);
                 startActivity(mapsActivity);
+                manager.getRestaurantList().clear();
                 finish();
             }
         });
@@ -93,4 +94,9 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        manager.getRestaurantList().clear();
+    }
 }
