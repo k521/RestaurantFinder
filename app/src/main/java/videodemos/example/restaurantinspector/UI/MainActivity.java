@@ -40,228 +40,26 @@ import videodemos.example.restaurantinspector.R;
 
 public class MainActivity extends AppCompatActivity implements RestaurantsAdapter.OnRestaurantListener {
 
-    private final String RESTAURANT_URL = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
-    private final String INSPECTION_URL = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
-    private final int HOURS_FOR_UPDATE = 20;
-    private final String PREFERENCES = "data";
-    private final String TAG_UPDATE_DATE = "last_update_date";
-    private final String TAG_SERVER_METADATA_DATE = "last_server_date";
-    private final String TAG_DEFAULT_DATA = "default_data";
-    private final String TAG_DIALOG = "new data dialog tag";
-
     private RestaurantManager manager;
-
-    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d("A" , "STARTED");
 
-        checkIfTimeToUpdate();
 
         setupToolbar();
-        setupRestaurantManager();
+
+        manager = RestaurantManager.getInstance(this);
 
         setUpRestaurantsRecylerView();
-
 
         if( isServicesOK() ){ //checks for functioning Google Services
             setupMapButton();
         }
 
     }
-
-
-    private boolean isDataDefaultVersion(){
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        return preferences.getBoolean(TAG_DEFAULT_DATA, true);
-    }
-
-    private void setDataDefaultVersionToFalse(){
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-
-        editor.putBoolean(TAG_DEFAULT_DATA, false);
-        editor.apply();
-        Log.d("Updated:", "DEFAULT DATA UPDATED");
-    }
-
-    private void checkIfTimeToUpdate() {
-        if (isTimeForUpdate(getLastUpdateDate())){
-            checkForNewServerData();
-        }
-    }
-
-    private void loadCSVsFromServer() {
-        loadRestaurantsFromServer();
-        loadInspectionsFromServer();
-    }
-
-    public String loadInspectionsFromServer() {
-
-        String line = "";
-        try {
-
-            HttpHandler httpHandler = new HttpHandler(INSPECTION_URL);
-            httpHandler.getData();
-            String body = httpHandler.getBody();
-
-            return body;
-
-
-        } catch (Exception e) {
-            Log.wtf("My Activity", "Error reading data file on line " + line, e);
-            e.printStackTrace();
-        }
-
-        return null;
-
-    }
-
-    public String loadRestaurantsFromServer() {
-
-        String line = "";
-        try {
-            HttpHandler httpHandler = new HttpHandler(RESTAURANT_URL);
-            httpHandler.getData();
-            String body = httpHandler.getBody();
-            return body;
-
-        } catch (Exception e) {
-            Log.wtf("My Activity", "Error reading data file on line " + line, e);
-            e.printStackTrace();
-        }
-
-        return "";
-    }
-
-
-    private void checkForNewServerData() {
-        Thread gettingDataThread = new Thread(new Runnable(){
-            public void run(){
-                try{
-                    HttpHandler httpHandler = new HttpHandler(RESTAURANT_URL);
-                    String latestDate = httpHandler.getCurrentDateFromServer();
-                    String lastServerDate = getLastServerDate();
-                    Log.d("CHECKDATES:", "Server Date: " + lastServerDate + " Latest Date: " + latestDate);
-                    if (isNewDataAvailable(lastServerDate, latestDate)){
-                        // ask user in dialog
-                        FragmentManager manager = getSupportFragmentManager();
-                        NewDataFragment dialog = new NewDataFragment(latestDate);
-                        dialog.show(manager, TAG_DIALOG);
-                    }
-
-                } catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        gettingDataThread.start();
-    }
-
-    public void updateDataAndRefresh(String latestDate) {
-        WaitTask waitTask = new WaitTask(this, latestDate);
-        waitTask.execute();
-    }
-
-    public void updateFiles(String restaurantBody, String inspectionsBody, String latestDate){
-        setDataDefaultVersionToFalse();
-        DateTime dateTime = new DateTime();
-        updateLastUpdateDate(dateTime.toString());
-        updateLastServerDate(latestDate);
-        writeDataOnCsvFiles(restaurantBody, inspectionsBody);
-        finish();
-        startActivity(getIntent());
-    }
-
-    public String[] getBodiesFromServer(){
-        loadCSVsFromServer();
-        String restaurantBody = loadRestaurantsFromServer();
-        String inspectionsBody = loadInspectionsFromServer();
-
-        String[] bodies = {restaurantBody, inspectionsBody};
-
-        return bodies;
-    }
-
-
-    private void writeDataOnCsvFiles(String restaurantBody, String inspectionsBody) {
-
-        try{
-            File path = getFilesDir();
-            File file = new File(path, "restaurants.csv");
-            PrintWriter writer = new PrintWriter(file);
-            writer.write(restaurantBody);
-            writer.close();
-
-            path = getFilesDir();
-            file = new File(path, "inspectionreports.csv");
-            writer = new PrintWriter(file);
-            writer.write(inspectionsBody);
-            writer.close();
-
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-
-    }
-
-    private void updateLastUpdateDate(String newUpdateDate){
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-
-        editor.putString(TAG_UPDATE_DATE, newUpdateDate);
-        editor.apply();
-    }
-
-    private String getLastServerDate(){
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        String date = preferences.getString(TAG_SERVER_METADATA_DATE, "empty");
-        return date;
-    }
-
-    private void updateLastServerDate(String newServerDate){
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-
-        editor.putString(TAG_SERVER_METADATA_DATE, newServerDate);
-        editor.apply();
-    }
-
-    private String getLastUpdateDate(){
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-
-        String date = preferences.getString(TAG_UPDATE_DATE, "");
-        //Toast.makeText(this, "SP Date: " + date, Toast.LENGTH_LONG).show();
-        Log.d("LastUpdate:", " " + date);
-        return date;
-    }
-
-    public boolean isNewDataAvailable(String lastUpdateDate, String serverDate){
-        return !lastUpdateDate.equals(serverDate);
-    }
-
-
-    public boolean isTimeForUpdate(String latestDate){
-        if (latestDate.isEmpty()){
-            DateTime today = new DateTime();
-            updateLastUpdateDate(today.toString());
-            return true;
-        }
-
-        if(isDataDefaultVersion()){
-            return true;
-        }
-
-        DateCalculations dateCalculations = new DateCalculations();
-
-        return dateCalculations.hoursInBetween(latestDate) >= HOURS_FOR_UPDATE;
-    }
-
 
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.restaurant_list_toolbar);
@@ -275,22 +73,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
                 startActivity(intent);
             }
         });
-    }
-
-    private void setupRestaurantManager(){
-        manager = RestaurantManager.getInstance(this);
-        if (isDataDefaultVersion()){
-            // Call old method for csv parsing
-            manager.readRestaurantFromOldCSV(this);
-            manager.readInspectionsFromOldCSV(this);
-        } else {
-            // Call new method for csv parsing
-            manager.readRestaurantFromNewCSV(this);
-            manager.readInspectionsFromNewCSV(this);
-        }
-
-        manager.sortByRestaurantName();
-        manager.sortInspections();
     }
 
     private void setUpRestaurantsRecylerView() {

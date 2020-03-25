@@ -124,7 +124,7 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
     @Override
     protected boolean shouldRenderAsCluster(Cluster cluster) {
         // Always render clusters.
-        return cluster.getSize() > 1;
+        return cluster.getSize() > 5;
     }
 
     @Override

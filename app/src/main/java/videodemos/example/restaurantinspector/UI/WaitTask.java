@@ -8,13 +8,13 @@ import androidx.fragment.app.FragmentManager;
 
 class WaitTask extends AsyncTask<Void, Void,  String[]> {
 
-    private MainActivity activity;
+    private MapsActivity activity;
     private String latestDate;
     private WaitFragment dialog;
     private FragmentManager manager;
 
 
-    public WaitTask(MainActivity activity, String latestDate) {
+    public WaitTask(MapsActivity activity, String latestDate) {
         this.activity = activity;
         this.latestDate = latestDate;
 

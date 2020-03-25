@@ -32,7 +32,7 @@ public class NewDataFragment extends AppCompatDialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 //getActivity().finish();
-                ((MainActivity)getActivity()).updateDataAndRefresh(latestDate);
+                ((MapsActivity)getActivity()).updateDataAndRefresh(latestDate);
             }
         };
 
