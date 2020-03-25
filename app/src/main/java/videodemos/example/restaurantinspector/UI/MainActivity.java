@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -40,14 +41,15 @@ import videodemos.example.restaurantinspector.R;
 
 public class MainActivity extends AppCompatActivity implements RestaurantsAdapter.OnRestaurantListener {
 
+    private static final String TAG = "MainActivity";
+    private static final int ERROR_DIALOG_REQUEST = 9001;
+
     private RestaurantManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
 
         setupToolbar();
 
@@ -94,10 +96,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
             startActivity(intent);
     }
 
-    private static final String TAG = "MainActivity";
-
-    private static final int ERROR_DIALOG_REQUEST = 9001;
-
     public boolean isServicesOK(){
         Log.d(TAG, "isServicesOK: checking google services version");
 
@@ -131,21 +129,15 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
     }
 
     private void setupMapButton() {
-        ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
-        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    Intent mapsActivity = MapsActivity.makeIntent(MainActivity.this);
-                    startActivity(mapsActivity);
-                    finish();
-                    // The toggle is enabled
-                } else {
-                    // The toggle is disabled
-                }
+        ImageView mapButton = findViewById(R.id.iv_go_to_maps);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mapsActivity = MapsActivity.makeIntent(MainActivity.this);
+                startActivity(mapsActivity);
+                finish();
             }
         });
-
-
     }
 
     public static Intent makeIntent(Context c){
