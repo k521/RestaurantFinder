@@ -51,7 +51,7 @@ public class InspectionReportActivity extends AppCompatActivity {
     private int inspectionIndex;
 
 
-    private RestaurantManager restaurantManager = RestaurantManager.getInstance(this);
+    private RestaurantManager restaurantManager = RestaurantManager.getInstance();
     private Restaurant currentRestaurant;
 
     private List<Inspection> inspectionsList;

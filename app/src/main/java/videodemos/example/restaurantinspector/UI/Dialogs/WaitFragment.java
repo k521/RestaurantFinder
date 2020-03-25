@@ -1,4 +1,4 @@
-package videodemos.example.restaurantinspector.UI;
+package videodemos.example.restaurantinspector.UI.Dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -12,41 +12,28 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import videodemos.example.restaurantinspector.R;
 
 /**
- * A class to build a win dialog for game over.
+ * A class to build a dialog to show progress while downloading data.
  */
-public class NewDataFragment extends AppCompatDialogFragment {
+public class WaitFragment extends AppCompatDialogFragment {
 
-    private String latestDate;
-
-    public NewDataFragment(String latestDate) {
-        super();
-        this.latestDate = latestDate;
-    }
+    public boolean cancel = false;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v = LayoutInflater.from(getActivity())
-                .inflate(R.layout.new_data_dialog_layout, null);
-
-        DialogInterface.OnClickListener okListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                //getActivity().finish();
-                ((MainActivity)getActivity()).updateDataAndRefresh(latestDate);
-            }
-        };
+                .inflate(R.layout.wait_fragment_layout, null);
 
         DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //getActivity().finish();
+                cancel = true;
             }
         };
 
         return new AlertDialog.Builder(getActivity())
                 .setView(v)
-                .setPositiveButton(android.R.string.ok, okListener)
                 .setNegativeButton(android.R.string.cancel,cancelListener )
+                .setCancelable(false)
                 .create();
     }
 }
