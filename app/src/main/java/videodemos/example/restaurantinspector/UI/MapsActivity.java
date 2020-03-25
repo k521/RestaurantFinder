@@ -328,8 +328,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             double latitude = intent.getDoubleExtra("lat", -999.0);
                             double longitude = intent.getDoubleExtra("long", -999.0);
                             if(latitude != -999.0 && longitude != -999.0){
-                                moveCamera(new LatLng(latitude, longitude),
-                                        DEFAULT_ZOOM, "Restaurant location");
+
                                 LatLng currGPS = new LatLng(latitude, longitude);
                                 ClusterMarker foundMarker = new ClusterMarker();
                                 int index = 0;
@@ -344,6 +343,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 final int fIndex = index;
                                 Marker mark = mMap.addMarker(new MarkerOptions().position(currGPS).title(foundMarker.getTitle()).snippet(foundMarker.getSnippet()));
+                                moveCamera(new LatLng(latitude, longitude),
+                                        DEFAULT_ZOOM, foundMarker.getTitle());
                                 mark.showInfoWindow();
 
                                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -464,19 +465,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
-//    @Override
-//    public void onInfoWindowClick(Marker marker) {
-//        int index = 0;
-//        for(int i = 0; i <mClusterMarkers.size(); i++){
-//            if(marker.getTitle().equals(mClusterMarkers.get(i).getTitle())){
-//                index = i;
-//                i = mClusterMarkers.size() + 1;
-//            }
-//        }
-//        Intent intent = new Intent(MapsActivity.this, RestaurantReportActivity.class);
-//        startActivity(intent);
-//    }'
+    @Override
+    public void onBackPressed() {
+        RestaurantManager manager = RestaurantManager.getInstance(this);
+        manager.getRestaurantList().clear();
+
+        finish();
 
 
+    }
 
 }
