@@ -1,0 +1,4 @@
+Scrum Master: Awshaf Ishtiaque, [aishtiaq]
+Product Owner: Takudzwa Marwendo, [tmarwend]
+Repository Manager: Cesar Moreno, [cmoreno]
+Team Member: Kent Huang, [kenth]
