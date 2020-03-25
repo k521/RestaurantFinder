@@ -58,6 +58,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
 
+    private boolean isComingFromGPS = false;
+
     public GoogleMap getMap() {
         return mMap;
     }
@@ -67,12 +69,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
-    public static Intent makeGPSIntent(Context c, double latitude, double longitude){
-        Intent intent = new Intent(c,MapsActivity.class);
-        intent.putExtra("lat", latitude);
-        intent.putExtra("long", longitude);
-        return intent;
-    }
 
 
     @Override
@@ -327,8 +323,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Intent intent = getIntent();
                             double latitude = intent.getDoubleExtra("lat", -999.0);
                             double longitude = intent.getDoubleExtra("long", -999.0);
+
                             if(latitude != -999.0 && longitude != -999.0){
 
+                                isComingFromGPS = true;
                                 LatLng currGPS = new LatLng(latitude, longitude);
                                 ClusterMarker foundMarker = new ClusterMarker();
                                 int index = 0;
@@ -432,8 +430,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
-        Intent intent = RestaurantReportActivity.makeIntent(this, index);
-        startActivity(intent);
+        if(isComingFromGPS){
+            finish();
+        }else{
+            Intent intent = RestaurantReportActivity.makeIntent(this, index);
+            startActivity(intent);
+        }
 
     }
 
@@ -464,15 +466,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return true;
     }
-
-    @Override
-    public void onBackPressed() {
-        RestaurantManager manager = RestaurantManager.getInstance(this);
-        manager.getRestaurantList().clear();
-
-        finish();
-
-
+    public static Intent makeGPSIntent(Context c, double latitude, double longitude){
+        Intent intent = new Intent(c,MapsActivity.class);
+        intent.putExtra("lat", latitude);
+        intent.putExtra("long", longitude);
+        return intent;
     }
+
+
+
+//     @Override
+//    public void onBackPressed() {
+//        RestaurantManager manager = RestaurantManager.getInstance(this);
+//        manager.getRestaurantList().clear();
+//
+//        finish();
+//
+//
+//    }
 
 }

@@ -27,6 +27,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         return intent;
     }
 
+
     private int indexOfRestaurant;
     private Restaurant restaurant;
 
@@ -54,7 +55,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         double longitude = restaurant.getLongitude();
         Intent intent = MapsActivity.makeGPSIntent(this, latitude, longitude);
         startActivity(intent);
-        finish();
+        //finish();
     }
 
     private void setupToolbar() {
@@ -95,7 +96,8 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
     public void onInspectionClick(int position) {
         Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +" Inspect Index " + position);
         Intent intent = InspectionReportActivity.makeIntent(this,indexOfRestaurant,position);
-        startActivity(intent);
+
+        //startActivity(intent);
 
     }
 }
