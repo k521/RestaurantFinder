@@ -36,7 +36,7 @@
         <activity android:name=".UI.InfoScreenActivity" />
         <activity android:name=".UI.InspectionReportActivity" />
         <activity android:name=".UI.RestaurantReportActivity" />
-        <activity android:name=".UI.MainActivity">
+        <activity android:name=".UI.ListRestaurantActivity">
         </activity>
     </application>
 

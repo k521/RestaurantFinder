@@ -6,7 +6,10 @@ import androidx.fragment.app.FragmentManager;
 
 import videodemos.example.restaurantinspector.UI.Dialogs.WaitFragment;
 
-class WaitTask extends AsyncTask<Void, Void,  String[]> {
+/**
+ * A class that gets data from a server while running on a background thread.
+ */
+public class WaitTask extends AsyncTask<Void, Void, String[]> {
 
     private MapsActivity activity;
     private String latestDate;
@@ -20,7 +23,6 @@ class WaitTask extends AsyncTask<Void, Void,  String[]> {
 
         manager = activity.getSupportFragmentManager();
         dialog = new WaitFragment();
-
     }
 
 
@@ -28,15 +30,15 @@ class WaitTask extends AsyncTask<Void, Void,  String[]> {
     protected void onPreExecute() {
         dialog.show(manager, "wait dialog");
     }
+
     @Override
     protected String[] doInBackground(Void... args) {
-        // do background work here
         return activity.getBodiesFromServer();
     }
 
     @Override
     protected void onPostExecute(String[] bodies) {
-        if (!dialog.cancel){
+        if (!dialog.cancel) {
             dialog.dismiss();
             activity.updateFiles(bodies[0], bodies[1], latestDate);
         }

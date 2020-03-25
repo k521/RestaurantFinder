@@ -17,7 +17,11 @@ import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.UI.Adapters.InspectionsAdapter;
 
-public class RestaurantReportActivity extends AppCompatActivity implements InspectionsAdapter.OnInspectionListener {
+/**
+ * A class that shows inspection reports for a chosen restaurant.
+ */
+public class RestaurantReportActivity extends AppCompatActivity
+        implements InspectionsAdapter.OnInspectionListener {
 
     private static final String RESTAURANT_INDEX = "RESTAURANT_INDEX";
 
@@ -51,13 +55,12 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         setupRestaurantInfoTextViews();
     }
 
-    public void onClick(View v){
+    public void onGpsClick(View v){
         double latitude = restaurant.getLatitude();
         double longitude = restaurant.getLongitude();
         MapsActivity.comeFromInspectionList = true;
         Intent intent = MapsActivity.makeGPSIntent(this, latitude, longitude);
         startActivity(intent);
-        //finish();
     }
 
     private void setupToolbar() {
@@ -90,13 +93,15 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 
         recyclerView.setLayoutManager(layoutManager);
-        InspectionsAdapter adapter = new InspectionsAdapter(restaurant.getInspections(), this, this);
+        InspectionsAdapter adapter = new InspectionsAdapter(restaurant.getInspections(),
+                this, this);
         recyclerView.setAdapter(adapter);
     }
 
     @Override
     public void onInspectionClick(int position) {
-        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +" Inspect Index " + position);
+        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +
+                " Inspect Index " + position);
         Intent intent = InspectionReportActivity.makeIntent(this,indexOfRestaurant,position);
         startActivity(intent);
 
