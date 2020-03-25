@@ -49,6 +49,14 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         setupRestaurantInfoTextViews();
     }
 
+    public void onClick(View v){
+        double latitude = restaurant.getLatitude();
+        double longitude = restaurant.getLongitude();
+        Intent intent = MapsActivity.makeGPSIntent(this, latitude, longitude);
+        startActivity(intent);
+        finish();
+    }
+
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.restaurant_report_toolbar);
         setSupportActionBar(toolbar);

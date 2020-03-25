@@ -67,6 +67,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
+    public static Intent makeGPSIntent(Context c, double latitude, double longitude){
+        Intent intent = new Intent(c,MapsActivity.class);
+        intent.putExtra("lat", latitude);
+        intent.putExtra("long", longitude);
+        return intent;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,13 +177,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         Log.d("MapActivity","onMapReadyCalled");
         RestaurantManager manager = RestaurantManager.getInstance(this);
-
         mMap = googleMap;
-//
-//        mClusterManager = new ClusterManager<>(this, getMap());
-//
-//        mMap.setOnCameraIdleListener(mClusterManager);
-
 
         mClusterManager = new ClusterManager<ClusterMarker>(this, getMap());
         mClusterManager.setRenderer(new MyClusterManagerRenderer(this,mMap,mClusterManager));
@@ -189,78 +191,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         readItems();
 
-       // getMap().setOnCameraIdleListener(mClusterManager);
-
-
-//        if(mMap != null){
-//
-//            if(mClusterManager == null){
-//                mClusterManager = new ClusterManager<ClusterMarker>(this.getApplicationContext(), mMap);
-//            }
-//
-//            if(mClusterManagerRenderer == null ){
-//                mClusterManagerRenderer = new MyClusterManagerRenderer(
-//                        this,
-//                        mMap,
-//                        mClusterManager
-//                );
-//                mClusterManager.setRenderer(mClusterManagerRenderer);
-//            }
-//
-//            Log.d("MapActivity", "Begin clustering");
-//
-//            for(Restaurant restaurant: manager.getRestaurantList()){
-//                int markerID;
-//                String hazardRating;
-//                if(restaurant.getInspections().isEmpty()) {
-//                    hazardRating = "No hazards";
-//                }
-//                else{
-//                    hazardRating = restaurant.getInspections().get(0).getHazardRating();
-//                }
-//
-//                if(hazardRating.equals("Low")){
-//                    markerID = R.drawable.critical_icon;
-//                }
-//                else if(hazardRating.equals("Moderate")){
-//                    markerID = R.drawable.critical_icon;
-//                }
-//                else{
-//                    markerID = R.drawable.app_logo;
-//                }
-//                ClusterMarker newClusterMarker = new ClusterMarker(
-//
-//                        new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
-//                        restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
-//                        "blank",
-//                        markerID,
-//                        restaurant
-//                );
-//
-//
-//                mClusterManager.addItem(newClusterMarker);
-//                mClusterMarkers.add(newClusterMarker);
-//            }
-//        }
-
-
         mClusterManager.cluster();
 
-//        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//            @Override
-//            public void onInfoWindowClick(Marker marker) {
-//                Log.d("MapsActivity","Info window clicked");
-//                Toast.makeText(MapsActivity.this, "Infowindow clicked", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//            @Override
-//            public boolean onMarkerClick(Marker marker) {
-//                Log.d("MapsActivity","Marker clicked");
-//                Toast.makeText(MapsActivity.this, "Marker Clicked", Toast.LENGTH_SHORT).show();
-//                return false;
-//            }
-//        });
         if(mLocationPermissionsGranted){
             Log.d(TAG, "Executing: getDeviceLocation() function");
             getDeviceLocation();
@@ -392,8 +324,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
 
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                    DEFAULT_ZOOM, "My location");
+                            Intent intent = getIntent();
+                            double latitude = intent.getDoubleExtra("lat", -999.0);
+                            double longitude = intent.getDoubleExtra("long", -999.0);
+                            if(latitude != -999.0 && longitude != -999.0){
+                                moveCamera(new LatLng(latitude, longitude),
+                                        DEFAULT_ZOOM, "Restaurant location");
+                                LatLng currGPS = new LatLng(latitude, longitude);
+                                ClusterMarker foundMarker = new ClusterMarker();
+                                int index = 0;
+                                for(ClusterMarker marker: mClusterMarkers){
+
+                                    if(marker.getPosition().equals(currGPS)){
+                                        foundMarker = marker;
+                                        break;
+                                    }
+                                    index++;
+                                }
+
+                                final int fIndex = index;
+                                Marker mark = mMap.addMarker(new MarkerOptions().position(currGPS).title(foundMarker.getTitle()).snippet(foundMarker.getSnippet()));
+                                mark.showInfoWindow();
+
+                                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                                    @Override
+                                    public void onInfoWindowClick(Marker marker) {
+                                        Intent intent = RestaurantReportActivity.makeIntent(MapsActivity.this, fIndex);
+                                        startActivity(intent);
+                                    }
+                                });
+
+
+                            }else{
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                        DEFAULT_ZOOM, "My location");
+                            }
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
@@ -510,7 +475,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        }
 //        Intent intent = new Intent(MapsActivity.this, RestaurantReportActivity.class);
 //        startActivity(intent);
-//    }
+//    }'
+
 
 
 }
