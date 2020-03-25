@@ -15,6 +15,7 @@ import android.widget.TextView;
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
+import videodemos.example.restaurantinspector.UI.Adapters.InspectionsAdapter;
 
 public class RestaurantReportActivity extends AppCompatActivity implements InspectionsAdapter.OnInspectionListener {
 
@@ -27,6 +28,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         return intent;
     }
 
+
     private int indexOfRestaurant;
     private Restaurant restaurant;
 
@@ -35,7 +37,7 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
         super.onCreate(savedInstanceState);
 
         indexOfRestaurant = getIntent().getIntExtra(RESTAURANT_INDEX, 0);
-        RestaurantManager manager = RestaurantManager.getInstance(this);
+        RestaurantManager manager = RestaurantManager.getInstance();
         restaurant = manager.getRestaurant(indexOfRestaurant);
 
         if (restaurant.getInspections().isEmpty()){
@@ -52,9 +54,10 @@ public class RestaurantReportActivity extends AppCompatActivity implements Inspe
     public void onClick(View v){
         double latitude = restaurant.getLatitude();
         double longitude = restaurant.getLongitude();
+        MapsActivity.comeFromInspectionList = true;
         Intent intent = MapsActivity.makeGPSIntent(this, latitude, longitude);
         startActivity(intent);
-        finish();
+        //finish();
     }
 
     private void setupToolbar() {

@@ -1,4 +1,4 @@
-package videodemos.example.restaurantinspector.UI;
+package videodemos.example.restaurantinspector.UI.Dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -11,6 +11,9 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 
 import videodemos.example.restaurantinspector.R;
 
+/**
+ * A class to build a dialog to show progress while downloading data.
+ */
 public class WaitFragment extends AppCompatDialogFragment {
 
     public boolean cancel = false;

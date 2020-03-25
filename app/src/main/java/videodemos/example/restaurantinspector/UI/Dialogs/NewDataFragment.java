@@ -1,4 +1,4 @@
-package videodemos.example.restaurantinspector.UI;
+package videodemos.example.restaurantinspector.UI.Dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -10,9 +10,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import videodemos.example.restaurantinspector.R;
+import videodemos.example.restaurantinspector.UI.MapsActivity;
 
 /**
- * A class to build a win dialog for game over.
+ * A class to build a dialog to ask user if they want to download new data.
  */
 public class NewDataFragment extends AppCompatDialogFragment {
 
@@ -31,7 +32,6 @@ public class NewDataFragment extends AppCompatDialogFragment {
         DialogInterface.OnClickListener okListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //getActivity().finish();
                 ((MapsActivity)getActivity()).updateDataAndRefresh(latestDate);
             }
         };
@@ -39,7 +39,6 @@ public class NewDataFragment extends AppCompatDialogFragment {
         DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //getActivity().finish();
             }
         };
 

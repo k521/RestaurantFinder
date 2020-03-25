@@ -13,19 +13,15 @@ import okhttp3.Request;
 import okhttp3.Response;
 import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
 
+/**
+ * A class that gets data from the internet.
+ */
 public class HttpHandler {
 
-
-
     private String url;
-
     private OkHttpClient client = new OkHttpClient();
-
     private String body = "";
-
     private String latestDate = "";
-
-
 
     public HttpHandler(String url) {
         this.url = url;
@@ -35,35 +31,11 @@ public class HttpHandler {
         return body;
     }
 
-
-
     public String getCurrentDateFromServer() throws IOException, JSONException {
         JSONObject jsonObject = getJsonDataFromUrl();
         latestDate = getDateFromUrl(jsonObject);
         return latestDate;
     }
-
-//    public void getCurrentDateFromServer(){
-//        Thread gettingDataThread = new Thread(new Runnable(){
-//            public void run(){
-//                try{
-//                    JSONObject jsonObject = getJsonDataFromUrl();
-//
-//                    latestDate = getDateFromUrl(jsonObject);
-//
-//                } catch(Exception e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//
-//        gettingDataThread.start();
-//        try {
-//            gettingDataThread.join();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public void getData() {
         Thread gettingDataThread = new Thread(new Runnable(){
@@ -71,12 +43,7 @@ public class HttpHandler {
                 try{
 
                     JSONObject jsonObject = getJsonDataFromUrl();
-
-                    String date = getDateFromUrl(jsonObject);
-                    Log.d("META_DATE", date);
-
                     String csvUrl = getCsvDataUrl(jsonObject);
-
                     body = getCsvBody(csvUrl);
 
                 } catch(Exception e){
@@ -127,7 +94,10 @@ public class HttpHandler {
         JSONObject jsonObjectResources = jsonArrayResult.getJSONObject(0);
         String csvUrl = jsonObjectResources.getString("url");
 
-        return csvUrl.substring(0, 4) + "s" + csvUrl.substring(4, csvUrl.length());
+        //add an s to http to make it https
+        String httpsUrl = csvUrl.substring(0, 4) + "s" + csvUrl.substring(4, csvUrl.length());
+
+        return httpsUrl;
     }
 
 

@@ -29,19 +29,12 @@ import videodemos.example.restaurantinspector.R;
 
 public class RestaurantManager {
 
-    private final String RESTAURANT_URL = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
-    private final String INSPECTION_URL = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
-    private final String RESTAURANT_CSV_URL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
-    private final String INSPECTIONS_CSV_URL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
-
     public static RestaurantManager instance;
     private List<Restaurant> restaurantList = new ArrayList<>();
-    private DBAdapter dbAdapter;
 
-
-    public static RestaurantManager getInstance(Context c) {
+    public static RestaurantManager getInstance() {
         if (instance == null) {
-            instance = new RestaurantManager(c);
+            instance = new RestaurantManager();
         }
 
         return instance;
@@ -55,19 +48,14 @@ public class RestaurantManager {
         return restaurantList.get(index);
     }
 
-    private RestaurantManager(Context c) {
-//        readFromCSV(c);
-//        sortByRestaurantName();
+    private RestaurantManager() {
     }
 
     public void readRestaurantFromNewCSV(Context c) {
         restaurantList = new ArrayList<>();
-        //InputStream is = c.getResources().openRawResource(R.raw.restaurants);
 
         File path = c.getFilesDir();
         File file = new File(path, "restaurants.csv");
-
-
 
         String line = "";
         try {
@@ -78,7 +66,7 @@ public class RestaurantManager {
             final int SET_PHYSICALCITY = 3;
             final int SET_FACT_TYPE = 4;
             final int SET_LATITUDE_TYPE = 5;
-            final int SET_LONGITUDE= 6;
+            final int SET_LONGITUDE = 6;
 
             int length = (int) file.length();
             byte[] bytes = new byte[length];
@@ -90,17 +78,11 @@ public class RestaurantManager {
                 in.close();
             }
 
-            String contents = new String(bytes);
             InputStream is = new ByteArrayInputStream(bytes);
-//            Log.d("CONTENTS_RESTAURANTS", " size" + contents.length());
-//            Log.d("CONTENTS_RESTAURANTS", contents);
 
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(is, Charset.forName("UTF-8"))
             );
-
-
-           // SWOD-AG5UGV,"Green Indian Cuisine, Pizza & Sweets",12565 88 Ave,Surrey,Restaurant,49.16401631,-122.874781
 
             // Step over headers
             reader.readLine();
@@ -109,8 +91,8 @@ public class RestaurantManager {
 
                 Restaurant restaurant = new Restaurant();
 
-                String []tokensEdge = line.split("\"");
-                if(tokensEdge.length > 1) {
+                String[] tokensEdge = line.split("\"");
+                if (tokensEdge.length > 1) {
                     String trackingNum = tokensEdge[0].replaceAll(",", "");
                     restaurant.setTrackingNumber(trackingNum);
                     restaurant.setName(tokensEdge[1]);
@@ -126,8 +108,7 @@ public class RestaurantManager {
                     restaurant.setLatitude(Double.parseDouble(tokensEdgeRest[4]));
 
                     restaurant.setLatitude(Double.parseDouble(tokensEdgeRest[5]));
-                }
-                else{
+                } else {
                     String[] tokens = line.split(",");
 
                     // Read the data
@@ -150,8 +131,6 @@ public class RestaurantManager {
                             replace("\"", ""));
 
                     if (tokens[SET_LATITUDE_TYPE].length() > 0) {
-                        Log.d("RestaurantManager",tokens[SET_LATITUDE_TYPE]);
-                        Log.d("RestaurantManager","Line is " + line);
                         restaurant.setLatitude(Double.parseDouble(tokens[SET_LATITUDE_TYPE]));
                     } else {
                         restaurant.setLatitude(0);
@@ -174,28 +153,11 @@ public class RestaurantManager {
     }
 
     public void readInspectionsFromNewCSV(Context c) {
-
-
-        //InputStream is = c.getResources().openRawResource(R.raw.inspectionreports);
         File path = c.getFilesDir();
         File file = new File(path, "inspectionreports.csv");
 
         String line = "";
         try {
-
-
-            //   NDAA-8RNNVR,20190412,Routine,0,2,
-            //   "306,Not Critical,Food premises not maintained in a sanitary condition
-            //   [s. 17(1)],Not Repeat|308,Not Critical,Equipment/utensils/food contact surfaces are
-            //   not in good working order [s. 16(b)],Not Repeat",Moderate
-
-            final int TRACKING_NUM_INDEX = 1;
-            final int DATE_INDEX = 2;
-            final int INSPECTION_TYPE_INDEX = 3;
-            final int CRITICAL_INDEX = 4;
-            final int HAZARD_INDEX = 5;
-            final int VIOLATIONS_LUMP_INDEX = 7;
-
             int length = (int) file.length();
 
             byte[] bytes = new byte[length];
@@ -207,15 +169,11 @@ public class RestaurantManager {
                 in.close();
             }
 
-            String contents = new String(bytes);
             InputStream is = new ByteArrayInputStream(bytes);
-//            Log.d("CONTENTS_INSPECTIONS", " size" + contents.length());
-//            Log.d("CONTENTS_INSPECTIONS", contents);
 
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(is, Charset.forName("UTF-8"))
             );
-
 
             // Step over headers
             reader.readLine();
@@ -223,20 +181,18 @@ public class RestaurantManager {
                 Inspection inspection = new Inspection();
 
                 // Even newer splitting method
-                //NDAA-9DNQLJ,20180924,Follow-Up,0,0,,Low
-                //HCAR-BKDQCL,20200127,Routine,1,0,"302,Critical,Equipment/utensils/food contact surfaces not properly washed and sanitized [s. 17(2)],Not Repeat",Low
-                String [] tokens = line.split("\"");
+                String[] tokens = line.split("\"");
 
-                String [] tokensFirstHalf = tokens[0].split(",");
+                String[] tokensFirstHalf = tokens[0].split(",");
 
-                if (tokensFirstHalf.length == 0){
+                if (tokensFirstHalf.length == 0) {
                     continue;
                 }
                 String trackingNum = tokensFirstHalf[0];
 
-                if(tokens.length > 1){
-                    for(Restaurant r : restaurantList){
-                        if(r.getTrackingNumber().equals(trackingNum)){
+                if (tokens.length > 1) {
+                    for (Restaurant r : restaurantList) {
+                        if (r.getTrackingNumber().equals(trackingNum)) {
                             String datetoAdd = tokensFirstHalf[1];
                             inspection.setInspectionDate(datetoAdd);
 
@@ -249,9 +205,9 @@ public class RestaurantManager {
                             int numOfNonCritical = Integer.parseInt(tokensFirstHalf[4]);
                             inspection.setNumNonCritical(numOfNonCritical);
 
-                            if(numOfCritical + numOfNonCritical != 0){
+                            if (numOfCritical + numOfNonCritical != 0) {
                                 String[] violations = tokens[1].split("\\|");
-                                for(String violationPossibility: violations){
+                                for (String violationPossibility : violations) {
                                     String violation = violationPossibility.substring(0, 3);
                                     inspection.addViolation(Integer.parseInt(violation));
                                 }
@@ -259,10 +215,9 @@ public class RestaurantManager {
 
                             String hazardLevel = tokens[2];
                             hazardLevel = hazardLevel.replace(",", "");
-                            if(hazardLevel.length() > 1){
+                            if (hazardLevel.length() > 1) {
                                 inspection.setHazardRating(hazardLevel);
-                            }
-                            else{
+                            } else {
                                 inspection.setHazardRating("Low");
                             }
 
@@ -271,81 +226,34 @@ public class RestaurantManager {
                         }
 
                     }
-                }
-                else{
+                } else {
+                    String[] tokensSplit = tokens[0].split(",");
+                    trackingNum = tokensSplit[0];
 
-                    // NDAA-8RNNVR,20181017,Routine,0,0,,Low
-                    String [] tokensSplit = tokens[0].split(",");
-                     trackingNum = tokensSplit[0];
+                    for (Restaurant r : restaurantList) {
+                        if (r.getTrackingNumber().equals(trackingNum)) {
+                            String dateToAdd = tokensSplit[1];
+                            inspection.setInspectionDate(dateToAdd);
 
-                     for(Restaurant r : restaurantList){
-                         if(r.getTrackingNumber().equals(trackingNum)){
-                             String dateToAdd = tokensSplit[1];
-                             inspection.setInspectionDate(dateToAdd);
+                            String inspectionType = tokensSplit[2];
+                            inspection.setInspType(inspectionType);
 
-                             String inspectionType = tokensSplit[2];
-                             inspection.setInspType(inspectionType);
+                            inspection.setNumNonCritical(Integer.parseInt(tokensSplit[3]));
+                            inspection.setNumCritical(Integer.parseInt(tokensSplit[4]));
+                            if (tokensSplit.length == 7) {
+                                inspection.setHazardRating(tokensSplit[6]);
+                            } else {
+                                //csv has no hazard rating
+                                inspection.setHazardRating("Low");
+                            }
 
-                             inspection.setNumNonCritical(Integer.parseInt(tokensSplit[3]));
-                             inspection.setNumCritical(Integer.parseInt(tokensSplit[4]));
-                             if (tokensSplit.length == 7){
-                                 inspection.setHazardRating(tokensSplit[6]);
-                             } else {
-                                 //csv has no hazard rating
-                                 inspection.setHazardRating("Low");
-                             }
+                            r.addInspection(inspection);
+                            break;
 
-
-                             r.addInspection(inspection);
-                             break;
-
-                         }
-                     }
+                        }
+                    }
 
                 }
-
-
-//                String[] tokens = line.split("\"");
-//                String trackingNum = tokens[TRACKING_NUM_INDEX];
-//                for(Restaurant r: restaurantList){
-//                    Log.d("Main Activity", " Found right restaurant");
-//                    if(r.getTrackingNumber().equals(trackingNum)){
-//                        String dateToAdd = tokens[DATE_INDEX];
-//                        dateToAdd = dateToAdd.substring(1, dateToAdd.length() - 1);
-//                        inspection.setInspectionDate(dateToAdd);
-//
-//                        String inspectionType = tokens[INSPECTION_TYPE_INDEX];
-//                        inspection.setInspType(inspectionType);
-//
-//                        String valuesForCritical = tokens[CRITICAL_INDEX];
-//                        valuesForCritical = valuesForCritical.replaceAll(",","");
-//
-//                        char charNumNonCrit = valuesForCritical.charAt(0);
-//                        String numNonCrit = Character.toString(charNumNonCrit);
-//
-//                        char charNumCrit = valuesForCritical.charAt(1);
-//                        String numCrit = Character.toString(charNumCrit);
-//
-//                        inspection.setNumNonCritical(Integer.parseInt(numNonCrit));
-//                        inspection.setNumCritical(Integer.parseInt(numCrit));
-//
-//                        String hazardRating = tokens[HAZARD_INDEX];
-//                        inspection.setHazardRating(hazardRating);
-//
-//                        if(Integer.parseInt(numNonCrit) + Integer.parseInt(numCrit) > 0){
-//                            String[] violations = tokens[VIOLATIONS_LUMP_INDEX].split("\\|");
-//
-//                            for(String violationPossibility: violations){
-//                                String violation = violationPossibility.substring(0, 3);
-//                               inspection.addViolation(Integer.parseInt(violation));
-//                            }
-//
-//                        }
-//
-//                        r.addInspection(inspection);
-//
-//                    }
-//                }
 
             }
 
@@ -372,7 +280,7 @@ public class RestaurantManager {
             final int SET_PHYSICALCITY = 3;
             final int SET_FACT_TYPE = 4;
             final int SET_LATITUDE_TYPE = 5;
-            final int SET_LONGITUDE= 6;
+            final int SET_LONGITUDE = 6;
 
             // Step over headers
             reader.readLine();
@@ -445,8 +353,8 @@ public class RestaurantManager {
                 // Even newer splitting method
                 String[] tokens = line.split("\"");
                 String trackingNum = tokens[TRACKING_NUM_INDEX];
-                for(Restaurant r: restaurantList){
-                    if(r.getTrackingNumber().equals(trackingNum)){
+                for (Restaurant r : restaurantList) {
+                    if (r.getTrackingNumber().equals(trackingNum)) {
                         String dateToAdd = tokens[DATE_INDEX];
                         dateToAdd = dateToAdd.substring(1, dateToAdd.length() - 1);
                         inspection.setInspectionDate(dateToAdd);
@@ -455,7 +363,7 @@ public class RestaurantManager {
                         inspection.setInspType(inspectionType);
 
                         String valuesForCritical = tokens[CRITICAL_INDEX];
-                        valuesForCritical = valuesForCritical.replaceAll(",","");
+                        valuesForCritical = valuesForCritical.replaceAll(",", "");
 
                         char charNumNonCrit = valuesForCritical.charAt(0);
                         String numNonCrit = Character.toString(charNumNonCrit);
@@ -469,10 +377,10 @@ public class RestaurantManager {
                         String hazardRating = tokens[HAZARD_INDEX];
                         inspection.setHazardRating(hazardRating);
 
-                        if(Integer.parseInt(numNonCrit) + Integer.parseInt(numCrit) > 0){
+                        if (Integer.parseInt(numNonCrit) + Integer.parseInt(numCrit) > 0) {
                             String[] violations = tokens[VIOLATIONS_LUMP_INDEX].split("\\|");
 
-                            for(String violationPossibility: violations){
+                            for (String violationPossibility : violations) {
                                 String violation = violationPossibility.substring(0, 3);
                                 inspection.addViolation(Integer.parseInt(violation));
                             }
@@ -494,8 +402,6 @@ public class RestaurantManager {
     }
 
 
-
-
     public void sortByRestaurantName() {
         Comparator<Restaurant> comparatorName = new Comparator<Restaurant>() {
             @Override
@@ -507,21 +413,10 @@ public class RestaurantManager {
         Collections.sort(restaurantList, comparatorName);
     }
 
-    public void sortByRestaurantNameDescending() {
-        Comparator<Restaurant> comparatorName = new Comparator<Restaurant>() {
-            @Override
-            public int compare(Restaurant r1, Restaurant r2) {
-                return r2.getName().compareTo(r1.getName());
-            }
-        };
-
-        Collections.sort(restaurantList, comparatorName);
-    }
-
     public void sortInspections() {
         for (Restaurant r : restaurantList) {
             r.sortByInspectionDate();
         }
     }
-    
+
 }

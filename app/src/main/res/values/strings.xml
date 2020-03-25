@@ -56,6 +56,17 @@
     <string name="inspectionTypeNotInput">Inspection Type:</string>
     <string name="dateOfInspection">TextView</string>
     <string name="attribution_links">
+                    Logos: \n
+                    <a href="https://company.timhortons.com/us/en/corporate/multimedia.php?type=0&amp;category=logo">timhortons.com</a>\n
+                    <a href="https://www.qsrmagazine.com/news/get-glimpse-subways-brand-new-logo-branding">qsrmagazine.com/subway</a>\n
+                    <a href="https://en.wikipedia.org/wiki/Starbucks">wikipedia.org/Starbucks</a>\n
+                    <a href="https://ca.indeed.com/cmp/Save-On-Foods/reviews?fcountry=CA&amp;floc=Surrey%2C+BC">indeed.com</a>\n
+                    <a href="https://sco.wikipedia.org/wiki/File:Pizza_Hut_logo.svg">wikipedia.org</a>\n
+                    <a href="https://rogersarena.com/hospitality/panago-logo/">rogersarena.com</a>\n
+                    <a href="https://news.mcdonalds.com/token-logo">mcdonalds.com</a>\n
+                    <a href="https://leeyuenseafoodrestaurant.com/">leeyuenseafoodrestaurant.com</a>\n
+                    <a href="https://en.wikipedia.org/wiki/Blenz_Coffee#/media/File:Blenz_Coffee_Logo.jpg">wikipedia.org</a>\n
+                    \n
                     AdapterView OnClickListener\n
                     <a href="https://www.youtube.com/watch?v=69C1ljfDvl0&amp;t=441s">youtube.com</a>\n
                     \n

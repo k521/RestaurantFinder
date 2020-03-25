@@ -1,4 +1,4 @@
-package videodemos.example.restaurantinspector.UI;
+package videodemos.example.restaurantinspector.UI.Adapters;
 
 
 import android.content.Context;

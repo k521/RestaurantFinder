@@ -1,8 +1,7 @@
-package videodemos.example.restaurantinspector.UI;
+package videodemos.example.restaurantinspector.UI.Adapters;
 
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

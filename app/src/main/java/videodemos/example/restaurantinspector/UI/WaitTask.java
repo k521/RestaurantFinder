@@ -1,10 +1,10 @@
 package videodemos.example.restaurantinspector.UI;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.fragment.app.FragmentManager;
+
+import videodemos.example.restaurantinspector.UI.Dialogs.WaitFragment;
 
 class WaitTask extends AsyncTask<Void, Void,  String[]> {
 

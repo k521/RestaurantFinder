@@ -3,37 +3,24 @@ package videodemos.example.restaurantinspector.UI;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import org.joda.time.DateTime;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import videodemos.example.restaurantinspector.Model.DBAdapter;
-import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
-import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
+import videodemos.example.restaurantinspector.UI.Adapters.RestaurantsAdapter;
 
 /**
  * Main Activity displays all the restaurants.
@@ -53,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantsAdapte
 
         setupToolbar();
 
-        manager = RestaurantManager.getInstance(this);
+        manager = RestaurantManager.getInstance();
 
         setUpRestaurantsRecylerView();
 

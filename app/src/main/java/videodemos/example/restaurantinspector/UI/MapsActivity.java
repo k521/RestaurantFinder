@@ -14,16 +14,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -31,7 +28,6 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -45,7 +41,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.android.clustering.view.ClusterRenderer;
 
 import org.joda.time.DateTime;
 
@@ -61,11 +56,14 @@ import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
+import videodemos.example.restaurantinspector.UI.Dialogs.NewDataFragment;
 import videodemos.example.restaurantinspector.Utilities.MyClusterManagerRenderer;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<ClusterMarker>, ClusterManager.OnClusterInfoWindowClickListener<ClusterMarker>,
         ClusterManager.OnClusterItemClickListener<ClusterMarker>, ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker>{
+
+    public static boolean comeFromInspectionList = false;
 
     private final String RESTAURANT_URL = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
     private final String INSPECTION_URL = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
@@ -94,14 +92,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Boolean mLocationPermissionsGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;     // dependency:     implementation 'com.google.android.gms:play-services-location:15.0.1'
 
+    private boolean isComingFromGPS = false;
 
     private SharedPreferences preferences;
-    private RestaurantManager manager;
+    private RestaurantManager manager = RestaurantManager.getInstance();;
+
+    private boolean haveCoordinatesBeenSet = false;
 
     public static Intent makeIntent(Context c){
         Intent intent = new Intent(c,MapsActivity.class);
         return intent;
     }
+
     public static Intent makeGPSIntent(Context c, double latitude, double longitude){
         Intent intent = new Intent(c,MapsActivity.class);
         intent.putExtra("lat", latitude);
@@ -126,6 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+
     private void setupToolbar() {
         ImageButton helpButton = findViewById(R.id.ib_restaurant_help_icon);
         helpButton.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +151,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void setupRestaurantManager(){
-        manager = RestaurantManager.getInstance(this);
         if (isDataDefaultVersion()){
             // Call old method for csv parsing
             manager.readRestaurantFromOldCSV(this);
@@ -403,26 +405,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()),
                     DEFAULT_ZOOM,
                     address.getAddressLine(0) );
-            //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    //private ClusterManager mClusterManager;
-    //  private MyClusterManagerRenderer mClusterManagerRenderer;
-//    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d("MapActivity","onMapReadyCalled");
-        RestaurantManager manager = RestaurantManager.getInstance(this);
         mMap = googleMap;
 
         mClusterManager = new ClusterManager<ClusterMarker>(this, getMap());
@@ -454,8 +444,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void readItems() {
-        //mClusterManager.setRenderer(mClusterManagerRenderer);
-        RestaurantManager manager = RestaurantManager.getInstance(this);
         for (Restaurant restaurant : manager.getRestaurantList()) {
             int markerID;
             String hazardRating;
@@ -478,7 +466,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
                     "blank",
                     markerID,
-                    restaurant
+                    restaurant.getTrackingNumber()
             );
 
             mClusterManager.addItem(newClusterMarker);
@@ -558,14 +546,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Intent intent = getIntent();
                             double latitude = intent.getDoubleExtra("lat", -999.0);
                             double longitude = intent.getDoubleExtra("long", -999.0);
-                            if(latitude != -999.0 && longitude != -999.0){
 
+                            if (latitude != -999.0 && longitude != -999.0 && comeFromInspectionList) {
+
+                                isComingFromGPS = true;
                                 LatLng currGPS = new LatLng(latitude, longitude);
                                 ClusterMarker foundMarker = new ClusterMarker();
                                 int index = 0;
-                                for(ClusterMarker marker: mClusterMarkers){
+                                for (ClusterMarker marker : mClusterMarkers) {
 
-                                    if(marker.getPosition().equals(currGPS)){
+                                    if (marker.getPosition().equals(currGPS)) {
                                         foundMarker = marker;
                                         break;
                                     }
@@ -578,6 +568,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         DEFAULT_ZOOM, foundMarker.getTitle());
                                 mark.showInfoWindow();
 
+
                                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                                     @Override
                                     public void onInfoWindowClick(Marker marker) {
@@ -586,11 +577,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     }
                                 });
 
+                                comeFromInspectionList = false;
 
-                            }else{
+                            } else {
                                 moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                         DEFAULT_ZOOM, "My location");
                             }
+
+
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
@@ -662,29 +656,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onClusterItemInfoWindowClick(ClusterMarker item) {
-        RestaurantManager manager = RestaurantManager.getInstance(this);
-        Restaurant r = item.getRestaurant();
+        String trackingNumber = item.getTrackingNumber();
         int index = 0;
         for(int i = 0; i < manager.getRestaurantList().size();i++){
             Restaurant rInQuestion = manager.getRestaurant(i);
-            if(rInQuestion.getTrackingNumber().equals(r.getTrackingNumber())){
+            if(rInQuestion.getTrackingNumber().equals(trackingNumber)){
                 index = i;
                 break;
             }
         }
 
-        Intent intent = RestaurantReportActivity.makeIntent(this, index);
-        startActivity(intent);
+        if(isComingFromGPS){
+            finish();
+        }else{
+            Intent intent = RestaurantReportActivity.makeIntent(this, index);
+            startActivity(intent);
+        }
 
     }
 
 
     @Override
     public boolean onClusterClick(Cluster<ClusterMarker> cluster) {
-        // Show a toast with some info when the cluster is clicked.
-        String firstName = cluster.getItems().iterator().next().getRestaurant().getName();
-        // Toast.makeText(this, cluster.getSize() + " (including " + firstName + ")", Toast.LENGTH_SHORT).show();
-
         // Zoom in the cluster. Need to create LatLngBounds and including all the cluster items
         // inside of bounds, then animate to center of the bounds.
 
@@ -706,15 +699,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        RestaurantManager manager = RestaurantManager.getInstance(this);
-        manager.getRestaurantList().clear();
 
-        finish();
-
-
-    }
 
     //endregion Interface Override methods
 }
