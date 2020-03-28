@@ -20,6 +20,8 @@ public class Restaurant {
     private String factype;
     private double latitude;
     private double longitude;
+    private boolean isFavourite;
+    private boolean isVisible;
 
     private List<Inspection> inspections = new ArrayList<>();
 
@@ -78,6 +80,25 @@ public class Restaurant {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+    }
+
+
+    public boolean isFavourite() {
+        return isFavourite;
+    }
+
+    public void setFavourite(boolean favourite) {
+        isFavourite = favourite;
+    }
+
 
 
     public void addInspection(Inspection i) {
