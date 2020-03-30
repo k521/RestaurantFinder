@@ -107,6 +107,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SharedPreferences preferences;
     private RestaurantManager manager = RestaurantManager.getInstance();;
 
+    //TODO: Add favourite restaurants to the HashMap before updating the csv
+
     public static Intent makeIntent(Context c){
         Intent intent = new Intent(c,MapsActivity.class);
         return intent;

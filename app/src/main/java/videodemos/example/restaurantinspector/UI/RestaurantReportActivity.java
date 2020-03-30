@@ -7,10 +7,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
@@ -33,6 +38,9 @@ public class RestaurantReportActivity extends AppCompatActivity
     }
 
 
+    private final String PREFERENCES = "data";
+    private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
+    private SharedPreferences preferences;
     private int indexOfRestaurant;
     private Restaurant restaurant;
 
@@ -64,16 +72,55 @@ public class RestaurantReportActivity extends AppCompatActivity
     }
 
     private void setupToolbar() {
-        Toolbar toolbar = findViewById(R.id.restaurant_report_toolbar);
-        setSupportActionBar(toolbar);
-
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        ImageButton backButton = findViewById(R.id.ib_back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+
+
+        ToggleButton favouriteButton = findViewById(R.id.tb_favourite);
+
+        favouriteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if (checked){
+                    favouriteButton.setBackgroundResource(R.drawable.ic_star_filled_24dp);
+                    setRestaurantToFavourite();
+                } else {
+                    favouriteButton.setBackgroundResource(R.drawable.ic_star_border_24dp);
+                    restaurant.setFavourite(false);
+                }
+            }
+        });
+
+        if (restaurant.isFavourite()){
+            favouriteButton.setChecked(true);
+        }
+    }
+
+    private void setRestaurantToFavourite(){
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        restaurant.setFavourite(true);
+
+        String listOfTrackingNums = getFavouriteRestaurantsTrackingNumbers();
+        if (listOfTrackingNums.equals("")){
+            listOfTrackingNums = restaurant.getTrackingNumber();
+        } else {
+            listOfTrackingNums += "," + restaurant.getTrackingNumber();
+        }
+
+        editor.putString(TAG_TRACKING_NUMBER_LIST, listOfTrackingNums);
+        editor.apply();
+    }
+
+    private String getFavouriteRestaurantsTrackingNumbers(){
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        return preferences.getString(TAG_TRACKING_NUMBER_LIST, "");
     }
 
     private void setupRestaurantInfoTextViews() {

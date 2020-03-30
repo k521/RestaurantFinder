@@ -3,6 +3,7 @@ package videodemos.example.restaurantinspector.UI;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,6 +31,10 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
     private static final String TAG = "ListRestaurantActivity";
 
+    private final String PREFERENCES = "data";
+    private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
+
+    private SharedPreferences preferences;
     private RestaurantManager manager;
 
     public static Intent makeIntent(Context c) {
@@ -48,6 +53,23 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         setUpRestaurantsRecylerView();
 
+        Log.d("Favorites", getFavouriteRestaurantsTrackingNumbers());
+
+        Toast.makeText(this, getFavouriteRestaurantsTrackingNumbers(), Toast.LENGTH_LONG).show();
+        //clearFavouriteSharedPreferences();
+
+    }
+
+    private void clearFavouriteSharedPreferences(){
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(TAG_TRACKING_NUMBER_LIST, "");
+        editor.apply();
+    }
+
+    private String getFavouriteRestaurantsTrackingNumbers(){
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        return preferences.getString(TAG_TRACKING_NUMBER_LIST, "");
     }
 
     private void setupToolbar() {

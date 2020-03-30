@@ -1,6 +1,7 @@
 package videodemos.example.restaurantinspector.Model;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -23,6 +24,8 @@ import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.R;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * A class that holds and loads the list of restaurants.
  */
@@ -39,6 +42,10 @@ public class RestaurantManager {
 
         return instance;
     }
+
+    private final String PREFERENCES = "data";
+    private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
+    private SharedPreferences preferences;
 
     public List<Restaurant> getRestaurantList() {
         return restaurantList;
@@ -143,6 +150,10 @@ public class RestaurantManager {
                     }
                 }
 
+                String favourites = getFavouriteRestaurantsTrackingNumbers(c);
+                if (favourites.contains(restaurant.getTrackingNumber())){
+                    restaurant.setFavourite(true);
+                }
                 restaurantList.add(restaurant);
 
             }
@@ -320,6 +331,10 @@ public class RestaurantManager {
                     restaurant.setLongitude(0);
                 }
 
+                String favourites = getFavouriteRestaurantsTrackingNumbers(c);
+                if (favourites.contains(restaurant.getTrackingNumber())){
+                    restaurant.setFavourite(true);
+                }
                 restaurantList.add(restaurant);
 
             }
@@ -417,6 +432,11 @@ public class RestaurantManager {
         for (Restaurant r : restaurantList) {
             r.sortByInspectionDate();
         }
+    }
+
+    private String getFavouriteRestaurantsTrackingNumbers(Context c){
+        preferences = c.getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        return preferences.getString(TAG_TRACKING_NUMBER_LIST, "");
     }
 
 }

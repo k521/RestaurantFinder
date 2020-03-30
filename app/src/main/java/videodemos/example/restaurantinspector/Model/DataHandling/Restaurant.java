@@ -20,7 +20,7 @@ public class Restaurant {
     private String factype;
     private double latitude;
     private double longitude;
-    private boolean isFavourite;
+    private boolean isFavourite = false;
     private boolean isVisible;
 
     private List<Inspection> inspections = new ArrayList<>();
