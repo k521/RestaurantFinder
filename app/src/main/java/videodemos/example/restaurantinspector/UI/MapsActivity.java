@@ -484,9 +484,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         searchedClusterManager.cluster();
-        if(searchString.equals("")){
-            clusterManager.cluster();
-        }
+
 
         if(locationPermissionsGranted){
             Log.d(TAG, "Executing: getDeviceLocation() function");
@@ -499,6 +497,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             map.getUiSettings().setZoomControlsEnabled(true);
 
             init();
+        }
+
+        if(searchString.equals("")){
+            clusterManager.cluster();
         }
 
     }
