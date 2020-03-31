@@ -105,7 +105,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean isComingFromGPS = false;
 
     private SharedPreferences preferences;
-    private RestaurantManager manager = RestaurantManager.getInstance();;
+    private RestaurantManager manager = RestaurantManager.getInstance();
+
+
 
     //TODO: Add favourite restaurants to the HashMap before updating the csv
 
@@ -345,6 +347,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public String[] getBodiesFromServer(){
+        storeFavouriteRestaurants();
+
         loadCSVsFromServer();
         String restaurantBody = loadRestaurantsFromServer();
         String inspectionsBody = loadInspectionsFromServer();
@@ -352,6 +356,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String[] bodies = {restaurantBody, inspectionsBody};
 
         return bodies;
+    }
+
+    private void storeFavouriteRestaurants() {
+        for (Restaurant r : manager.getRestaurantList()){
+            if (r.isFavourite()){
+                manager.insertIntoFavouritesMap(r.getTrackingNumber(), r.getInspections().get(0));
+            }
+        }
     }
 
     private void writeDataOnCsvFiles(String restaurantBody, String inspectionsBody) {

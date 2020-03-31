@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
@@ -34,6 +35,7 @@ public class RestaurantManager {
 
     public static RestaurantManager instance;
     private List<Restaurant> restaurantList = new ArrayList<>();
+    private HashMap<String, Inspection> favouritesMap = new HashMap<>();
 
     public static RestaurantManager getInstance() {
         if (instance == null) {
@@ -53,6 +55,14 @@ public class RestaurantManager {
 
     public Restaurant getRestaurant(int index) {
         return restaurantList.get(index);
+    }
+
+    public void insertIntoFavouritesMap(String trackingNumber, Inspection latestInspection){
+        favouritesMap.put(trackingNumber, latestInspection);
+    }
+
+    public boolean isFavouritesMapEmpty(){
+        return favouritesMap.isEmpty();
     }
 
     private RestaurantManager() {
@@ -414,6 +424,21 @@ public class RestaurantManager {
             e.printStackTrace();
         }
 
+    }
+
+
+    public void removeNonNewRestaurantInspections(){
+        for (Restaurant r : restaurantList){
+            String key = r.getTrackingNumber();
+            if (favouritesMap.containsKey(key)){
+                Inspection latestInspectionFromOldData = favouritesMap.get(key);
+                Inspection latestInspectionFromNewData = r.getInspections().get(0);
+
+                if (latestInspectionFromOldData.getInspectionDate().equals(latestInspectionFromNewData.getInspectionDate())){
+                    favouritesMap.remove(key);
+                }
+            }
+        }
     }
 
 

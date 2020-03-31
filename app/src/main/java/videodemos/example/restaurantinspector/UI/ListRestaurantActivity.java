@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,7 +28,7 @@ import videodemos.example.restaurantinspector.UI.Adapters.RestaurantsAdapter;
  * Main Activity displays all the restaurants.
  */
 
-public class ListRestaurantActivity extends AppCompatActivity implements RestaurantsAdapter.OnRestaurantListener {
+public class ListRestaurantActivity extends AppCompatActivity implements RestaurantsAdapter.OnRestaurantListener, SearchView.OnQueryTextListener{
 
     private static final String TAG = "ListRestaurantActivity";
 
@@ -53,11 +54,24 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         setUpRestaurantsRecylerView();
 
+        updateNewInspectionMap();
+        checkForNewFavInspections();
+
         Log.d("Favorites", getFavouriteRestaurantsTrackingNumbers());
 
         Toast.makeText(this, getFavouriteRestaurantsTrackingNumbers(), Toast.LENGTH_LONG).show();
         //clearFavouriteSharedPreferences();
 
+    }
+
+    private void checkForNewFavInspections() {
+        if (!manager.isFavouritesMapEmpty()){
+            //TODO: inflate fragment here
+        }
+    }
+
+    private void updateNewInspectionMap() {
+        manager.removeNonNewRestaurantInspections();
     }
 
     private void clearFavouriteSharedPreferences(){
@@ -120,5 +134,15 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     public void onBackPressed() {
         super.onBackPressed();
         manager.getRestaurantList().clear();
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
     }
 }
