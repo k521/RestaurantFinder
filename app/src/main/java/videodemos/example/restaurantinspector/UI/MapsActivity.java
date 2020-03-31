@@ -424,21 +424,83 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String searchString = searchText.getText().toString();
 
         Geocoder geocoder = new Geocoder(MapsActivity.this);
-        List<Address> list = new ArrayList<>();
-        try{
-            list = geocoder.getFromLocationName(searchString,1);
-        }catch (IOException e){
-            Log.e(TAG,"geoLocate: IOException: " + e.getMessage());
+//        List<Address> list = new ArrayList<>();
+//        try{
+//            list = geocoder.getFromLocationName(searchString,1);
+//        }catch (IOException e){
+//            Log.e(TAG,"geoLocate: IOException: " + e.getMessage());
+//        }
+//
+//        if(list.size() > 0){
+//            Address address = list.get(0);
+//
+//            Log.d(TAG, "geoLocate:found a location:" + address.toString());
+//            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()),
+//                    DEFAULT_ZOOM,
+//                    address.getAddressLine(0) );
+//        }
+
+        map.clear();
+        ClusterManager<ClusterMarker> searchedClusterManager;
+        List<ClusterMarker> searchedClusterMarkers = new ArrayList<>();
+
+        searchedClusterManager = new ClusterManager<ClusterMarker>(this, getMap());
+        searchedClusterManager.setRenderer(new MyClusterManagerRenderer(this, map, searchedClusterManager));
+        getMap().setOnCameraIdleListener(searchedClusterManager);
+        getMap().setOnMarkerClickListener(searchedClusterManager);
+        getMap().setOnInfoWindowClickListener(searchedClusterManager);
+        searchedClusterManager.setOnClusterClickListener(this);
+        searchedClusterManager.setOnClusterItemInfoWindowClickListener(this);
+
+        for (Restaurant restaurant : manager.getRestaurantList()) {
+            if (restaurant.getName().toLowerCase().contains(searchString)) {
+                int markerID;
+                String hazardRating;
+                if (restaurant.getInspections().isEmpty()) {
+                    hazardRating = "No hazards";
+                } else {
+                    hazardRating = restaurant.getInspections().get(0).getHazardRating();
+                }
+
+                if (hazardRating.equals("High")) {
+                    markerID = R.drawable.criticality_high_icon;
+                } else if (hazardRating.equals("Moderate")) {
+                    markerID = R.drawable.criticality_medium_icon;
+                } else {
+                    markerID = R.drawable.criticality_low_icon;
+                }
+                ClusterMarker newClusterMarker = new ClusterMarker(
+
+                        new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+                        restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                        "blank",
+                        markerID,
+                        restaurant.getTrackingNumber()
+                );
+
+                searchedClusterManager.addItem(newClusterMarker);
+                searchedClusterMarkers.add(newClusterMarker);
+            }
         }
 
-        if(list.size() > 0){
-            Address address = list.get(0);
-
-            Log.d(TAG, "geoLocate:found a location:" + address.toString());
-            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()),
-                    DEFAULT_ZOOM,
-                    address.getAddressLine(0) );
+        searchedClusterManager.cluster();
+        if(searchString.equals("")){
+            clusterManager.cluster();
         }
+
+        if(locationPermissionsGranted){
+            Log.d(TAG, "Executing: getDeviceLocation() function");
+            getDeviceLocation();
+            map.setMyLocationEnabled(true);
+
+            //UI settings
+            map.getUiSettings().setMyLocationButtonEnabled(false);
+            map.getUiSettings().setAllGesturesEnabled(true);
+            map.getUiSettings().setZoomControlsEnabled(true);
+
+            init();
+        }
+
     }
 
     @Override
