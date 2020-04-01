@@ -87,10 +87,10 @@ public class RestaurantReportActivity extends AppCompatActivity
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked){
-                    favouriteButton.setBackgroundResource(R.drawable.ic_star_filled_24dp);
+                    favouriteButton.setBackgroundResource(R.drawable.star_filled);
                     setRestaurantToFavourite();
                 } else {
-                    favouriteButton.setBackgroundResource(R.drawable.ic_star_border_24dp);
+                    favouriteButton.setBackgroundResource(R.drawable.star_empty);
                     restaurant.setFavourite(false);
                 }
             }

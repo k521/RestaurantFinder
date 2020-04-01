@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
@@ -27,6 +28,7 @@ import videodemos.example.restaurantinspector.R;
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
 
     private List<Restaurant> restaurantDataset;
+    private List<Restaurant> restaurantsCopy = new ArrayList<>();
     private Context context;
     private OnRestaurantListener onRestaurantListener;
 
@@ -64,6 +66,8 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         this.restaurantDataset = restaurantDataset;
         this.context = context;
         this.onRestaurantListener = onRestaurantListener;
+
+        restaurantsCopy.addAll(restaurantDataset);
     }
 
     @Override
@@ -153,6 +157,21 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                 .inflate(R.layout.restaurant_item, parent, false);
 
         return new RestaurantsViewHolder(view, onRestaurantListener);
+    }
+
+    public void filter(String text) {
+        restaurantDataset.clear();
+        if(text.isEmpty()){
+            restaurantDataset.addAll(restaurantsCopy);
+        } else{
+            text = text.toLowerCase();
+            for(Restaurant r : restaurantsCopy){
+                if(r.getName().toLowerCase().contains(text)){
+                    restaurantDataset.add(r);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     public interface OnRestaurantListener {

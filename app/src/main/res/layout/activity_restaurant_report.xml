@@ -36,7 +36,11 @@
             android:id="@+id/tb_favourite"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/ic_star_border_24dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/star_empty"
             android:checked="false"
             android:text="ToggleButton"
             android:textOff=" "
@@ -51,6 +55,7 @@
             android:id="@+id/ib_back_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline12"
             app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent=".8" />
+            app:layout_constraintGuide_percent="0.85" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

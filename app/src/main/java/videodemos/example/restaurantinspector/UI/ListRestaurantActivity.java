@@ -9,10 +9,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +28,7 @@ import videodemos.example.restaurantinspector.UI.Adapters.RestaurantsAdapter;
  * Main Activity displays all the restaurants.
  */
 
-public class ListRestaurantActivity extends AppCompatActivity implements RestaurantsAdapter.OnRestaurantListener, SearchView.OnQueryTextListener{
+public class ListRestaurantActivity extends AppCompatActivity implements RestaurantsAdapter.OnRestaurantListener{
 
     private static final String TAG = "ListRestaurantActivity";
 
@@ -37,6 +37,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
     private SharedPreferences preferences;
     private RestaurantManager manager;
+    private RestaurantsAdapter restaurantsAdapter;
 
     public static Intent makeIntent(Context c) {
         Intent intent = new Intent(c, ListRestaurantActivity.class);
@@ -54,6 +55,8 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         setUpRestaurantsRecylerView();
 
+        setupSearchView();
+
         updateNewInspectionMap();
         checkForNewFavInspections();
 
@@ -62,6 +65,31 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         Toast.makeText(this, getFavouriteRestaurantsTrackingNumbers(), Toast.LENGTH_LONG).show();
         //clearFavouriteSharedPreferences();
 
+    }
+
+    private void setupSearchView() {
+        SearchView searchView = findViewById(R.id.sv_restaurant_list);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                restaurantsAdapter.filter(query);
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                restaurantsAdapter.filter(newText);
+                return true;
+            }
+        });
+
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchView.setIconified(false);
+            }
+        });
     }
 
     private void checkForNewFavInspections() {
@@ -119,7 +147,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         restaurantsRecyclerView.setLayoutManager(layoutManager);
 
-        RestaurantsAdapter restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
+        restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
         restaurantsRecyclerView.setAdapter(restaurantsAdapter);
 
     }
@@ -136,13 +164,4 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         manager.getRestaurantList().clear();
     }
 
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
-    }
 }

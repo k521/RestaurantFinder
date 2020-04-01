@@ -75,6 +75,14 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <View
+        android:id="@+id/v_separator"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintTop_toBottomOf="@id/sv_restaurant_list"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_restaurant_list"
         android:layout_width="0dp"
@@ -83,13 +91,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/listSearchView" />
+        app:layout_constraintTop_toBottomOf="@+id/v_separator" />
 
     <SearchView
-        android:id="@+id/listSearchView"
+        android:id="@+id/sv_restaurant_list"
         android:layout_width="0dp"
         android:layout_height="36dp"
-        android:layout_marginTop="1dp"
+        android:background="@drawable/searchview_background"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restaurant_list_toolbar" />
