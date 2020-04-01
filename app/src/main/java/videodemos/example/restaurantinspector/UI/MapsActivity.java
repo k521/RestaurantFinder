@@ -595,11 +595,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         DEFAULT_ZOOM, foundMarker.getTitle());
                                 mark.showInfoWindow();
 
+                                final String trackingNum = foundMarker.getTrackingNumber();
+
 
                                 map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                                     @Override
                                     public void onInfoWindowClick(Marker marker) {
-                                        Intent intent = RestaurantReportActivity.makeIntent(MapsActivity.this, fIndex);
+                                        Intent intent = RestaurantReportActivity.makeIntent(MapsActivity.this,trackingNum);
                                         startActivity(intent);
                                     }
                                 });
@@ -685,7 +687,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(isComingFromGPS){
             finish();
         }else{
-            Intent intent = RestaurantReportActivity.makeIntent(this, index);
+            Intent intent = RestaurantReportActivity.makeIntent(this, trackingNumber);
             startActivity(intent);
         }
 

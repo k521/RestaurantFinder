@@ -25,24 +25,29 @@ public class RestaurantReportActivity extends AppCompatActivity
 
     private static final String RESTAURANT_INDEX = "RESTAURANT_INDEX";
 
-    public static Intent makeIntent(Context context, int indexOfRestaurant){
+    public static Intent makeIntent(Context context, String trackingNumber){
         Intent intent = new Intent(context, RestaurantReportActivity.class);
-        intent.putExtra(RESTAURANT_INDEX, indexOfRestaurant);
+        intent.putExtra(RESTAURANT_INDEX, trackingNumber);
 
         return intent;
     }
 
 
-    private int indexOfRestaurant;
+    private String trackingNumber;
     private Restaurant restaurant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        indexOfRestaurant = getIntent().getIntExtra(RESTAURANT_INDEX, 0);
+        trackingNumber = getIntent().getStringExtra(RESTAURANT_INDEX);
         RestaurantManager manager = RestaurantManager.getInstance();
-        restaurant = manager.getRestaurant(indexOfRestaurant);
+        for(Restaurant r : manager.getRestaurantList()){
+            if(r.getTrackingNumber().equals(trackingNumber)){
+                restaurant = r;
+                break;
+            }
+        }
 
         if (restaurant.getInspections().isEmpty()){
             setContentView(R.layout.activity_restaurant_report_empty);
@@ -100,9 +105,9 @@ public class RestaurantReportActivity extends AppCompatActivity
 
     @Override
     public void onInspectionClick(int position) {
-        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +
-                " Inspect Index " + position);
-        Intent intent = InspectionReportActivity.makeIntent(this,indexOfRestaurant,position);
+//        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +
+//                " Inspect Index " + position);
+        Intent intent = InspectionReportActivity.makeIntent(this,trackingNumber,position);
         startActivity(intent);
 
     }
