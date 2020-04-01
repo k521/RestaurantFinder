@@ -21,7 +21,8 @@ public class Restaurant {
     private double latitude;
     private double longitude;
     private boolean isFavourite = false;
-    private boolean isVisible;
+    private boolean isVisible = true;
+
 
     private List<Inspection> inspections = new ArrayList<>();
 

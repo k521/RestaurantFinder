@@ -15,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
@@ -30,14 +31,15 @@ public class RestaurantReportActivity extends AppCompatActivity
 
     private static final String RESTAURANT_INDEX = "RESTAURANT_INDEX";
 
-    public static Intent makeIntent(Context context, int indexOfRestaurant){
+    public static Intent makeIntent(Context context, String trackingNumber){
         Intent intent = new Intent(context, RestaurantReportActivity.class);
-        intent.putExtra(RESTAURANT_INDEX, indexOfRestaurant);
+        intent.putExtra(RESTAURANT_INDEX, trackingNumber);
 
         return intent;
     }
 
 
+    private String trackingNumber;
     private final String PREFERENCES = "data";
     private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
     private SharedPreferences preferences;
@@ -48,9 +50,14 @@ public class RestaurantReportActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        indexOfRestaurant = getIntent().getIntExtra(RESTAURANT_INDEX, 0);
+        trackingNumber = getIntent().getStringExtra(RESTAURANT_INDEX);
         RestaurantManager manager = RestaurantManager.getInstance();
-        restaurant = manager.getRestaurant(indexOfRestaurant);
+        for(Restaurant r : manager.getRestaurantList()){
+            if(r.getTrackingNumber().equals(trackingNumber)){
+                restaurant = r;
+                break;
+            }
+        }
 
         if (restaurant.getInspections().isEmpty()){
             setContentView(R.layout.activity_restaurant_report_empty);
@@ -64,10 +71,8 @@ public class RestaurantReportActivity extends AppCompatActivity
     }
 
     public void onGpsClick(View v){
-        double latitude = restaurant.getLatitude();
-        double longitude = restaurant.getLongitude();
         MapsActivity.comeFromInspectionList = true;
-        Intent intent = MapsActivity.makeGPSIntent(this, latitude, longitude);
+        Intent intent = MapsActivity.makeGPSIntent(this, restaurant.getTrackingNumber());
         startActivity(intent);
     }
 
@@ -147,9 +152,9 @@ public class RestaurantReportActivity extends AppCompatActivity
 
     @Override
     public void onInspectionClick(int position) {
-        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +
-                " Inspect Index " + position);
-        Intent intent = InspectionReportActivity.makeIntent(this,indexOfRestaurant,position);
+//        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +
+//                " Inspect Index " + position);
+        Intent intent = InspectionReportActivity.makeIntent(this,trackingNumber,position);
         startActivity(intent);
 
     }

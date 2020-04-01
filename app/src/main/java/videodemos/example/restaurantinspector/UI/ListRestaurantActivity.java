@@ -1,6 +1,5 @@
 package videodemos.example.restaurantinspector.UI;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -17,9 +17,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+import java.util.ArrayList;
+import java.util.List;
 
+import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
+import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.UI.Adapters.RestaurantsAdapter;
@@ -36,8 +38,11 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
 
     private SharedPreferences preferences;
+    private List<Restaurant> filteredList = new ArrayList<>();
+
     private RestaurantManager manager;
     private RestaurantsAdapter restaurantsAdapter;
+    RecyclerView.LayoutManager layoutManager;
 
     public static Intent makeIntent(Context c) {
         Intent intent = new Intent(c, ListRestaurantActivity.class);
@@ -53,7 +58,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         manager = RestaurantManager.getInstance();
 
-        setUpRestaurantsRecylerView();
+        setUpRestaurantsRecylerView(true);
 
         setupSearchView();
 
@@ -72,14 +77,14 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                restaurantsAdapter.filter(query);
+                restaurantsAdapter.filterByName(query);
                 searchView.clearFocus();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                restaurantsAdapter.filter(newText);
+                restaurantsAdapter.filterByName(newText);
                 return true;
             }
         });
@@ -139,22 +144,29 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         });
     }
 
-    private void setUpRestaurantsRecylerView() {
+    private void setUpRestaurantsRecylerView(boolean useManager) {
         RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
 
         restaurantsRecyclerView.setHasFixedSize(true);
         restaurantsRecyclerView.setItemViewCacheSize(20);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager = new LinearLayoutManager(this);
         restaurantsRecyclerView.setLayoutManager(layoutManager);
 
-        restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
-        restaurantsRecyclerView.setAdapter(restaurantsAdapter);
+        if(useManager){
+            restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
+            restaurantsRecyclerView.setAdapter(restaurantsAdapter);
+        }
+        else{
+            restaurantsAdapter = new RestaurantsAdapter(filteredList, this, this);
+            restaurantsRecyclerView.setAdapter(restaurantsAdapter);
+        }
+
 
     }
 
     @Override
-    public void onRestaurantClick(int position) {
-        Intent intent = RestaurantReportActivity.makeIntent(this, position);
+    public void onRestaurantClick(String trackingNumber) {
+        Intent intent = RestaurantReportActivity.makeIntent(this, trackingNumber);
         startActivity(intent);
     }
 
@@ -164,4 +176,43 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         manager.getRestaurantList().clear();
     }
 
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.filterLow:
+                if (checked)
+                    filterRestaurantList("Low");
+                    setUpRestaurantsRecylerView(false);
+                    break;
+            case R.id.filterModerate:
+                if (checked)
+                    filterRestaurantList("Moderate");
+                    setUpRestaurantsRecylerView(false);
+                    break;
+            case R.id.filterHigh:
+                if(checked)
+                    filterRestaurantList("High");
+                    setUpRestaurantsRecylerView(false);
+                    break;
+        }
+
+    }
+
+    public void filterRestaurantList(String hazardLevel){
+        filteredList.clear();
+        for(Restaurant r : manager.getRestaurantList()){
+            if(r.getInspections().isEmpty()){
+                Log.d("ListActivity",r.getName() + " has no inspections");
+                continue;
+            }
+            Inspection mostRecentInspection = r.getInspections().get(0);
+            if(mostRecentInspection.getHazardRating().equals(hazardLevel)){
+                //r.setVisible(false);
+                filteredList.add(r);
+            }
+        }
+    }
 }

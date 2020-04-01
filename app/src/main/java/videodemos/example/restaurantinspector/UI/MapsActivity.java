@@ -72,6 +72,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static final String TAG_EXTRA_LAT = "lat";
     public static final String TAG_EXTRA_LONG = "long";
+    public static final String TAG_EXTRA_TRACKING_NUMBER = "tracking number";
     public static boolean comeFromInspectionList = false;
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
@@ -116,10 +117,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
-    public static Intent makeGPSIntent(Context c, double latitude, double longitude){
+    public static Intent makeGPSIntent(Context c, String trackingNumber){
         Intent intent = new Intent(c,MapsActivity.class);
-        intent.putExtra(TAG_EXTRA_LAT, latitude);
-        intent.putExtra(TAG_EXTRA_LONG, longitude);
+        intent.putExtra(TAG_EXTRA_TRACKING_NUMBER, trackingNumber);
         return intent;
     }
 
@@ -585,35 +585,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Location currentLocation = (Location) task.getResult();
 
                             Intent intent = getIntent();
-                            double latitude = intent.getDoubleExtra("lat", -999.0);
-                            double longitude = intent.getDoubleExtra("long", -999.0);
+                            String trackingNumberFromIntent = intent.getStringExtra(TAG_EXTRA_TRACKING_NUMBER);
 
-                            if (latitude != -999.0 && longitude != -999.0 && comeFromInspectionList) {
+                            if (comeFromInspectionList) {
 
                                 isComingFromGPS = true;
-                                LatLng currGPS = new LatLng(latitude, longitude);
                                 ClusterMarker foundMarker = new ClusterMarker();
                                 int index = 0;
                                 for (ClusterMarker marker : clusterMarkers) {
 
-                                    if (marker.getPosition().equals(currGPS)) {
+                                    if (marker.getTrackingNumber().equals(trackingNumberFromIntent)) {
                                         foundMarker = marker;
                                         break;
                                     }
                                     index++;
                                 }
 
+                                LatLng currGPS = foundMarker.getPosition();
+
                                 final int fIndex = index;
                                 Marker mark = map.addMarker(new MarkerOptions().position(currGPS).title(foundMarker.getTitle()).snippet(foundMarker.getSnippet()));
-                                moveCamera(new LatLng(latitude, longitude),
+                                moveCamera(currGPS,
                                         DEFAULT_ZOOM, foundMarker.getTitle());
                                 mark.showInfoWindow();
 
+                                final String trackingNum = foundMarker.getTrackingNumber();
+
+                                Toast.makeText(MapsActivity.this, foundMarker.getTrackingNumber() , Toast.LENGTH_LONG).show();
 
                                 map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                                     @Override
                                     public void onInfoWindowClick(Marker marker) {
-                                        Intent intent = RestaurantReportActivity.makeIntent(MapsActivity.this, fIndex);
+                                        Intent intent = RestaurantReportActivity.makeIntent(MapsActivity.this,trackingNum);
                                         startActivity(intent);
                                     }
                                 });
@@ -699,7 +702,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(isComingFromGPS){
             finish();
         }else{
-            Intent intent = RestaurantReportActivity.makeIntent(this, index);
+            Intent intent = RestaurantReportActivity.makeIntent(this, trackingNumber);
             startActivity(intent);
         }
 
