@@ -48,6 +48,8 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
     boolean isHazardLevelFilterOn = false;
 
+    boolean isOneFilterOn = false;
+
     private List<Restaurant> filteredList = new ArrayList<>();
 
     private List <Restaurant> filteredList2 = new ArrayList<>();
@@ -147,7 +149,8 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
                     }
                 }
                 if(numOfCriticFound > criticalViolations){
-                    filteredList.remove(i);
+                    //filteredList.remove(i);
+                    filteredList2.add(r);
                 }
             }
 
@@ -195,7 +198,13 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
             restaurantsRecyclerView.setAdapter(restaurantsAdapter);
         }
         else{
-            restaurantsAdapter = new RestaurantsAdapter(filteredList, this, this);
+            if(isOneFilterOn){
+                restaurantsAdapter = new RestaurantsAdapter(filteredList, this, this);
+                restaurantsRecyclerView.setAdapter(restaurantsAdapter);
+                isOneFilterOn = false;
+            }
+
+            restaurantsAdapter = new RestaurantsAdapter(filteredList2, this, this);
             restaurantsRecyclerView.setAdapter(restaurantsAdapter);
         }
 
@@ -216,7 +225,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
     public void onRadioButtonClicked(View view) {
         // Check to see if the other filter is on
-
+        isOneFilterOn = true;
         TextView filterText = findViewById(R.id.filterInput);
         String content = filterText.getText().toString();
         isHazardLevelFilterOn = true;
