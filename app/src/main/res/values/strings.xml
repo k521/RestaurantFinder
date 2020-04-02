@@ -176,5 +176,11 @@
     <string name="title_activity_maps">Map</string>
     <string name="new_data_available">There is a new update available.\nWould you like to download it now?</string>
     <string name="downloading">Please Wait\nDownloading..</string>
+    <string name="low">Low</string>
+    <string name="moderate">Moderate</string>
+    <string name="high">High</string>
+    <string name="number_of_violations_less_than_or_equal">Number of Violations less than or equal</string>
+    <string name="none">None</string>
+    <string name="hazard_level_filter">Hazard Level Filter:</string>
 
 </resources>

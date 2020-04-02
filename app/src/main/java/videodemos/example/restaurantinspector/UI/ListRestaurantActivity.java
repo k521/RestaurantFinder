@@ -6,10 +6,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.SearchView;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,14 +20,24 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
 import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.UI.Adapters.RestaurantsAdapter;
+import android.view.View.OnKeyListener;
+import android.view.View;
+import android.view.KeyEvent;
+import android.widget.ToggleButton;
+
 
 /**
  * Main Activity displays all the restaurants.
@@ -38,7 +51,8 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
 
     private SharedPreferences preferences;
-    private List<Restaurant> filteredList = new ArrayList<>();
+
+
 
     private RestaurantManager manager;
     private RestaurantsAdapter restaurantsAdapter;
@@ -51,6 +65,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_restaurant);
 
@@ -58,7 +73,10 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         manager = RestaurantManager.getInstance();
 
-        setUpRestaurantsRecylerView(true);
+        setupCriticalFilter();
+        setupFavouriteFilter();
+
+        setUpRestaurantsRecylerView();
 
         setupSearchView();
 
@@ -67,9 +85,61 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         Log.d("Favorites", getFavouriteRestaurantsTrackingNumbers());
 
-        Toast.makeText(this, getFavouriteRestaurantsTrackingNumbers(), Toast.LENGTH_LONG).show();
         //clearFavouriteSharedPreferences();
+    }
 
+    private void setupFavouriteFilter() {
+        Switch favouritesSwitch = findViewById(R.id.sw_filter_favourites);
+        favouritesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                restaurantsAdapter.filterByFavourites(isChecked);
+            }
+        });
+    }
+
+    private void setupCriticalFilter() {
+        TextView filterText = findViewById(R.id.filterInput);
+
+        filterText.setOnKeyListener(new OnKeyListener() {
+            public boolean onKey(View view, int keyCode, KeyEvent keyevent) {
+                //If the keyevent is a key-down event on the "enter" button
+                if ((keyevent.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    //...
+                    // Perform your action on key press here
+                    // ...
+                    Toast.makeText(ListRestaurantActivity.this,"Enter detected",Toast.LENGTH_SHORT).show();
+                    filterEditText();
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        ToggleButton toggleCompare = findViewById(R.id.tb_greater_or_lesser);
+        toggleCompare.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                filterEditText();
+            }
+        });
+
+    }
+
+    private void filterEditText(){
+        TextView filterText = findViewById(R.id.filterInput);
+        String content = filterText.getText().toString();
+
+        boolean isGreaterThan = true;
+        ToggleButton toggleComparison = findViewById(R.id.tb_greater_or_lesser);
+        Toast.makeText(this, toggleComparison.getText(), Toast.LENGTH_SHORT).show();
+
+        if (toggleComparison.isChecked()){
+            isGreaterThan = false;
+        }
+
+        restaurantsAdapter.filterByCriticalViolations(content, isGreaterThan);
     }
 
     private void setupSearchView() {
@@ -144,7 +214,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         });
     }
 
-    private void setUpRestaurantsRecylerView(boolean useManager) {
+    private void setUpRestaurantsRecylerView() {
         RecyclerView restaurantsRecyclerView = findViewById(R.id.rv_restaurant_list);
 
         restaurantsRecyclerView.setHasFixedSize(true);
@@ -152,15 +222,8 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         layoutManager = new LinearLayoutManager(this);
         restaurantsRecyclerView.setLayoutManager(layoutManager);
 
-        if(useManager){
-            restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
-            restaurantsRecyclerView.setAdapter(restaurantsAdapter);
-        }
-        else{
-            restaurantsAdapter = new RestaurantsAdapter(filteredList, this, this);
-            restaurantsRecyclerView.setAdapter(restaurantsAdapter);
-        }
-
+        restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
+        restaurantsRecyclerView.setAdapter(restaurantsAdapter);
 
     }
 
@@ -177,42 +240,32 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     }
 
     public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
 
         // Check which radio button was clicked
         switch(view.getId()) {
             case R.id.filterLow:
                 if (checked)
-                    filterRestaurantList("Low");
-                    setUpRestaurantsRecylerView(false);
+                    restaurantsAdapter.filterByHazardLevel("Low");
                     break;
             case R.id.filterModerate:
                 if (checked)
-                    filterRestaurantList("Moderate");
-                    setUpRestaurantsRecylerView(false);
+                    restaurantsAdapter.filterByHazardLevel("Moderate");
                     break;
             case R.id.filterHigh:
                 if(checked)
-                    filterRestaurantList("High");
-                    setUpRestaurantsRecylerView(false);
+                    restaurantsAdapter.filterByHazardLevel("High");
                     break;
+            case R.id.filterNone:
+                if (checked){
+                    restaurantsAdapter.filterByHazardLevel("none");
+                    break;
+                }
         }
 
     }
 
-    public void filterRestaurantList(String hazardLevel){
-        filteredList.clear();
-        for(Restaurant r : manager.getRestaurantList()){
-            if(r.getInspections().isEmpty()){
-                Log.d("ListActivity",r.getName() + " has no inspections");
-                continue;
-            }
-            Inspection mostRecentInspection = r.getInspections().get(0);
-            if(mostRecentInspection.getHazardRating().equals(hazardLevel)){
-                //r.setVisible(false);
-                filteredList.add(r);
-            }
-        }
-    }
+
+
+
 }

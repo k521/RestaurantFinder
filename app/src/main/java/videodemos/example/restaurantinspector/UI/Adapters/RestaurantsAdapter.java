@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -29,7 +30,11 @@ import videodemos.example.restaurantinspector.R;
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
 
     private List<Restaurant> restaurantDataset;
-    private List<Restaurant> restaurantsCopy = new ArrayList<>();
+    private List<Restaurant> restaurantsFullList = new ArrayList<>();
+    private boolean[] restaurantsHazardFilter;
+    private boolean[] restaurantsTextFilter;
+    private boolean[] restaurantsCriticalFilter;
+    private boolean[] restaurantsFavourites;
     private Context context;
     private OnRestaurantListener onRestaurantListener;
 
@@ -58,6 +63,16 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             favouriteIcon = itemView.findViewById(R.id.iv_card_favourite);
             this.onRestaurantListener = onRestaurantListener;
 
+            restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
+            restaurantsTextFilter = new boolean[restaurantsFullList.size()];
+            restaurantsCriticalFilter = new boolean[restaurantsFullList.size()];
+            restaurantsFavourites = new boolean[restaurantsFullList.size()];
+
+            setAllValuesToTrue(restaurantsHazardFilter);
+            setAllValuesToTrue(restaurantsTextFilter);
+            setAllValuesToTrue(restaurantsCriticalFilter);
+            setAllValuesToTrue(restaurantsFavourites);
+
             itemView.setOnClickListener(this);
 
         }
@@ -76,7 +91,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         this.context = context;
         this.onRestaurantListener = onRestaurantListener;
 
-        restaurantsCopy.addAll(restaurantDataset);
+        restaurantsFullList.addAll(restaurantDataset);
     }
 
     @Override
@@ -177,37 +192,128 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
     }
 
     public void filterByName(String text) {
-        restaurantDataset.clear();
+
+        restaurantsTextFilter = new boolean[restaurantsFullList.size()];
+
         if(text.isEmpty()){
-            restaurantDataset.addAll(restaurantsCopy);
+            setAllValuesToTrue(restaurantsTextFilter);
         } else{
             text = text.toLowerCase();
-            for(Restaurant r : restaurantsCopy){
+            for (int i = 0; i < restaurantsFullList.size(); i++){
+                Restaurant r = restaurantsFullList.get(i);
+
                 if(r.getName().toLowerCase().contains(text)){
-                    restaurantDataset.add(r);
+                    restaurantsTextFilter[i] = true;
                 }
             }
         }
-        //notifyDataSetChanged();
-        notifyItemRangeChanged(0, restaurantDataset.size());
+
+        filterAll();
     }
 
-//    public void filterByHazardLevel(String hazardLevel){
-//        //filteredList.clear();
-//        for(Restaurant r : manager.getRestaurantList()){
-//            if(r.getInspections().isEmpty()){
-//                Log.d("ListActivity",r.getName() + " has no inspections");
-//                continue;
-//            }
-//            Inspection mostRecentInspection = r.getInspections().get(0);
-//            if(mostRecentInspection.getHazardRating().equals(hazardLevel)){
-//                //r.setVisible(false);
-//                filteredList.add(r);
-//            }
-//        }
-//
-//        notifyDataSetChanged();
-//    }
+    public void filterByFavourites(boolean doFilter){
+        restaurantsFavourites = new boolean[restaurantsFullList.size()];
+
+        if (!doFilter){
+            setAllValuesToTrue(restaurantsFavourites);
+            filterAll();
+            return;
+        }
+
+        for (int i = 0; i < restaurantsFullList.size(); i++){
+            if (restaurantsFullList.get(i).isFavourite()){
+                restaurantsFavourites[i] = true;
+            }
+        }
+
+        filterAll();
+    }
+
+
+    public void filterByHazardLevel(String hazardLevel){
+
+        restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
+
+        if (hazardLevel.equals("none")){
+            setAllValuesToTrue(restaurantsHazardFilter);
+            filterAll();
+            return;
+        }
+
+        for (int i = 0; i < restaurantsFullList.size(); i++){
+            Restaurant r = restaurantsFullList.get(i);
+
+            if(r.getInspections().isEmpty()){
+                Log.d("ListActivity",r.getName() + " has no inspections");
+                continue;
+            }
+            Inspection mostRecentInspection = r.getInspections().get(0);
+            if(mostRecentInspection.getHazardRating().equals(hazardLevel)){
+                //r.setVisible(false);
+                restaurantsHazardFilter[i] = true;
+            }
+        }
+
+        filterAll();
+
+    }
+
+    public void filterByCriticalViolations(String criticalViolations, boolean isGreaterThan){
+
+        restaurantsCriticalFilter = new boolean[restaurantsFullList.size()];
+
+        if (criticalViolations.isEmpty()) {
+            setAllValuesToTrue(restaurantsCriticalFilter);
+            filterAll();
+            return;
+        }
+
+        int criticalViolation = Integer.parseInt(criticalViolations);
+
+        for (int j = 0; j < restaurantsFullList.size(); j++){
+            Restaurant r = restaurantsFullList.get(j);
+            int numOfCriticalViolationsFound = 0;
+            for(Inspection i : r.getInspections()){
+                String dateOfInspection = i.getInspectionDate();
+                DateCalculations dc = new DateCalculations();
+                int numOfDays = dc.daysInBetween(dateOfInspection);
+                if(numOfDays <= 365){
+                    numOfCriticalViolationsFound += i.getNumCritical();
+                }
+                else{
+                    break;
+                }
+            }
+            if(isGreaterThan && numOfCriticalViolationsFound >= criticalViolation){
+                Log.d("ListActivity",r.getName() + " : " + numOfCriticalViolationsFound);
+                restaurantsCriticalFilter[j] = true;
+            } else if (!isGreaterThan && numOfCriticalViolationsFound <= criticalViolation){
+                restaurantsCriticalFilter[j] = true;
+            }
+        }
+
+        filterAll();
+    }
+
+
+    private void setAllValuesToTrue(boolean[] list){
+        for (int i = 0; i < list.length; i++){
+            list[i] = true;
+        }
+    }
+
+    private void filterAll(){
+        restaurantDataset.clear();
+        for (int i = 0; i < restaurantsFullList.size(); i++){
+            if (restaurantsHazardFilter[i] && restaurantsTextFilter[i]
+                    && restaurantsCriticalFilter[i] && restaurantsFavourites[i]){
+                restaurantDataset.add(restaurantsFullList.get(i));
+            }
+        }
+
+        //notifyItemRangeChanged(0, restaurantsFullList.size());
+        notifyDataSetChanged();
+    }
 
     public interface OnRestaurantListener {
         void onRestaurantClick(String trackingNumber);
