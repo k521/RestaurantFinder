@@ -44,6 +44,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         ImageView hazardIcon;
         CardView cardViewBackground;
         ImageView restaurantIcon;
+        ImageView favouriteIcon;
         OnRestaurantListener onRestaurantListener;
 
         public RestaurantsViewHolder(View itemView, OnRestaurantListener onRestaurantListener) {
@@ -54,6 +55,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             cardViewBackground = itemView.findViewById(R.id.cv_restaurant_card);
             hazardIcon = itemView.findViewById(R.id.iv_card_hazard_icon);
             restaurantIcon = itemView.findViewById(R.id.iv_restaurant_icon);
+            favouriteIcon = itemView.findViewById(R.id.iv_card_favourite);
             this.onRestaurantListener = onRestaurantListener;
 
             itemView.setOnClickListener(this);
@@ -156,6 +158,13 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                     break;
                 }
             }
+
+            if (restaurantInQuestion.isFavourite()){
+                holder.favouriteIcon.setVisibility(View.VISIBLE);
+                holder.favouriteIcon.setImageResource(R.drawable.star_filled);
+            } else {
+                holder.favouriteIcon.setVisibility(View.INVISIBLE);
+            }
     }
 
     @NonNull
@@ -179,7 +188,8 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                 }
             }
         }
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
+        notifyItemRangeChanged(0, restaurantDataset.size());
     }
 
 //    public void filterByHazardLevel(String hazardLevel){
