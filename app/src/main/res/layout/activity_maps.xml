@@ -79,8 +79,10 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restaurant_list_toolbar"
+        app:layout_constraintVertical_bias="1.0"
         tools:context=".UI.MapsActivity" />
 
     <RelativeLayout
@@ -108,7 +110,7 @@
             android:id="@+id/input_search"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="3dp"
+            android:layout_marginLeft="-15dp"
             android:layout_toRightOf="@id/ic_magnify"
             android:background="@null"
             android:hint="Enter Address, City or Zip Code"
@@ -129,6 +131,49 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_gps"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relLayout1" />
+
+
+    <RadioGroup
+        android:layout_width="224dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toStartOf="@+id/getViolations"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/map"
+        app:layout_constraintTop_toBottomOf="@+id/relLayout1">
+
+        <RadioButton
+            android:id="@+id/lowRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Low " />
+
+        <RadioButton
+            android:id="@+id/moderateRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Moderate " />
+
+        <RadioButton
+            android:id="@+id/highRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="High" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/getViolations"
+        android:layout_width="61dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:hint="Max Violations"
+        android:inputType="number"
+        app:layout_constraintEnd_toStartOf="@+id/ic_gps"
         app:layout_constraintTop_toBottomOf="@+id/relLayout1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

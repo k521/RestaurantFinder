@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -141,7 +141,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchText = findViewById(R.id.input_search);
         gps = findViewById(R.id.ic_gps);
 
+
+
     }
+
+
+
 
     public boolean isServicesOK(){
         Log.d(TAG, "isServicesOK: checking google services version");
@@ -389,6 +394,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return map;
     }
 
+    private String violationType = "";
+    private int maxCritical = 564983;
+    private void radioClickAndViolations() {
+
+        EditText numViolations = findViewById(R.id.getViolations);
+        RadioButton lowRadio = findViewById(R.id.lowRadio);
+        RadioButton moderateRadio = findViewById(R.id.moderateRadio);
+        RadioButton highRadio = findViewById(R.id.highRadio);
+
+        if(lowRadio.isChecked()){
+            violationType = "Low";
+        }else if(moderateRadio.isChecked()){
+            violationType = "Moderate";
+        }else if(highRadio.isChecked()){
+            violationType = "High";
+        }
+
+        if(!numViolations.getText().toString().matches("")) {
+            maxCritical = Integer.parseInt(numViolations.getText().toString());
+        }
+
+    }
+
     private void init(){
         Log.d(TAG, "init: initializing");
 
@@ -402,11 +430,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //action goes here:
                     geoLocate();
                 }
-
                 return false;
             }
         });
-
         gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -414,7 +440,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getDeviceLocation();
             }
         });
-
         hideSoftKeyboard();
     }
 
@@ -422,6 +447,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d(TAG, "geoLocate: geolocating");
 
         String searchString = searchText.getText().toString();
+        radioClickAndViolations();
 
         Geocoder geocoder = new Geocoder(MapsActivity.this);
 //        List<Address> list = new ArrayList<>();
@@ -453,7 +479,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchedClusterManager.setOnClusterItemInfoWindowClickListener(this);
 
         for (Restaurant restaurant : manager.getRestaurantList()) {
-            if (restaurant.getName().toLowerCase().contains(searchString)) {
+            if (searchString.equals("") && violationType.equals("") && maxCritical == 564983) {
                 int markerID;
                 String hazardRating;
                 if (restaurant.getInspections().isEmpty()) {
@@ -480,11 +506,229 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 searchedClusterManager.addItem(newClusterMarker);
                 searchedClusterMarkers.add(newClusterMarker);
+            } else if (!searchString.equals("") && violationType.equals("") && maxCritical == 564983) {
+                if (restaurant.getName().toLowerCase().contains(searchString)) {
+                    int markerID;
+                    String hazardRating;
+                    if (restaurant.getInspections().isEmpty()) {
+                        hazardRating = "No hazards";
+                    } else {
+                        hazardRating = restaurant.getInspections().get(0).getHazardRating();
+                    }
+
+                    if (hazardRating.equals("High")) {
+                        markerID = R.drawable.criticality_high_icon;
+                    } else if (hazardRating.equals("Moderate")) {
+                        markerID = R.drawable.criticality_medium_icon;
+                    } else {
+                        markerID = R.drawable.criticality_low_icon;
+                    }
+                    ClusterMarker newClusterMarker = new ClusterMarker(
+
+                            new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+                            restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                            "blank",
+                            markerID,
+                            restaurant.getTrackingNumber()
+                    );
+
+                    searchedClusterManager.addItem(newClusterMarker);
+                    searchedClusterMarkers.add(newClusterMarker);
+                }
+            } else if (searchString.equals("") && !violationType.equals("") && maxCritical == 564983) {
+                if(!restaurant.getInspections().isEmpty()){
+                    if (restaurant.getInspections().get(0).getHazardRating().equals(violationType)) {
+                        int markerID;
+                        String hazardRating;
+                        if (restaurant.getInspections().isEmpty()) {
+                            hazardRating = "No hazards";
+                        } else {
+                            hazardRating = restaurant.getInspections().get(0).getHazardRating();
+                        }
+
+                        if (hazardRating.equals("High")) {
+                            markerID = R.drawable.criticality_high_icon;
+                        } else if (hazardRating.equals("Moderate")) {
+                            markerID = R.drawable.criticality_medium_icon;
+                        } else {
+                            markerID = R.drawable.criticality_low_icon;
+                        }
+                        ClusterMarker newClusterMarker = new ClusterMarker(
+
+                                new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+                                restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                                "blank",
+                                markerID,
+                                restaurant.getTrackingNumber()
+                        );
+
+                        searchedClusterManager.addItem(newClusterMarker);
+                        searchedClusterMarkers.add(newClusterMarker);
+                    }
+                } else if (searchString.equals("") && violationType.equals("") && maxCritical != 564983) {
+                    if(!restaurant.getInspections().isEmpty()) {
+                        if (restaurant.getInspections().get(0).getNumCritical() <= maxCritical) {
+                            int markerID;
+                            String hazardRating;
+                            if (restaurant.getInspections().isEmpty()) {
+                                hazardRating = "No hazards";
+                            } else {
+                                hazardRating = restaurant.getInspections().get(0).getHazardRating();
+                            }
+
+                            if (hazardRating.equals("High")) {
+                                markerID = R.drawable.criticality_high_icon;
+                            } else if (hazardRating.equals("Moderate")) {
+                                markerID = R.drawable.criticality_medium_icon;
+                            } else {
+                                markerID = R.drawable.criticality_low_icon;
+                            }
+                            ClusterMarker newClusterMarker = new ClusterMarker(
+
+                                    new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+                                    restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                                    "blank",
+                                    markerID,
+                                    restaurant.getTrackingNumber()
+                            );
+
+                            searchedClusterManager.addItem(newClusterMarker);
+                            searchedClusterMarkers.add(newClusterMarker);
+                        }
+                    }
+                } else if (!searchString.equals("") && !violationType.equals("") && maxCritical == 564983) {
+                    if(!restaurant.getInspections().isEmpty()) {
+                        if (restaurant.getName().toLowerCase().contains(searchString)
+                                && restaurant.getInspections().get(0).getHazardRating().equals(violationType)) {
+                            int markerID;
+                            String hazardRating;
+                            if (restaurant.getInspections().isEmpty()) {
+                                hazardRating = "No hazards";
+                            } else {
+                                hazardRating = restaurant.getInspections().get(0).getHazardRating();
+                            }
+
+                            if (hazardRating.equals("High")) {
+                                markerID = R.drawable.criticality_high_icon;
+                            } else if (hazardRating.equals("Moderate")) {
+                                markerID = R.drawable.criticality_medium_icon;
+                            } else {
+                                markerID = R.drawable.criticality_low_icon;
+                            }
+                            ClusterMarker newClusterMarker = new ClusterMarker(
+
+                                    new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+                                    restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                                    "blank",
+                                    markerID,
+                                    restaurant.getTrackingNumber()
+                            );
+
+                            searchedClusterManager.addItem(newClusterMarker);
+                            searchedClusterMarkers.add(newClusterMarker);
+                        }
+                    }
+                } else if (!searchString.equals("") && violationType.equals("") && maxCritical != 564983) {
+                    if(!restaurant.getInspections().isEmpty()) {
+                        if (restaurant.getName().toLowerCase().contains(searchString)
+                                && restaurant.getInspections().get(0).getNumCritical() <= maxCritical) {
+                            int markerID;
+                            String hazardRating;
+                            if (restaurant.getInspections().isEmpty()) {
+                                hazardRating = "No hazards";
+                            } else {
+                                hazardRating = restaurant.getInspections().get(0).getHazardRating();
+                            }
+
+                            if (hazardRating.equals("High")) {
+                                markerID = R.drawable.criticality_high_icon;
+                            } else if (hazardRating.equals("Moderate")) {
+                                markerID = R.drawable.criticality_medium_icon;
+                            } else {
+                                markerID = R.drawable.criticality_low_icon;
+                            }
+                            ClusterMarker newClusterMarker = new ClusterMarker(
+
+                                    new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+                                    restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                                    "blank",
+                                    markerID,
+                                    restaurant.getTrackingNumber()
+                            );
+
+                            searchedClusterManager.addItem(newClusterMarker);
+                            searchedClusterMarkers.add(newClusterMarker);
+                        }
+                    }
+                }else if (searchString.equals("") && !violationType.equals("") && maxCritical != 564983) {
+                    if(!restaurant.getInspections().isEmpty()) {
+                        if (restaurant.getInspections().get(0).getHazardRating().equals(violationType)
+                                && restaurant.getInspections().get(0).getNumCritical() <= maxCritical) {
+                            int markerID;
+                            String hazardRating;
+                            if (restaurant.getInspections().isEmpty()) {
+                                hazardRating = "No hazards";
+                            } else {
+                                hazardRating = restaurant.getInspections().get(0).getHazardRating();
+                            }
+
+                            if (hazardRating.equals("High")) {
+                                markerID = R.drawable.criticality_high_icon;
+                            } else if (hazardRating.equals("Moderate")) {
+                                markerID = R.drawable.criticality_medium_icon;
+                            } else {
+                                markerID = R.drawable.criticality_low_icon;
+                            }
+                            ClusterMarker newClusterMarker = new ClusterMarker(
+
+                                    new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+                                    restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                                    "blank",
+                                    markerID,
+                                    restaurant.getTrackingNumber()
+                            );
+
+                            searchedClusterManager.addItem(newClusterMarker);
+                            searchedClusterMarkers.add(newClusterMarker);
+                        }
+                    }
+                }else if (!searchString.equals("") && !violationType.equals("") && maxCritical != 564983) {
+                    if (!restaurant.getInspections().isEmpty()) {
+                        if (restaurant.getName().toLowerCase().contains(searchString)
+                                && restaurant.getInspections().get(0).getHazardRating().equals(violationType)
+                                && restaurant.getInspections().get(0).getNumCritical() <= maxCritical) {
+                            int markerID;
+                            String hazardRating;
+                            if (restaurant.getInspections().isEmpty()) {
+                                hazardRating = "No hazards";
+                            } else {
+                                hazardRating = restaurant.getInspections().get(0).getHazardRating();
+                            }
+
+                            if (hazardRating.equals("High")) {
+                                markerID = R.drawable.criticality_high_icon;
+                            } else if (hazardRating.equals("Moderate")) {
+                                markerID = R.drawable.criticality_medium_icon;
+                            } else {
+                                markerID = R.drawable.criticality_low_icon;
+                            }
+                            ClusterMarker newClusterMarker = new ClusterMarker(
+
+                                    new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
+                                    restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                                    "blank",
+                                    markerID,
+                                    restaurant.getTrackingNumber()
+                            );
+
+                            searchedClusterManager.addItem(newClusterMarker);
+                            searchedClusterMarkers.add(newClusterMarker);
+                        }
+                    }
+                }
             }
         }
-
         searchedClusterManager.cluster();
-
 
         if(locationPermissionsGranted){
             Log.d(TAG, "Executing: getDeviceLocation() function");
