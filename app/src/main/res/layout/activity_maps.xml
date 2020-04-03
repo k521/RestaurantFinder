@@ -135,45 +135,56 @@
 
 
     <RadioGroup
-        android:layout_width="224dp"
-        android:layout_height="34dp"
+        android:id="@+id/radioGroup"
+        android:layout_width="400dp"
+        android:layout_height="25dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toStartOf="@+id/getViolations"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/map"
         app:layout_constraintTop_toBottomOf="@+id/relLayout1">
 
         <RadioButton
             android:id="@+id/lowRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="77dp"
+            android:layout_height="match_parent"
+            android:onClick="onRadioClick"
             android:text="Low " />
 
         <RadioButton
             android:id="@+id/moderateRadio"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="onRadioClick"
             android:text="Moderate " />
 
         <RadioButton
             android:id="@+id/highRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="onRadioClick"
             android:text="High" />
+
+        <RadioButton
+            android:id="@+id/noneRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onRadioClick"
+            android:text="RadioButton" />
     </RadioGroup>
 
     <EditText
         android:id="@+id/getViolations"
         android:layout_width="61dp"
         android:layout_height="43dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="Max Violations"
         android:inputType="number"
         app:layout_constraintEnd_toStartOf="@+id/ic_gps"
-        app:layout_constraintTop_toBottomOf="@+id/relLayout1" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
