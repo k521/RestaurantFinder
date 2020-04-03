@@ -181,6 +181,8 @@
     <string name="high">High</string>
     <string name="number_of_violations_less_than_or_equal">Number of Violations less than or equal</string>
     <string name="none">None</string>
-    <string name="hazard_level_filter">Hazard Level Filter:</string>
+    <string name="hazard_level_filter">  Hazard Level:  </string>
+    <string name="favourites_filter">Favourites:</string>
+    <string name="critical_violations_filter">Critical violations:</string>
 
 </resources>

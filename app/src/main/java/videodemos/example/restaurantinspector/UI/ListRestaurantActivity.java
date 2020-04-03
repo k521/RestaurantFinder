@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -17,6 +19,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.constraintlayout.widget.Guideline;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,7 +61,10 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
     private RestaurantManager manager;
     private RestaurantsAdapter restaurantsAdapter;
-    RecyclerView.LayoutManager layoutManager;
+    private RecyclerView.LayoutManager layoutManager;
+    private ConstraintLayout filtersLayout;
+    private ConstraintLayout backgroundLayout;
+
 
     public static Intent makeIntent(Context c) {
         Intent intent = new Intent(c, ListRestaurantActivity.class);
@@ -73,6 +81,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         manager = RestaurantManager.getInstance();
 
+        setupShowFiltersButton();
         setupCriticalFilter();
         setupFavouriteFilter();
 
@@ -88,6 +97,38 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         //clearFavouriteSharedPreferences();
     }
 
+    private void setupShowFiltersButton() {
+        ImageButton showFilters = findViewById(R.id.ib_show_filters);
+        filtersLayout = findViewById(R.id.cl_filters);
+        backgroundLayout = findViewById(R.id.cl_restaurant_list_main);
+
+        showFilters.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (filtersLayout.getVisibility() == View.INVISIBLE){
+                    filtersLayout.setVisibility(View.VISIBLE);
+                    showFilters.setImageResource(R.drawable.ic_expand_less_black_24dp);
+
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(backgroundLayout);
+                    constraintSet.connect(R.id.v_separator, ConstraintSet.TOP, R.id.cl_filters, ConstraintSet.BOTTOM);
+                    constraintSet.applyTo(backgroundLayout);
+
+                } else {
+                    filtersLayout.setVisibility(View.INVISIBLE);
+                    showFilters.setImageResource(R.drawable.ic_expand_more_black_24dp);
+
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(backgroundLayout);
+                    constraintSet.connect(R.id.v_separator, ConstraintSet.TOP, R.id.sv_restaurant_list, ConstraintSet.BOTTOM);
+                    constraintSet.applyTo(backgroundLayout);
+
+                }
+
+            }
+        });
+    }
+
     private void setupFavouriteFilter() {
         Switch favouritesSwitch = findViewById(R.id.sw_filter_favourites);
         favouritesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -101,17 +142,29 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     private void setupCriticalFilter() {
         TextView filterText = findViewById(R.id.filterInput);
 
-        filterText.setOnKeyListener(new OnKeyListener() {
-            public boolean onKey(View view, int keyCode, KeyEvent keyevent) {
-                //If the keyevent is a key-down event on the "enter" button
-                if ((keyevent.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    //...
-                    // Perform your action on key press here
-                    // ...
-                    Toast.makeText(ListRestaurantActivity.this,"Enter detected",Toast.LENGTH_SHORT).show();
-                    filterEditText();
+//        filterText.setOnKeyListener(new OnKeyListener() {
+//            public boolean onKey(View view, int keyCode, KeyEvent keyevent) {
+//                //If the keyevent is a key-down event on the "enter" button
+//                if ((keyevent.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+//                    //...
+//                    // Perform your action on key press here
+//                    // ...
+//                    Toast.makeText(ListRestaurantActivity.this,"Enter detected",Toast.LENGTH_SHORT).show();
+//                    filterEditText();
+//
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
-                    return true;
+        filterText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE){
+                    //Toast.makeText(ListRestaurantActivity.this,"Enter detected",Toast.LENGTH_SHORT).show();
+
+                    filterEditText();
                 }
                 return false;
             }
@@ -133,7 +186,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         boolean isGreaterThan = true;
         ToggleButton toggleComparison = findViewById(R.id.tb_greater_or_lesser);
-        Toast.makeText(this, toggleComparison.getText(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, toggleComparison.getText(), Toast.LENGTH_SHORT).show();
 
         if (toggleComparison.isChecked()){
             isGreaterThan = false;

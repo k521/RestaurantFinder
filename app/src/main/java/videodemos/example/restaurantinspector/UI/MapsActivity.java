@@ -531,7 +531,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         clusterManager.setRenderer(new MyClusterManagerRenderer(this, map, clusterManager));
         getMap().setOnCameraIdleListener(clusterManager);
         getMap().setOnMarkerClickListener(clusterManager);
-        getMap().setOnInfoWindowClickListener(clusterManager);
+        //getMap().setOnInfoWindowClickListener(clusterManager);
 
         clusterManager.setOnClusterClickListener(this);
         clusterManager.setOnClusterItemInfoWindowClickListener(this);
@@ -680,6 +680,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 customMarkerTrackingNumber = foundMarker.getTrackingNumber();
 
                                 Toast.makeText(MapsActivity.this, foundMarker.getTrackingNumber() , Toast.LENGTH_LONG).show();
+
                                 //map.setOnInfoWindowClickListener(MapsActivity.this::onInfoWindowClick);
 
 //                                map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -773,15 +774,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            }
 //        }
 
+        //Toast.makeText(this, "ClusterItem", Toast.LENGTH_SHORT).show();
 
 
         if(isComingFromGPS){
-            Toast.makeText(this, "IF", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "IF", Toast.LENGTH_LONG).show();
             Intent intent = RestaurantReportActivity.makeIntent(this, trackingNumber);
             startActivity(intent);
 
         }else{
-            Toast.makeText(this, "CALLING: " + trackingNumber, Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "CALLING: " + trackingNumber, Toast.LENGTH_LONG).show();
             Intent intent = RestaurantReportActivity.makeIntent(this, trackingNumber);
             startActivity(intent);
 
@@ -819,6 +821,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     //endregion Interface Override methods
+
 
 
 }
