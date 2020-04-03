@@ -52,15 +52,21 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import videodemos.example.restaurantinspector.Model.ClusterMarker;
 import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
+import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.UI.Dialogs.NewDataFragment;
 import videodemos.example.restaurantinspector.Utilities.MyClusterManagerRenderer;
+import android.view.View.OnKeyListener;
+import android.view.View;
+import android.view.KeyEvent;
+
 
 /**
  * A class that setups data and shows a map for restaurants.
@@ -105,7 +111,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean isComingFromGPS = false;
 
     private SharedPreferences preferences;
-    private RestaurantManager manager = RestaurantManager.getInstance();;
+    private RestaurantManager manager = RestaurantManager.getInstance();
+
+    private boolean[] restaurantsHazardFilter;
+    private boolean[] restaurantsCriticalFilter;
+
+
+
+
+    private List<Restaurant> restaurantDataset = new ArrayList<>();
+
+
 
     public static Intent makeIntent(Context c){
         Intent intent = new Intent(c,MapsActivity.class);
@@ -125,6 +141,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        restaurantsHazardFilter = new boolean[manager.getRestaurantList().size()];
+        restaurantsCriticalFilter = new boolean[manager.getRestaurantList().size()];
+
+        restaurantDataset = manager.getRestaurantList();
+
+        setAllValuesToTrue(restaurantsHazardFilter);
+        setAllValuesToTrue(restaurantsCriticalFilter);
+
+
         checkIfTimeToUpdate();
         setupRestaurantManager();
 
@@ -138,14 +163,152 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         getLocationPermission();
 
+        setupCriticalFilter();
+
         searchText = findViewById(R.id.input_search);
         gps = findViewById(R.id.ic_gps);
-
-
 
     }
 
 
+    private void setupCriticalFilter() {
+        TextView filterText = findViewById(R.id.getViolations);
+
+        filterText.setOnKeyListener(new OnKeyListener() {
+            public boolean onKey(View view, int keyCode, KeyEvent keyevent) {
+                //If the keyevent is a key-down event on the "enter" button
+                if ((keyevent.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    //...
+                    // Perform your action on key press here
+                    // ...
+                    Toast.makeText(MapsActivity.this,"Enter detected",Toast.LENGTH_SHORT).show();
+                    filterEditText();
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
+    }
+
+    public void filterByCriticalViolations(String criticalViolations, boolean isGreaterThan){
+
+        restaurantsCriticalFilter = new boolean[manager.getRestaurantList().size()];
+
+        if (criticalViolations.isEmpty()) {
+            setAllValuesToTrue(restaurantsCriticalFilter);
+            filterAll();
+            return;
+        }
+
+        int criticalViolation = Integer.parseInt(criticalViolations);
+
+        for (int j = 0; j < manager.getRestaurantList().size(); j++){
+            Restaurant r = manager.getRestaurantList().get(j);
+            int numOfCriticalViolationsFound = 0;
+            for(Inspection i : r.getInspections()){
+                String dateOfInspection = i.getInspectionDate();
+                DateCalculations dc = new DateCalculations();
+                int numOfDays = dc.daysInBetween(dateOfInspection);
+                if(numOfDays <= 365){
+                    numOfCriticalViolationsFound += i.getNumCritical();
+                }
+                else{
+                    break;
+                }
+            }
+            if(isGreaterThan && numOfCriticalViolationsFound >= criticalViolation){
+                Log.d("ListActivity",r.getName() + " : " + numOfCriticalViolationsFound);
+                restaurantsCriticalFilter[j] = true;
+            } else if (!isGreaterThan && numOfCriticalViolationsFound <= criticalViolation){
+                restaurantsCriticalFilter[j] = true;
+            }
+        }
+
+        filterAll();
+    }
+
+
+
+    private void filterEditText(){
+        TextView filterText = findViewById(R.id.getViolations);
+        String content = filterText.getText().toString();
+        boolean isGreaterThan = false;
+        filterByCriticalViolations(content, isGreaterThan);
+    }
+
+    private void setAllValuesToTrue(boolean[] list){
+        for (int i = 0; i < list.length; i++){
+            list[i] = true;
+        }
+    }
+
+    public void onRadioClick(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.lowRadio:
+                if (checked)
+                    filterByHazardLevel("Low");
+                break;
+            case R.id.moderateRadio:
+                if (checked)
+                    filterByHazardLevel("Moderate");
+                break;
+            case R.id.highRadio:
+                if(checked)
+                    filterByHazardLevel("High");
+                break;
+            case R.id.noneRadioButton:
+                if(checked)
+                    filterByHazardLevel("None");
+        }
+
+    }
+
+    public void filterByHazardLevel(String hazardLevel){
+
+        restaurantsHazardFilter = new boolean[manager.getRestaurantList().size()];
+
+        if (hazardLevel.equals("None")){
+            setAllValuesToTrue(restaurantsHazardFilter);
+            filterAll();
+            return;
+        }
+
+        for (int i = 0; i < manager.getRestaurantList().size(); i++){
+            Restaurant r = manager.getRestaurantList().get(i);
+
+            if(r.getInspections().isEmpty()){
+                Log.d("ListActivity",r.getName() + " has no inspections");
+                continue;
+            }
+            Inspection mostRecentInspection = r.getInspections().get(0);
+            if(mostRecentInspection.getHazardRating().equals(hazardLevel)){
+                //r.setVisible(false);
+                restaurantsHazardFilter[i] = true;
+            }
+        }
+
+        filterAll();
+
+    }
+
+    private void filterAll(){
+        restaurantDataset.clear();
+        map.clear();
+        for (int i = 0; i < manager.getRestaurantList().size(); i++){
+            if (restaurantsHazardFilter[i] //&& restaurantsTextFilter[i]
+                    && restaurantsCriticalFilter[i] //&& restaurantsFavourites[i]){
+            ){
+                restaurantDataset.add(manager.getRestaurantList().get(i));
+            }
+        }
+
+        onMapReady(map);
+
+    }
 
 
     public boolean isServicesOK(){
@@ -781,7 +944,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void readItems() {
-        for (Restaurant restaurant : manager.getRestaurantList()) {
+        for (Restaurant restaurant : restaurantDataset) {
             int markerID;
             String hazardRating;
             if (restaurant.getInspections().isEmpty()) {
