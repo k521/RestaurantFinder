@@ -49,10 +49,6 @@ public class RestaurantManager {
     private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
     private SharedPreferences preferences;
 
-    private boolean isRestaurantFilterOn = false;
-    private boolean isGreaterThanFilterOn = false;
-    //String searchQuery, boolean isFavouriteFilterOn, String hazardLevelFilter, boolean isGreaterThan, String criticalFilter
-
     public List<Restaurant> getRestaurantList() {
         return restaurantList;
     }

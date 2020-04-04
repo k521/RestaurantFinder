@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -150,17 +151,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
-//    public static Intent makeIntent(Context c, String searchQuery, boolean isFavouriteFilterOn, String hazardLevelFilter, boolean isGreaterThan, String criticalFilter){
-//        Intent intent = new Intent(c, MapsActivity.class);
-//
-//        intent.putExtra(TAG_FAVOURITE, isFavouriteFilterOn);
-//        intent.putExtra(TAG_QUERY, searchQuery);
-//        intent.putExtra(TAG_GREATER_THAN, isGreaterThan);
-//        intent.putExtra(TAG_CRITICAL_FILTER, criticalFilter);
-//        intent.putExtra(TAG_HAZARD_LEVER, hazardLevelFilter);
-//
-//        return intent;
-//    }
+    public static Intent makeIntent(Context c, String searchQuery, boolean isFavouriteFilterOn, String hazardLevelFilter, boolean isGreaterThan, String criticalFilter){
+        Intent intent = new Intent(c, MapsActivity.class);
+
+        intent.putExtra(TAG_FAVOURITE, isFavouriteFilterOn);
+        intent.putExtra(TAG_QUERY, searchQuery);
+        intent.putExtra(TAG_GREATER_THAN, isGreaterThan);
+        intent.putExtra(TAG_CRITICAL_FILTER, criticalFilter);
+        intent.putExtra(TAG_HAZARD_LEVER, hazardLevelFilter);
+
+        return intent;
+    }
 
     public static Intent makeIntent(Context c){
         Intent intent = new Intent(c, MapsActivity.class);
@@ -206,14 +207,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         setupShowFiltersButton();
 
+        setupSavedFilters();
+
         getLocationPermission();
 
         setupCriticalFilter();
         setupFavouriteFilter();
 
+
         //searchText = findViewById(R.id.input_search);
         gps = findViewById(R.id.ic_gps);
 
+    }
+
+    private void setupSavedFilters() {
+        Intent intent = getIntent();
+        boolean isFavouriteFilterOn = intent.getBooleanExtra(TAG_FAVOURITE, false);
+        String searchQuery = intent.getStringExtra(TAG_QUERY);
+        boolean isGreaterThan = intent.getBooleanExtra(TAG_GREATER_THAN, false);
+        String criticalFilter = intent.getStringExtra(TAG_CRITICAL_FILTER);
+        String hazardLevelFilter = intent.getStringExtra(TAG_HAZARD_LEVER);
+
+        if (hazardLevelFilter == null){
+            return;
+        }
+
+
+        Switch favSwitch = findViewById(R.id.sw_filter_favourites_map);
+        favSwitch.setChecked(isFavouriteFilterOn);
+
+        ToggleButton tbGreater = findViewById(R.id.tb_greater_or_lesser_map);
+        tbGreater.setChecked(isGreaterThan);
+
+        TextView tvCriticalFilter = findViewById(R.id.filterInput_map);
+        tvCriticalFilter.setText(criticalFilter);
+
+        RadioGroup radioGroup = findViewById(R.id.radioGroup);
+        switch (hazardLevelFilter){
+            case "Low":
+                radioGroup.check(R.id.filterLow_map);
+                break;
+            case "Moderate":
+                radioGroup.check(R.id.filterModerate_map);
+                break;
+            case "High":
+                radioGroup.check(R.id.filterHigh_map);
+                break;
+            default:
+                radioGroup.check(R.id.filterNone_map);
+        }
+        radioGroup.check(R.id.filterLow_map);
+
+
+        SearchView searchView = findViewById(R.id.sv_maps);
+        searchView.setQuery(searchQuery, true);
     }
 
     private void setupFavouriteFilter() {

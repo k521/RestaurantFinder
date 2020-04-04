@@ -11,6 +11,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -237,8 +238,35 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SearchView searchView = findViewById(R.id.sv_restaurant_list);
+                Switch favSwitch = findViewById(R.id.sw_filter_favourites_map);
+                ToggleButton tbGreater = findViewById(R.id.tb_greater_or_lesser_map);
+                TextView criticalFilter = findViewById(R.id.filterInput_map);
+                RadioGroup radioGroup = findViewById(R.id.radioGroup);
+                int radioInt = radioGroup.getCheckedRadioButtonId();
 
-                Intent mapsActivity = MapsActivity.makeIntent(ListRestaurantActivity.this);
+
+                String hazardFilter = "";
+                switch(radioInt) {
+                    case R.id.filterLow_map:
+                        hazardFilter = "Low";
+                        break;
+                    case R.id.filterModerate_map:
+                        hazardFilter = "Moderate";
+                        break;
+                    case R.id.filterHigh:
+                        hazardFilter = "High";
+                        break;
+                    case R.id.filterNone_map:
+                        hazardFilter = "none";
+                        break;
+                }
+
+
+                Intent mapsActivity = MapsActivity.makeIntent(ListRestaurantActivity.this,
+                        searchView.getQuery().toString(), favSwitch.isChecked(), hazardFilter,
+                        !tbGreater.isChecked(), criticalFilter.getText().toString());
+
                 startActivity(mapsActivity);
                 manager.getRestaurantList().clear();
                 finish();
