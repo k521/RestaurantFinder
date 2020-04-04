@@ -141,17 +141,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        restaurantsHazardFilter = new boolean[manager.getRestaurantList().size()];
-        restaurantsCriticalFilter = new boolean[manager.getRestaurantList().size()];
-
-        restaurantDataset = manager.getRestaurantList();
-
-        setAllValuesToTrue(restaurantsHazardFilter);
-        setAllValuesToTrue(restaurantsCriticalFilter);
+        //restaurantDataset = manager.getRestaurantList();
 
 
         checkIfTimeToUpdate();
         setupRestaurantManager();
+
+        restaurantsHazardFilter = new boolean[manager.getRestaurantList().size()];
+        restaurantsCriticalFilter = new boolean[manager.getRestaurantList().size()];
+
+        setAllValuesToTrue(restaurantsHazardFilter);
+        setAllValuesToTrue(restaurantsCriticalFilter);
+
+        restaurantDataset.addAll(manager.getRestaurantList());
+
+        Log.d("Size", "size = " + restaurantDataset.size() + "Original = " + manager.getRestaurantList().size());
 
         if(!isServicesOK()){
             Intent mainActivity = ListRestaurantActivity.makeIntent(MapsActivity.this);
@@ -297,7 +301,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void filterAll(){
         restaurantDataset.clear();
-        map.clear();
+        //map.clear();
+        clusterManager.clearItems();
         for (int i = 0; i < manager.getRestaurantList().size(); i++){
             if (restaurantsHazardFilter[i] //&& restaurantsTextFilter[i]
                     && restaurantsCriticalFilter[i] //&& restaurantsFavourites[i]){
@@ -306,7 +311,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
-        onMapReady(map);
+        //onMapReady(map);
+        readItems();
+
+        clusterManager.cluster();
 
     }
 
@@ -944,7 +952,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void readItems() {
+        Log.d("ReadItem", "START");
+        Log.d("ReadItem", "List = " + restaurantDataset.size());
+
         for (Restaurant restaurant : restaurantDataset) {
+            Log.d("ReadItem", restaurant.getName());
             int markerID;
             String hazardRating;
             if (restaurant.getInspections().isEmpty()) {
