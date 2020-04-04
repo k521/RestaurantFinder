@@ -7,10 +7,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
@@ -25,14 +31,18 @@ public class RestaurantReportActivity extends AppCompatActivity
 
     private static final String RESTAURANT_INDEX = "RESTAURANT_INDEX";
 
-    public static Intent makeIntent(Context context, int indexOfRestaurant){
+    public static Intent makeIntent(Context context, String trackingNumber){
         Intent intent = new Intent(context, RestaurantReportActivity.class);
-        intent.putExtra(RESTAURANT_INDEX, indexOfRestaurant);
+        intent.putExtra(RESTAURANT_INDEX, trackingNumber);
 
         return intent;
     }
 
 
+    private String trackingNumber;
+    private final String PREFERENCES = "data";
+    private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
+    private SharedPreferences preferences;
     private int indexOfRestaurant;
     private Restaurant restaurant;
 
@@ -40,9 +50,14 @@ public class RestaurantReportActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        indexOfRestaurant = getIntent().getIntExtra(RESTAURANT_INDEX, 0);
+        trackingNumber = getIntent().getStringExtra(RESTAURANT_INDEX);
         RestaurantManager manager = RestaurantManager.getInstance();
-        restaurant = manager.getRestaurant(indexOfRestaurant);
+        for(Restaurant r : manager.getRestaurantList()){
+            if(r.getTrackingNumber().equals(trackingNumber)){
+                restaurant = r;
+                break;
+            }
+        }
 
         if (restaurant.getInspections().isEmpty()){
             setContentView(R.layout.activity_restaurant_report_empty);
@@ -56,24 +71,61 @@ public class RestaurantReportActivity extends AppCompatActivity
     }
 
     public void onGpsClick(View v){
-        double latitude = restaurant.getLatitude();
-        double longitude = restaurant.getLongitude();
         MapsActivity.comeFromInspectionList = true;
-        Intent intent = MapsActivity.makeGPSIntent(this, latitude, longitude);
+        Intent intent = MapsActivity.makeGPSIntent(this, restaurant.getTrackingNumber());
         startActivity(intent);
     }
 
     private void setupToolbar() {
-        Toolbar toolbar = findViewById(R.id.restaurant_report_toolbar);
-        setSupportActionBar(toolbar);
-
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        ImageButton backButton = findViewById(R.id.ib_back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+
+
+        ToggleButton favouriteButton = findViewById(R.id.tb_favourite);
+
+        favouriteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if (checked){
+                    favouriteButton.setBackgroundResource(R.drawable.star_filled);
+                    setRestaurantToFavourite();
+                } else {
+                    favouriteButton.setBackgroundResource(R.drawable.star_empty);
+                    restaurant.setFavourite(false);
+                }
+            }
+        });
+
+        if (restaurant.isFavourite()){
+            favouriteButton.setChecked(true);
+        }
+    }
+
+    private void setRestaurantToFavourite(){
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        restaurant.setFavourite(true);
+
+        String listOfTrackingNums = getFavouriteRestaurantsTrackingNumbers();
+        if (listOfTrackingNums.equals("")){
+            listOfTrackingNums = restaurant.getTrackingNumber();
+        } else {
+            listOfTrackingNums += "," + restaurant.getTrackingNumber();
+        }
+
+        editor.putString(TAG_TRACKING_NUMBER_LIST, listOfTrackingNums);
+        editor.apply();
+    }
+
+    private String getFavouriteRestaurantsTrackingNumbers(){
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        return preferences.getString(TAG_TRACKING_NUMBER_LIST, "");
     }
 
     private void setupRestaurantInfoTextViews() {
@@ -100,9 +152,9 @@ public class RestaurantReportActivity extends AppCompatActivity
 
     @Override
     public void onInspectionClick(int position) {
-        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +
-                " Inspect Index " + position);
-        Intent intent = InspectionReportActivity.makeIntent(this,indexOfRestaurant,position);
+//        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +
+//                " Inspect Index " + position);
+        Intent intent = InspectionReportActivity.makeIntent(this,trackingNumber,position);
         startActivity(intent);
 
     }

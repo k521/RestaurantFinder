@@ -34,9 +34,9 @@ import videodemos.example.restaurantinspector.R;
 
 public class InspectionReportActivity extends AppCompatActivity {
 
-    public static Intent makeIntent(Context c, int indexOfRestaurant, int indexOfInspection) {
+    public static Intent makeIntent(Context c, String trackingNumber, int indexOfInspection) {
         Intent intentThirdActivity = new Intent(c, InspectionReportActivity.class);
-        intentThirdActivity.putExtra(TAG_RESTAURANT, indexOfRestaurant);
+        intentThirdActivity.putExtra(TAG_RESTAURANT, trackingNumber);
         intentThirdActivity.putExtra(TAG_INSPECTION, indexOfInspection);
         return intentThirdActivity;
 
@@ -47,7 +47,7 @@ public class InspectionReportActivity extends AppCompatActivity {
 
     private List<Violation> violationList = new ArrayList<Violation>();
 
-    private int restaurantName;
+    private String restaurantName;
     private int inspectionIndex;
 
 
@@ -65,7 +65,8 @@ public class InspectionReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspection_report);
 
-        restaurantName = getIntent().getIntExtra(TAG_RESTAURANT, 0);
+        //restaurantName = getIntent().getIntExtra(TAG_RESTAURANT, 0);
+        restaurantName = getIntent().getStringExtra(TAG_RESTAURANT);
         inspectionIndex = getIntent().getIntExtra(TAG_INSPECTION, 0);
         maps = new ViolationMaps(this);
 
@@ -81,7 +82,11 @@ public class InspectionReportActivity extends AppCompatActivity {
     }
 
     private void getCurrentRestaurant() {
-        currentRestaurant = restaurantManager.getRestaurant(restaurantName);
+        for(Restaurant r : restaurantManager.getRestaurantList()){
+            if(r.getTrackingNumber().equals(restaurantName)){
+                currentRestaurant = r;
+            }
+        }
     }
 
     private void getCurrentInspectionReport() {

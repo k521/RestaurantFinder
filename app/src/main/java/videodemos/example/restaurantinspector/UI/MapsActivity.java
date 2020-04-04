@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -78,6 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static final String TAG_EXTRA_LAT = "lat";
     public static final String TAG_EXTRA_LONG = "long";
+    public static final String TAG_EXTRA_TRACKING_NUMBER = "tracking number";
     public static boolean comeFromInspectionList = false;
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
@@ -113,6 +115,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SharedPreferences preferences;
     private RestaurantManager manager = RestaurantManager.getInstance();
 
+    private Marker customMarker;
+    private String customMarkerTrackingNumber;
+
+    //TODO: Add favourite restaurants to the HashMap before updating the csv
+
+
     private boolean[] restaurantsHazardFilter;
     private boolean[] restaurantsCriticalFilter;
 
@@ -128,10 +136,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
-    public static Intent makeGPSIntent(Context c, double latitude, double longitude){
+    public static Intent makeGPSIntent(Context c, String trackingNumber){
         Intent intent = new Intent(c,MapsActivity.class);
-        intent.putExtra(TAG_EXTRA_LAT, latitude);
-        intent.putExtra(TAG_EXTRA_LONG, longitude);
+        intent.putExtra(TAG_EXTRA_TRACKING_NUMBER, trackingNumber);
         return intent;
     }
 
@@ -519,6 +526,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public String[] getBodiesFromServer(){
+        storeFavouriteRestaurants();
+
         loadCSVsFromServer();
         String restaurantBody = loadRestaurantsFromServer();
         String inspectionsBody = loadInspectionsFromServer();
@@ -526,6 +535,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String[] bodies = {restaurantBody, inspectionsBody};
 
         return bodies;
+    }
+
+    private void storeFavouriteRestaurants() {
+        for (Restaurant r : manager.getRestaurantList()){
+            if (r.isFavourite()){
+                manager.insertIntoFavouritesMap(r.getTrackingNumber(), r.getInspections().get(0));
+            }
+        }
     }
 
     private void writeDataOnCsvFiles(String restaurantBody, String inspectionsBody) {
@@ -600,7 +617,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
                     //action goes here:
                     geoLocate();
+                    hideSoftKeyboard();
                 }
+
                 return false;
             }
         });
@@ -611,6 +630,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getDeviceLocation();
             }
         });
+
         hideSoftKeyboard();
     }
 
@@ -901,6 +921,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        }
         searchedClusterManager.cluster();
 
+
         if(locationPermissionsGranted){
             Log.d(TAG, "Executing: getDeviceLocation() function");
             getDeviceLocation();
@@ -930,6 +951,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getMap().setOnCameraIdleListener(clusterManager);
         getMap().setOnMarkerClickListener(clusterManager);
         getMap().setOnInfoWindowClickListener(clusterManager);
+
         clusterManager.setOnClusterClickListener(this);
         clusterManager.setOnClusterItemInfoWindowClickListener(this);
 
@@ -1054,38 +1076,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Location currentLocation = (Location) task.getResult();
 
                             Intent intent = getIntent();
-                            double latitude = intent.getDoubleExtra("lat", -999.0);
-                            double longitude = intent.getDoubleExtra("long", -999.0);
+                            String trackingNumberFromIntent = intent.getStringExtra(TAG_EXTRA_TRACKING_NUMBER);
 
-                            if (latitude != -999.0 && longitude != -999.0 && comeFromInspectionList) {
+                            if (comeFromInspectionList) {
 
                                 isComingFromGPS = true;
-                                LatLng currGPS = new LatLng(latitude, longitude);
                                 ClusterMarker foundMarker = new ClusterMarker();
                                 int index = 0;
                                 for (ClusterMarker marker : clusterMarkers) {
 
-                                    if (marker.getPosition().equals(currGPS)) {
+                                    if (marker.getTrackingNumber().equals(trackingNumberFromIntent)) {
                                         foundMarker = marker;
                                         break;
                                     }
                                     index++;
                                 }
 
+                                LatLng currGPS = foundMarker.getPosition();
+
                                 final int fIndex = index;
-                                Marker mark = map.addMarker(new MarkerOptions().position(currGPS).title(foundMarker.getTitle()).snippet(foundMarker.getSnippet()));
-                                moveCamera(new LatLng(latitude, longitude),
+                                customMarker = map.addMarker(new MarkerOptions().position(currGPS).title(foundMarker.getTitle()).snippet(foundMarker.getSnippet()));
+                                moveCamera(currGPS,
                                         DEFAULT_ZOOM, foundMarker.getTitle());
-                                mark.showInfoWindow();
+                                customMarker.showInfoWindow();
 
+                                customMarkerTrackingNumber = foundMarker.getTrackingNumber();
 
-                                map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                                    @Override
-                                    public void onInfoWindowClick(Marker marker) {
-                                        Intent intent = RestaurantReportActivity.makeIntent(MapsActivity.this, fIndex);
-                                        startActivity(intent);
-                                    }
-                                });
+                                Toast.makeText(MapsActivity.this, foundMarker.getTrackingNumber() , Toast.LENGTH_LONG).show();
+
+                                //map.setOnInfoWindowClickListener(MapsActivity.this::onInfoWindowClick);
+
+//                                map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+//                                    @Override
+//                                    public void onInfoWindowClick(Marker marker) {
+//
+//                                        Intent intent = RestaurantReportActivity.makeIntent(MapsActivity.this,trackingNum);
+//                                        startActivity(intent);
+//
+//                                    }
+//                                });
+
 
                                 comeFromInspectionList = false;
 
@@ -1156,20 +1186,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onClusterItemInfoWindowClick(ClusterMarker item) {
         String trackingNumber = item.getTrackingNumber();
-        int index = 0;
-        for(int i = 0; i < manager.getRestaurantList().size();i++){
-            Restaurant rInQuestion = manager.getRestaurant(i);
-            if(rInQuestion.getTrackingNumber().equals(trackingNumber)){
-                index = i;
-                break;
-            }
-        }
+ //       Toast.makeText(this, rInQuestion.getName(), Toast.LENGTH_LONG).show();
+//        int index = 0;
+//        for(int i = 0; i < manager.getRestaurantList().size();i++){
+//            Restaurant rInQuestion = manager.getRestaurant(i);
+//            if(rInQuestion.getTrackingNumber().equals(trackingNumber)){
+//                index = i;
+//                Toast.makeText(this, rInQuestion.getName(), Toast.LENGTH_LONG).show();
+//                break;
+//            }
+//        }
+
+        //Toast.makeText(this, "ClusterItem", Toast.LENGTH_SHORT).show();
+
 
         if(isComingFromGPS){
-            finish();
-        }else{
-            Intent intent = RestaurantReportActivity.makeIntent(this, index);
+            //Toast.makeText(this, "IF", Toast.LENGTH_LONG).show();
+            Intent intent = RestaurantReportActivity.makeIntent(this, trackingNumber);
             startActivity(intent);
+
+        }else{
+            Intent intent = RestaurantReportActivity.makeIntent(this, trackingNumber);
+            startActivity(intent);
+
         }
 
     }
@@ -1196,6 +1235,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     //endregion Interface Override methods
+
 
 
 }

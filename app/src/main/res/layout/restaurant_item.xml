@@ -105,6 +105,16 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.1" />
 
+        <ImageView
+            android:id="@+id/iv_card_favourite"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/iv_card_hazard_icon"
+            app:layout_constraintStart_toStartOf="@+id/iv_card_hazard_icon"
+            app:layout_constraintTop_toBottomOf="@+id/iv_card_hazard_icon"
+            app:srcCompat="@drawable/star_filled" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
