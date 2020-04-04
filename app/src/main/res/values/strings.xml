@@ -184,5 +184,6 @@
     <string name="hazard_level_filter">  Hazard Level:  </string>
     <string name="favourites_filter">Favourites:</string>
     <string name="critical_violations_filter">Critical violations:</string>
+    <string name="favourite_restaurants_with_new_inspections">Favourite restaurants with new inspections:</string>
 
 </resources>

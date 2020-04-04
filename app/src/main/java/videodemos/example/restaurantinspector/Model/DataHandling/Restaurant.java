@@ -1,5 +1,7 @@
 package videodemos.example.restaurantinspector.Model.DataHandling;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -124,6 +126,16 @@ public class Restaurant {
         Collections.sort(inspections, comparatorName);
     }
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (!(obj instanceof Restaurant)) {
+            return false;
+        }
+
+        Restaurant other = (Restaurant) obj;
+
+        return trackingNumber.equals(other.getTrackingNumber());
+    }
 
     @Override
     public String toString() {

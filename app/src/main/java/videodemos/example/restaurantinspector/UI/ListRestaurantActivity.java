@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +30,11 @@ import videodemos.example.restaurantinspector.UI.Adapters.RestaurantsAdapter;
 
 import android.view.KeyEvent;
 import android.widget.ToggleButton;
+
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 
 /**
@@ -91,11 +97,11 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         setUpRestaurantsRecylerView();
 
 
-        updateNewInspectionMap();
-        checkForNewFavInspections();
+
 
         setupSavedFilters();
         Log.d("order", "End of onCreate");
+
 
         //clearFavouriteSharedPreferences();
     }
@@ -207,7 +213,6 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE){
-                    //Toast.makeText(ListRestaurantActivity.this,"Enter detected",Toast.LENGTH_SHORT).show();
 
                     filterEditText();
                 }
@@ -231,7 +236,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         boolean isGreaterThan = true;
         ToggleButton toggleComparison = findViewById(R.id.tb_greater_or_lesser_map);
-        //Toast.makeText(this, toggleComparison.getText(), Toast.LENGTH_SHORT).show();
+
 
         if (toggleComparison.isChecked()){
             isGreaterThan = false;
@@ -265,15 +270,6 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         });
     }
 
-    private void checkForNewFavInspections() {
-        if (!manager.isFavouritesMapEmpty()){
-            //TODO: inflate fragment here
-        }
-    }
-
-    private void updateNewInspectionMap() {
-        manager.removeNonNewRestaurantInspections();
-    }
 
     private void clearFavouriteSharedPreferences(){
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
@@ -350,6 +346,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
         restaurantsRecyclerView.setAdapter(restaurantsAdapter);
+
 
     }
 

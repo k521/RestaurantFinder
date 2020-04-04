@@ -15,7 +15,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
@@ -93,11 +92,9 @@ public class RestaurantReportActivity extends AppCompatActivity
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked){
                     favouriteButton.setBackgroundResource(R.drawable.star_filled);
-                    Toast.makeText(RestaurantReportActivity.this, "True", Toast.LENGTH_LONG).show();
                     setRestaurantToFavourite(true);
                 } else {
                     favouriteButton.setBackgroundResource(R.drawable.star_empty);
-                    Toast.makeText(RestaurantReportActivity.this, "Before: "  + restaurant.getTrackingNumber(), Toast.LENGTH_LONG).show();
                     setRestaurantToFavourite(false);
 
                 }
@@ -132,7 +129,6 @@ public class RestaurantReportActivity extends AppCompatActivity
             }
         }
 
-        Toast.makeText(this, "After: "  + listOfTrackingNums, Toast.LENGTH_LONG).show();
 
         editor.putString(TAG_TRACKING_NUMBER_LIST, listOfTrackingNums);
         editor.apply();

@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -57,7 +56,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             restaurantName = itemView.findViewById(R.id.tv_card_restaraunt_name);
             numOfIssues = itemView.findViewById(R.id.tv_card_number_issues);
             lastInspection = itemView.findViewById(R.id.tv_card_last_inspection);
-            cardViewBackground = itemView.findViewById(R.id.cv_restaurant_card);
+            cardViewBackground = itemView.findViewById(R.id.cv_fragment_card);
             hazardIcon = itemView.findViewById(R.id.iv_card_hazard_icon);
             restaurantIcon = itemView.findViewById(R.id.iv_restaurant_icon);
             favouriteIcon = itemView.findViewById(R.id.iv_card_favourite);

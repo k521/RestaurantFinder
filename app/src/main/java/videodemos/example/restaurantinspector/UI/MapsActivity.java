@@ -24,7 +24,7 @@ import android.widget.SearchView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -34,6 +34,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -69,6 +72,7 @@ import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.UI.Dialogs.NewDataFragment;
+import videodemos.example.restaurantinspector.UI.Dialogs.NewFavouriteInspectionFragment;
 import videodemos.example.restaurantinspector.Utilities.MyClusterManagerRenderer;
 import android.view.View.OnKeyListener;
 import android.view.View;
@@ -98,6 +102,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final String INSPECTION_URL = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
     private final int HOURS_FOR_UPDATE = 20;
     private final String PREFERENCES = "data";
+    private final String TAG_TUTORIAL = "tutorial";
     private final String TAG_UPDATE_DATE = "last_update_date";
     private final String TAG_SERVER_METADATA_DATE = "last_server_date";
     private final String TAG_DEFAULT_DATA = "default_data";
@@ -203,10 +208,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             finish();
         }
 
+        Log.d("Got_here", "211");
+
         setupToolbar();
 
         setupShowFiltersButton();
-
+        Log.d("Got_here", "216");
 
         getLocationPermission();
 
@@ -217,6 +224,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //searchText = findViewById(R.id.input_search);
         gps = findViewById(R.id.ic_gps);
 
+        showTutorial();
+
+        Log.d("Got_here", "229");
+        updateNewInspectionMap();
+        checkForNewFavInspections();
+        Log.d("Got_here", "232");
+
+    }
+
+    private void updateNewInspectionMap() {
+        manager.removeNonNewRestaurantInspections();
+    }
+
+    private void checkForNewFavInspections() {
+        if (!manager.isFavouritesMapEmpty()){
+            FragmentManager manager = getSupportFragmentManager();
+            NewFavouriteInspectionFragment dialog = new NewFavouriteInspectionFragment();
+            dialog.show(manager, "new fav dialog");
+        }
+    }
+
+    private void showTutorial() {
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        boolean isFirstTime = preferences.getBoolean(TAG_TUTORIAL, true);
+
+        if (isFirstTime){
+            Target target = new ViewTarget(R.id.ib_show_filters, this);
+            ShowcaseView showcaseView = new ShowcaseView.Builder(this)
+                    .setTarget(target)
+                    .setContentTitle("See more filters")
+                    .setContentText("Click here to show/hide the filters")
+                    .hideOnTouchOutside()
+                    .setStyle(R.style.CustomShowcaseTheme)
+                    .build();
+
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean(TAG_TUTORIAL, false);
+            editor.apply();
+        }
     }
 
     private void setupSavedFilters() {
@@ -537,8 +583,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(TAG, "isServicesOK: an error occured but we can fix it");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapsActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
-        }else{
-            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
         }
         return false;
     }
@@ -765,7 +809,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void storeFavouriteRestaurants() {
         for (Restaurant r : manager.getRestaurantList()){
             if (r.isFavourite()){
-                manager.insertIntoFavouritesMap(r.getTrackingNumber(), r.getInspections().get(0));
+                if (r.getInspections().size() > 0){
+                    manager.insertIntoFavouritesMap(r.getTrackingNumber(), r.getInspections().get(0));
+                }
+
             }
         }
     }
@@ -1004,21 +1051,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 customMarkerTrackingNumber = foundMarker.getTrackingNumber();
 
-                                Toast.makeText(MapsActivity.this, foundMarker.getTrackingNumber() , Toast.LENGTH_LONG).show();
-
-                                //map.setOnInfoWindowClickListener(MapsActivity.this::onInfoWindowClick);
-
-//                                map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//                                    @Override
-//                                    public void onInfoWindowClick(Marker marker) {
-//
-//                                        Intent intent = RestaurantReportActivity.makeIntent(MapsActivity.this,trackingNum);
-//                                        startActivity(intent);
-//
-//                                    }
-//                                });
-
-
                                 comeFromInspectionList = false;
 
                             } else {
@@ -1029,7 +1061,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
-                            Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -1088,31 +1119,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onClusterItemInfoWindowClick(ClusterMarker item) {
         String trackingNumber = item.getTrackingNumber();
- //       Toast.makeText(this, rInQuestion.getName(), Toast.LENGTH_LONG).show();
-//        int index = 0;
-//        for(int i = 0; i < manager.getRestaurantList().size();i++){
-//            Restaurant rInQuestion = manager.getRestaurant(i);
-//            if(rInQuestion.getTrackingNumber().equals(trackingNumber)){
-//                index = i;
-//                Toast.makeText(this, rInQuestion.getName(), Toast.LENGTH_LONG).show();
-//                break;
-//            }
-//        }
 
-        //Toast.makeText(this, "ClusterItem", Toast.LENGTH_SHORT).show();
-
-
-        if(isComingFromGPS){
-            //Toast.makeText(this, "IF", Toast.LENGTH_LONG).show();
-            Intent intent = RestaurantReportActivity.makeIntent(this, trackingNumber);
-            startActivity(intent);
-
-        }else{
-            Intent intent = RestaurantReportActivity.makeIntent(this, trackingNumber);
-            startActivity(intent);
-
-        }
-
+        Intent intent = RestaurantReportActivity.makeIntent(this, trackingNumber);
+        startActivity(intent);
     }
 
 

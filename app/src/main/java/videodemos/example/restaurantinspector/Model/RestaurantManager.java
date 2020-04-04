@@ -59,6 +59,11 @@ public class RestaurantManager {
 
     public void insertIntoFavouritesMap(String trackingNumber, Inspection latestInspection){
         favouritesMap.put(trackingNumber, latestInspection);
+
+    }
+
+    public HashMap<String, Inspection> getFavouritesMap() {
+        return favouritesMap;
     }
 
     public boolean isFavouritesMapEmpty(){
