@@ -144,14 +144,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:checkedButton="@id/filterNone"
+            android:checkedButton="@id/filterNone_map"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView9"
             app:layout_constraintTop_toTopOf="@+id/textView9">
 
             <RadioButton
-                android:id="@+id/filterNone"
+                android:id="@+id/filterNone_map"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/colorNoHazard"
@@ -159,7 +159,7 @@
                 android:text="@string/none" />
 
             <RadioButton
-                android:id="@+id/filterLow"
+                android:id="@+id/filterLow_map"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/colorLowHazard"
@@ -167,7 +167,7 @@
                 android:text="@string/low" />
 
             <RadioButton
-                android:id="@+id/filterModerate"
+                android:id="@+id/filterModerate_map"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/colorMedHazard"
@@ -193,13 +193,13 @@
             android:background="@drawable/searchview_background"
             android:gravity="center"
             android:text="@string/critical_violations_filter"
-            app:layout_constraintBottom_toBottomOf="@id/tb_greater_or_lesser"
+            app:layout_constraintBottom_toBottomOf="@id/tb_greater_or_lesser_map"
             app:layout_constraintEnd_toEndOf="@id/textView9"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
         <EditText
-            android:id="@+id/filterInput"
+            android:id="@+id/filterInput_map"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -209,7 +209,7 @@
             android:inputType="number"
             android:maxLines="1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tb_greater_or_lesser"
+            app:layout_constraintStart_toEndOf="@+id/tb_greater_or_lesser_map"
             app:layout_constraintTop_toTopOf="@+id/textView8" />
 
         <TextView
@@ -225,10 +225,10 @@
             app:layout_constraintBottom_toBottomOf="@id/radioGroup"
             app:layout_constraintEnd_toStartOf="@id/radioGroup"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/sw_filter_favourites" />
+            app:layout_constraintTop_toBottomOf="@+id/sw_filter_favourites_map" />
 
         <ToggleButton
-            android:id="@+id/tb_greater_or_lesser"
+            android:id="@+id/tb_greater_or_lesser_map"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
@@ -238,12 +238,12 @@
             android:textOff="&gt;="
             android:textOn="&lt;="
             android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@+id/filterInput"
+            app:layout_constraintBottom_toBottomOf="@+id/filterInput_map"
             app:layout_constraintStart_toEndOf="@+id/textView8"
-            app:layout_constraintTop_toTopOf="@+id/filterInput" />
+            app:layout_constraintTop_toTopOf="@+id/filterInput_map" />
 
         <Switch
-            android:id="@+id/sw_filter_favourites"
+            android:id="@+id/sw_filter_favourites_map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -259,10 +259,10 @@
             android:background="@drawable/searchview_background"
             android:gravity="center"
             android:text="@string/favourites_filter"
-            app:layout_constraintBottom_toBottomOf="@+id/sw_filter_favourites"
+            app:layout_constraintBottom_toBottomOf="@+id/sw_filter_favourites_map"
             app:layout_constraintEnd_toStartOf="@+id/radioGroup"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/sw_filter_favourites" />
+            app:layout_constraintTop_toTopOf="@+id/sw_filter_favourites_map" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -15,31 +14,18 @@ import android.widget.RadioButton;
 import android.widget.SearchView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.constraintlayout.widget.Guideline;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-
-import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
-import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
-import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.UI.Adapters.RestaurantsAdapter;
-import android.view.View.OnKeyListener;
-import android.view.View;
+
 import android.view.KeyEvent;
 import android.widget.ToggleButton;
 
@@ -64,6 +50,8 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     private RecyclerView.LayoutManager layoutManager;
     private ConstraintLayout filtersLayout;
     private ConstraintLayout backgroundLayout;
+
+
 
 
     public static Intent makeIntent(Context c) {
@@ -95,6 +83,12 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         Log.d("Favorites", getFavouriteRestaurantsTrackingNumbers());
 
         //clearFavouriteSharedPreferences();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpRestaurantsRecylerView();
     }
 
     private void setupShowFiltersButton() {
@@ -130,7 +124,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     }
 
     private void setupFavouriteFilter() {
-        Switch favouritesSwitch = findViewById(R.id.sw_filter_favourites);
+        Switch favouritesSwitch = findViewById(R.id.sw_filter_favourites_map);
         favouritesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -140,23 +134,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     }
 
     private void setupCriticalFilter() {
-        TextView filterText = findViewById(R.id.filterInput);
-
-//        filterText.setOnKeyListener(new OnKeyListener() {
-//            public boolean onKey(View view, int keyCode, KeyEvent keyevent) {
-//                //If the keyevent is a key-down event on the "enter" button
-//                if ((keyevent.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-//                    //...
-//                    // Perform your action on key press here
-//                    // ...
-//                    Toast.makeText(ListRestaurantActivity.this,"Enter detected",Toast.LENGTH_SHORT).show();
-//                    filterEditText();
-//
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
+        TextView filterText = findViewById(R.id.filterInput_map);
 
         filterText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -170,7 +148,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
             }
         });
 
-        ToggleButton toggleCompare = findViewById(R.id.tb_greater_or_lesser);
+        ToggleButton toggleCompare = findViewById(R.id.tb_greater_or_lesser_map);
         toggleCompare.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -181,11 +159,11 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     }
 
     private void filterEditText(){
-        TextView filterText = findViewById(R.id.filterInput);
+        TextView filterText = findViewById(R.id.filterInput_map);
         String content = filterText.getText().toString();
 
         boolean isGreaterThan = true;
-        ToggleButton toggleComparison = findViewById(R.id.tb_greater_or_lesser);
+        ToggleButton toggleComparison = findViewById(R.id.tb_greater_or_lesser_map);
         //Toast.makeText(this, toggleComparison.getText(), Toast.LENGTH_SHORT).show();
 
         if (toggleComparison.isChecked()){
@@ -259,6 +237,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent mapsActivity = MapsActivity.makeIntent(ListRestaurantActivity.this);
                 startActivity(mapsActivity);
                 manager.getRestaurantList().clear();
@@ -297,11 +276,11 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         // Check which radio button was clicked
         switch(view.getId()) {
-            case R.id.filterLow:
+            case R.id.filterLow_map:
                 if (checked)
                     restaurantsAdapter.filterByHazardLevel("Low");
                     break;
-            case R.id.filterModerate:
+            case R.id.filterModerate_map:
                 if (checked)
                     restaurantsAdapter.filterByHazardLevel("Moderate");
                     break;
@@ -309,7 +288,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
                 if(checked)
                     restaurantsAdapter.filterByHazardLevel("High");
                     break;
-            case R.id.filterNone:
+            case R.id.filterNone_map:
                 if (checked){
                     restaurantsAdapter.filterByHazardLevel("none");
                     break;
