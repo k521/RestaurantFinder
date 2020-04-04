@@ -63,15 +63,18 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             favouriteIcon = itemView.findViewById(R.id.iv_card_favourite);
             this.onRestaurantListener = onRestaurantListener;
 
-            restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
-            restaurantsTextFilter = new boolean[restaurantsFullList.size()];
-            restaurantsCriticalFilter = new boolean[restaurantsFullList.size()];
-            restaurantsFavourites = new boolean[restaurantsFullList.size()];
+            Log.d("Adapter_Init", "Init arrays");
+            Log.d("order", "Start of ViewHolder");
 
-            setAllValuesToTrue(restaurantsHazardFilter);
-            setAllValuesToTrue(restaurantsTextFilter);
-            setAllValuesToTrue(restaurantsCriticalFilter);
-            setAllValuesToTrue(restaurantsFavourites);
+//            restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
+//            restaurantsTextFilter = new boolean[restaurantsFullList.size()];
+//            restaurantsCriticalFilter = new boolean[restaurantsFullList.size()];
+//            restaurantsFavourites = new boolean[restaurantsFullList.size()];
+//
+//            setAllValuesToTrue(restaurantsHazardFilter);
+//            setAllValuesToTrue(restaurantsTextFilter);
+//            setAllValuesToTrue(restaurantsCriticalFilter);
+//            setAllValuesToTrue(restaurantsFavourites);
 
             itemView.setOnClickListener(this);
 
@@ -92,6 +95,16 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         this.onRestaurantListener = onRestaurantListener;
 
         restaurantsFullList.addAll(restaurantDataset);
+
+        restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
+        restaurantsTextFilter = new boolean[restaurantsFullList.size()];
+        restaurantsCriticalFilter = new boolean[restaurantsFullList.size()];
+        restaurantsFavourites = new boolean[restaurantsFullList.size()];
+
+        setAllValuesToTrue(restaurantsHazardFilter);
+        setAllValuesToTrue(restaurantsTextFilter);
+        setAllValuesToTrue(restaurantsCriticalFilter);
+        setAllValuesToTrue(restaurantsFavourites);
     }
 
     @Override
@@ -234,7 +247,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
         restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
 
-        if (hazardLevel.equals("none")){
+        if (hazardLevel.equals("None")){
             setAllValuesToTrue(restaurantsHazardFilter);
             filterAll();
             return;

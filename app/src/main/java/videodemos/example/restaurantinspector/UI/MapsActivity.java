@@ -207,7 +207,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         setupShowFiltersButton();
 
-        setupSavedFilters();
 
         getLocationPermission();
 
@@ -235,32 +234,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Switch favSwitch = findViewById(R.id.sw_filter_favourites_map);
         favSwitch.setChecked(isFavouriteFilterOn);
+        filterByFavourites(isFavouriteFilterOn);
 
         ToggleButton tbGreater = findViewById(R.id.tb_greater_or_lesser_map);
         tbGreater.setChecked(isGreaterThan);
 
         TextView tvCriticalFilter = findViewById(R.id.filterInput_map);
         tvCriticalFilter.setText(criticalFilter);
+        filterByCriticalViolations(criticalFilter, isGreaterThan);
 
         RadioGroup radioGroup = findViewById(R.id.radioGroup);
         switch (hazardLevelFilter){
             case "Low":
                 radioGroup.check(R.id.filterLow_map);
+                filterByHazardLevel("Low");
                 break;
             case "Moderate":
                 radioGroup.check(R.id.filterModerate_map);
+                filterByHazardLevel("Moderate");
                 break;
             case "High":
                 radioGroup.check(R.id.filterHigh_map);
+                filterByHazardLevel("High");
                 break;
             default:
                 radioGroup.check(R.id.filterNone_map);
+                filterByHazardLevel("None");
         }
-        radioGroup.check(R.id.filterLow_map);
+
 
 
         SearchView searchView = findViewById(R.id.sv_maps);
         searchView.setQuery(searchQuery, true);
+        searchView.setIconified(false);
+        searchView.clearFocus();
+
     }
 
     private void setupFavouriteFilter() {
@@ -305,6 +313,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onQueryTextSubmit(String query) {
                 filterByName(query);
                 searchView.clearFocus();
+
                 //geoLocate();
                 return true;
             }
@@ -548,8 +557,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         listButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent mainActivity = ListRestaurantActivity.makeIntent(MapsActivity.this);
-                startActivity(mainActivity);
+                SearchView searchView = findViewById(R.id.sv_maps);
+                Switch favSwitch = findViewById(R.id.sw_filter_favourites_map);
+                ToggleButton tbGreater = findViewById(R.id.tb_greater_or_lesser_map);
+                TextView criticalFilter = findViewById(R.id.filterInput_map);
+                RadioGroup radioGroup = findViewById(R.id.radioGroup);
+                int radioInt = radioGroup.getCheckedRadioButtonId();
+
+
+                String hazardFilter = "";
+                switch(radioInt) {
+                    case R.id.filterLow_map:
+                        hazardFilter = "Low";
+                        break;
+                    case R.id.filterModerate_map:
+                        hazardFilter = "Moderate";
+                        break;
+                    case R.id.filterHigh:
+                        hazardFilter = "High";
+                        break;
+                    case R.id.filterNone_map:
+                        hazardFilter = "none";
+                        break;
+                }
+
+
+                Intent listActivity = ListRestaurantActivity.makeIntent(MapsActivity.this,
+                        searchView.getQuery().toString(), favSwitch.isChecked(), hazardFilter,
+                        tbGreater.isChecked(), criticalFilter.getText().toString());
+
+
+                startActivity(listActivity);
                 finish();
             }
         });
@@ -820,6 +858,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         readItems();
 
         clusterManager.cluster();
+
+        setupSavedFilters();
 
         if(locationPermissionsGranted){
             Log.d(TAG, "Executing: getDeviceLocation() function");

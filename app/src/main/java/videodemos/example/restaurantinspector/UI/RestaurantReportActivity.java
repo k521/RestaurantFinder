@@ -93,10 +93,13 @@ public class RestaurantReportActivity extends AppCompatActivity
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked){
                     favouriteButton.setBackgroundResource(R.drawable.star_filled);
-                    setRestaurantToFavourite();
+                    Toast.makeText(RestaurantReportActivity.this, "True", Toast.LENGTH_LONG).show();
+                    setRestaurantToFavourite(true);
                 } else {
                     favouriteButton.setBackgroundResource(R.drawable.star_empty);
-                    restaurant.setFavourite(false);
+                    Toast.makeText(RestaurantReportActivity.this, "Before: "  + restaurant.getTrackingNumber(), Toast.LENGTH_LONG).show();
+                    setRestaurantToFavourite(false);
+
                 }
             }
         });
@@ -106,18 +109,30 @@ public class RestaurantReportActivity extends AppCompatActivity
         }
     }
 
-    private void setRestaurantToFavourite(){
+    private void setRestaurantToFavourite(boolean isFavourite){
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
-        restaurant.setFavourite(true);
+        restaurant.setFavourite(isFavourite);
 
         String listOfTrackingNums = getFavouriteRestaurantsTrackingNumbers();
-        if (listOfTrackingNums.equals("")){
-            listOfTrackingNums = restaurant.getTrackingNumber();
-        } else {
-            listOfTrackingNums += "," + restaurant.getTrackingNumber();
+        if (isFavourite && !listOfTrackingNums.contains(restaurant.getTrackingNumber())){
+            if (listOfTrackingNums.equals("")){
+                listOfTrackingNums = restaurant.getTrackingNumber();
+            } else {
+                listOfTrackingNums += "," + restaurant.getTrackingNumber();
+            }
+        } else if (!isFavourite && listOfTrackingNums.contains(restaurant.getTrackingNumber())){
+            if (listOfTrackingNums.contains("," + restaurant.getTrackingNumber())){
+                listOfTrackingNums = listOfTrackingNums.replaceAll( "," + restaurant.getTrackingNumber(), "");
+            } else if (listOfTrackingNums.contains(restaurant.getTrackingNumber() + ",")){
+                listOfTrackingNums = listOfTrackingNums.replaceAll( restaurant.getTrackingNumber() + ",", "");
+            } else if (listOfTrackingNums.contains(restaurant.getTrackingNumber())){
+                listOfTrackingNums = listOfTrackingNums.replaceAll( restaurant.getTrackingNumber(), "");
+            }
         }
+
+        Toast.makeText(this, "After: "  + listOfTrackingNums, Toast.LENGTH_LONG).show();
 
         editor.putString(TAG_TRACKING_NUMBER_LIST, listOfTrackingNums);
         editor.apply();

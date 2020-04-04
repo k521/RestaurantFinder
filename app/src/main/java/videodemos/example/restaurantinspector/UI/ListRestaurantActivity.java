@@ -52,7 +52,17 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     private ConstraintLayout filtersLayout;
     private ConstraintLayout backgroundLayout;
 
+    public static Intent makeIntent(Context c, String searchQuery, boolean isFavouriteFilterOn, String hazardLevelFilter, boolean isGreaterThan, String criticalFilter){
+        Intent intent = new Intent(c, ListRestaurantActivity.class);
 
+        intent.putExtra(MapsActivity.TAG_FAVOURITE, isFavouriteFilterOn);
+        intent.putExtra(MapsActivity.TAG_QUERY, searchQuery);
+        intent.putExtra(MapsActivity.TAG_GREATER_THAN, isGreaterThan);
+        intent.putExtra(MapsActivity.TAG_CRITICAL_FILTER, criticalFilter);
+        intent.putExtra(MapsActivity.TAG_HAZARD_LEVER, hazardLevelFilter);
+
+        return intent;
+    }
 
 
     public static Intent makeIntent(Context c) {
@@ -70,18 +80,22 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         manager = RestaurantManager.getInstance();
 
+
+
         setupShowFiltersButton();
         setupCriticalFilter();
         setupFavouriteFilter();
+        setupSearchView();
+
 
         setUpRestaurantsRecylerView();
 
-        setupSearchView();
 
         updateNewInspectionMap();
         checkForNewFavInspections();
 
-        Log.d("Favorites", getFavouriteRestaurantsTrackingNumbers());
+        setupSavedFilters();
+        Log.d("order", "End of onCreate");
 
         //clearFavouriteSharedPreferences();
     }
@@ -132,6 +146,58 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
                 restaurantsAdapter.filterByFavourites(isChecked);
             }
         });
+    }
+
+    private void setupSavedFilters() {
+        Intent intent = getIntent();
+        boolean isFavouriteFilterOn = intent.getBooleanExtra(MapsActivity.TAG_FAVOURITE, false);
+        String searchQuery = intent.getStringExtra(MapsActivity.TAG_QUERY);
+        boolean isGreaterThan = intent.getBooleanExtra(MapsActivity.TAG_GREATER_THAN, false);
+        String criticalFilter = intent.getStringExtra(MapsActivity.TAG_CRITICAL_FILTER);
+        String hazardLevelFilter = intent.getStringExtra(MapsActivity.TAG_HAZARD_LEVER);
+
+        if (hazardLevelFilter == null){
+            return;
+        }
+
+
+        Switch favSwitch = findViewById(R.id.sw_filter_favourites_map);
+        favSwitch.setChecked(isFavouriteFilterOn);
+        restaurantsAdapter.filterByFavourites(isFavouriteFilterOn);
+
+        ToggleButton tbGreater = findViewById(R.id.tb_greater_or_lesser_map);
+        tbGreater.setChecked(isGreaterThan);
+
+        TextView tvCriticalFilter = findViewById(R.id.filterInput_map);
+        tvCriticalFilter.setText(criticalFilter);
+        restaurantsAdapter.filterByCriticalViolations(criticalFilter, isGreaterThan);
+
+        RadioGroup radioGroup = findViewById(R.id.radioGroup);
+        switch (hazardLevelFilter){
+            case "Low":
+                radioGroup.check(R.id.filterLow_map);
+                restaurantsAdapter.filterByHazardLevel("Low");
+                break;
+            case "Moderate":
+                radioGroup.check(R.id.filterModerate_map);
+                restaurantsAdapter.filterByHazardLevel("Moderate");
+                break;
+            case "High":
+                radioGroup.check(R.id.filterHigh_map);
+                restaurantsAdapter.filterByHazardLevel("High");
+                break;
+            default:
+                radioGroup.check(R.id.filterNone_map);
+                restaurantsAdapter.filterByHazardLevel("None");
+        }
+
+
+
+        SearchView searchView = findViewById(R.id.sv_restaurant_list);
+        searchView.setQuery(searchQuery, true);
+        searchView.setIconified(false);
+        searchView.clearFocus();
+
     }
 
     private void setupCriticalFilter() {
@@ -265,7 +331,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
                 Intent mapsActivity = MapsActivity.makeIntent(ListRestaurantActivity.this,
                         searchView.getQuery().toString(), favSwitch.isChecked(), hazardFilter,
-                        !tbGreater.isChecked(), criticalFilter.getText().toString());
+                        tbGreater.isChecked(), criticalFilter.getText().toString());
 
                 startActivity(mapsActivity);
                 manager.getRestaurantList().clear();
@@ -318,7 +384,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
                     break;
             case R.id.filterNone_map:
                 if (checked){
-                    restaurantsAdapter.filterByHazardLevel("none");
+                    restaurantsAdapter.filterByHazardLevel("None");
                     break;
                 }
         }
