@@ -137,14 +137,17 @@ public class InspectionReportActivity extends AppCompatActivity {
             int lowHazardColor = ContextCompat.getColor(this, R.color.colorLowHazard);
             hazardBackground.setBackgroundColor(lowHazardColor);
             hazardIcon.setImageResource(R.drawable.low_hazard_icon);
+            hazardRating = getString(R.string.low);
         } else if (hazardRating.equals("Moderate")) {
             int lowMedColor = ContextCompat.getColor(this, R.color.colorMedHazard);
             hazardBackground.setBackgroundColor(lowMedColor);
             hazardIcon.setImageResource(R.drawable.med_hazard_icon);
+            hazardRating = getString(R.string.moderate);
         } else {
             int lowHighColor = ContextCompat.getColor(this, R.color.colorHighHazard);
             hazardBackground.setBackgroundColor(lowHighColor);
             hazardIcon.setImageResource(R.drawable.high_hazard_icon);
+            hazardRating = getString(R.string.high);
         }
 
         hazardDescription.setText(getString(R.string.hazard_level, hazardRating));

@@ -1,0 +1,190 @@
+<resources>
+    <string name="app_name">Inspector de restaurantes</string>
+    <string name="coordinates">Cordenadas del GPS: %1$f, %2$f</string>
+    <string name="number_crit_issues"># de problemas críticos: %1$d</string>
+    <string name="number_non_crit_issues"># de problemas no críticos: %1$d</string>
+    <string name="no_inspections_yet">Todavía no hay inspecciones.</string>
+    <string name="number_of_issues">Número de problemas: %1$d</string>
+    <string name="no_inspections_so_far">Sin inspección hasta el momento</string>
+    <string name="inspections">Inspecciones</string>
+    <string name="inspections_details">Detalles de la inspección</string>
+    <string name="hazard_level">Nivel de peligro: %1$s </string>
+    <string name="date_of_inspection_days_ago">Fecha de inspección: hace %1$d días.</string>
+    <string name="date_of_inspection_with_params">Fecha de inspección: %1$s %2$d</string>
+    <string name="date_of_inspections">Fecha de inspección:</string>
+    <string name = "sv1"> Planos / construcción / alteraciones deficientes. </string>
+    <string name = "sv2"> Operación de locales de alimentos no aprobados. </string>
+    <string name = "sv3"> No hay un permiso válido para este restaurante. </string>
+    <string name = "sv4"> El permiso no se ve fácilmente. </string>
+    <string name = "sv5"> Alimentos contaminados o no aptos para el consumo. </string>
+    <string name = "sv6"> Alimentos no procesados ​​de manera segura para comer. </string>
+    <string name = "sv7"> Los alimentos no se enfrían correctamente. </string>
+    <string name = "sv8"> Alimentos no cocinados o calentados para una alimentación segura. </string>
+    <string name = "sv9"> Los alimentos fríos no se almacenan correctamente. </string>
+    <string name = "sv10"> La comida caliente no se almacena correctamente. </string>
+    <string name = "sv11"> Alimentos obtenidos de fuentes no aprobadas. </string>
+    <string name = "sv12"> Alimentos no protegidos de la contaminación. </string>
+    <string name = "sv13"> Los alimentos no se descongelaron correctamente. </string>
+    <string name = "sv14"> Los alimentos congelados no se almacenan correctamente. </string>
+    <string name = "sv15"> No se proporcionan procedimientos de manipulación de alimentos. </string>
+    <string name = "sv16"> Utensilios / comida no sanitaria. </string>
+    <string name = "sv17"> Utensilios / comida no lavados adecuadamente. </string>
+    <string name = "sv18"> Saneamiento inadecuado. </string>
+    <string name = "sv19"> La ubicación contiene plagas. </string>
+    <string name = "sv20"> Las condiciones observadas pueden cultivar plagas. </string>
+    <string name = "sv21"> Local alimentario no sanitario. </string>
+    <string name = "sv22"> Superficies de contacto mal diseño / material </string>
+    <string name = "sv23"> Las superficies de contacto no funcionan. </string>
+    <string name = "sv24"> Limpiadores químicos - almacenamiento / etiquetas. </string>
+    <string name = "sv25"> Elementos de un solo uso utilizados más de una vez. </string>
+    <string name = "sv26"> Premisa no mantenida de acuerdo con el plan. </string>
+    <string name = "sv27"> Elementos no relacionados con el negocio de alimentos en las instalaciones. </string>
+    <string name = "sv28"> Animales vivos en las instalaciones. </string>
+    <string name = "sv29"> No se proporcionaron procedimientos de saneamiento aprobados. </string>
+    <string name = "sv30"> Termómetros inexactos. </string>
+    <string name = "sv31"> Estación de lavado de manos adecuada no presente. </string>
+    <string name = "sv32"> Prácticas incorrectas de lavado de manos. </string>
+    <string name = "sv33"> Los empleados carecen de higiene. </string>
+    <string name = "sv34"> Empleados que fuman en áreas no apropiadas. </string>
+    <string name = "sv35"> FOODSAFE nivel 1 o equivalente no presente. </string>
+    <string name = "sv36"> Nadie tiene FOODSAFE nivel 1 o equivalente. </string>
+    <string name = "inspectionType"> </string>
+    <string name = "criticalIssues"> </string>
+    <string name = "nonCriticalIssues"> </string>
+    <string name = "nonCritical"> # de problemas no críticos: </string>
+    <string name = "criticalIssuesInput"> # de problemas críticos: </string>
+    <string name = "inspectionTypeNotInput"> Tipo de inspección: </string>
+    <string name = "dateOfInspection"> TextView </string>
+    <string name = "attribution_links">
+                    Logotipos: \n
+                    <a href="https://company.timhortons.com/us/en/corporate/multimedia.php?type=0&amp;category=logo"> timhortons.com </a> \n
+                    <a href="https://www.qsrmagazine.com/news/get-glimpse-subways-brand-new-logo-branding"> qsrmagazine.com/subway </a> \n
+                    <a href="https://en.wikipedia.org/wiki/Starbucks"> wikipedia.org/Starbucks </a> \n
+                    <a href="https://ca.indeed.com/cmp/Save-On-Foods/reviews?fcountry=CA&amp;floc=Surrey%2C+BC"> Indeed.com </a> \n
+                    <a href="https://sco.wikipedia.org/wiki/File:Pizza_Hut_logo.svg"> wikipedia.org </a> \n
+                    <a href="https://rogersarena.com/hospitality/panago-logo/"> rogersarena.com </a> \n
+                    <a href="https://news.mcdonalds.com/token-logo"> mcdonalds.com </a> \n
+                    <a href="https://leeyuenseafoodrestaurant.com/"> leeyuenseafoodrestaurant.com </a> \n
+                    <a href="https://en.wikipedia.org/wiki/Blenz_Coffee#/media/File:Blenz_Coffee_Logo.jpg"> wikipedia.org </a> \n
+                    \n
+                    AdapterView OnClickListener \n
+                    <a href="https://www.youtube.com/watch?v=69C1ljfDvl0&amp;t=441s"> youtube.com </a> \n
+                    \n
+                    Joda Time \n
+                    <a href="https://stackoverflow.com/questions/3802893/number-of-days-between-two-dates-in-joda-time"> stackoverflow.com </a> \n
+                    \n
+                    Vector de triángulo \n
+                    <a href="https://clipartstation.com/warning-clipart-4/"> clipartstation.com </a> \n
+                    \n
+                    Vector de llave inglesa \n
+                    <a href="https://www.nicepng.com/maxp/u2w7y3e6u2y3a9r5/"> nicepng.com </a> \n
+                    \n
+                    Ícono activo: (el enlace no lo lleva a la imagen con precisión, sino que lo hace una búsqueda de imágenes de Google) \n
+                    <a href="https://pngtree.com/so/lj-hot-on-icon"> pngtree.com </a> \n
+                    \n
+                    Vector de plagas (cucarachas) \n
+                    <a href="http://icon-library.com/icon/pest-icon-3.html"> icon-library.com </a> \n
+                    \n
+                    Vector de lavado de manos \n
+                    <a href="https://www.flaticon.com/free-icon/hand-wash_1216004"> flaticon.com </a> \n
+                    \n
+                    Vector de utensilios de cocina \n
+                    <a href="https://www.freepik.com/free-icon/cooking_908165.html"> freepik.com </a> \n
+                    \n
+                    Vector indicador de termómetro: \n
+                    <a href="https://www.onlinewebfonts.com/icon/541882"> onlinewebfonts.com </a> \n
+                    \n
+                    Vector de lavado de manos con jabón: \n
+                    <a href="https://ya-webdesign.com/imgdownload.html"> ya-webdesign.com </a> \n
+                    \n
+                    Logotipo de plato de comida (para contaminación) \n
+                    <a href="https://freeiconshop.com/icon/food-icon-outline-filled/"> freeiconshop.com </a> \n
+                    \n
+                    Stop Hand Sign \n
+                    <a href="https://www.pngkey.com/detail/u2a9o0y3t4y3y3i1_stop-sign-stop-hand-sign-svg/"> pngkey.com </a> \n
+                    \n
+                    Logotipo antihigiénico> tenedor / cuchillo \n
+                    <a href="https://www.flaticon.com/free-icon/restaurant_754938"> flaticon.com </a> \n
+                    \n
+                    Logotipo antihigiénico> Bacterias: \n
+                    <a href="https://www.flaticon.com/free-icon/bacteria_191117"> flaticon.com </a> \n
+                    \n
+                    Consumo no apto> signo X: \n
+                    <a href="https://muslimcouncil.org.hk/5-dos-5-donts-ramadan/"> muslimcouncil.org.hk </a> \n
+                    \n
+                    Consumo no apto> tenedor / cuchillo: \n
+                    <a href="https://www.onlinewebfonts.com/icon/480176"> onlinewebfonts.com </a> \n
+                    \n
+                    Orden de trabajo> llave inglesa: \n
+                    <a href="https://www.pngkey.com/download/u2q8u2q8u2o0w7q8_this-icon-is-a-hand-holding-a-wrench/"> pngkey.com </a> \n
+                    \n
+                    Vector de sirena: \n
+                    <a href="https://www.flaticon.com/free-icon/siren_819586"> flaticon.com </a> \n
+                    \n
+                    Lupa \n
+                    <a href = "https://pngriver.com/download-system-magnifying-glass-png-image-77125-for-designing-projects-114528/download-system-magnifying-glass-png-image-77125-for -designing-projects / "> pngriver.com </a> \n
+                    </string>
+    <string name = "attribution"> Atribución </string>
+    <string name="violationDescription101">No crítico, planos / construcción / alteraciones no conformes con el Reglamento [s. 3; s. 4], no repetir</string>
+    <string name="violationDescription102">No crítico, Operación de un local de alimentos no aprobado [s. 6 (1)], no repetir</string>
+    <string name="violationDescription103">No es crítico, no se posee un permiso válido mientras se opera un establecimiento de servicio de alimentos [s. 8 (1)], no repetir </string>
+    <string name="violationDescription104">No es crítico, el permiso no se publica en una ubicación visible [s. 8 (7)], no repetir </string>
+    <string name="violationDescription201">Crítico, alimentos contaminados o no aptos para el consumo humano [s. 13], no repetir </string>
+    <string name="violationDescription202">Crítico, Alimentos no procesados ​​de una manera que los haga seguros para comer [s. 14 (1)], no repetir </string>
+    <string name="violationDescription203">Crítico, alimentos no enfriados de manera aceptable [s. 12 (a)], no repetir </string>
+    <string name="violationDescription204">Crítico, alimentos no cocinados o recalentados de manera que sea seguro comerlos [s. 14 (1)], no repetir </string>
+    <string name="violationDescription205">Alimentos críticos, potencialmente peligrosos en frío almacenados / mostrados por encima de 4 ° C. [s. 14 (2)], no repetir</string>
+    <string name="violationDescription206">Alimentos críticos, potencialmente peligrosos y calientes almacenados / mostrados por debajo de 60 ° C. [s. 14 (2)], no repetir</string>
+    <string name="violationDescription208">No crítico, alimentos obtenidos de fuentes no aprobadas [s. 11], no repetir</string>
+    <string name="violationDescription209">No crítico, Alimentos no protegidos contra la contaminación [s. 12 (a)], no repetir</string>
+    <string name="violationDescription210">No es crítico, los alimentos no se descongelan de manera aceptable [s. 14 (2)], no repetir </string>
+    <string name="violationDescription211">No crítico, alimentos potencialmente peligrosos congelados almacenados / mostrados por encima de -18 ° C. [s. 14 (3)], no repetir</string>
+    <string name="violationDescription212">No es crítico, el operador no ha proporcionado procedimientos de manipulación de alimentos por escrito aceptables [s. 23], no repetir </string>
+    <string name="violationDescription301">Crítico, equipo / utensilios / superficies de contacto con alimentos no mantenidas en condiciones sanitarias [s. 17 (1)], no repetir</string>
+    <string name="violationDescription302">Crítico, equipo / utensilios / superficies en contacto con alimentos no lavados y desinfectados adecuadamente [s. 17 (2)], no repetir</string>
+    <string name="violationDescription303">! [CDATA [Crítico, equipo / instalaciones / agua caliente y fría para mantenimiento sanitario no adecuado [s. 17 (3); s. 4 (1) (f)], No repetir]]</string>
+    <string name="violationDescription304"> No crítico, locales no libres de plagas [s. 26 (a)], no repetir </string>
+    <string name="violationDescription305"> No es crítico, se observaron condiciones que pueden permitir la entrada / albergue / reproducción de plagas [s. 26 (b) (c)], No repetir</string>
+    <string name="violationDescription306">No es crítico, las instalaciones de alimentos no se mantienen en condiciones sanitarias [s. 17 (1)], no repetir </string>
+    <string name="violationDescription307">No es crítico, el equipo / utensilios / superficies de contacto con alimentos no son de diseño / material adecuado [s. dieciséis; s. 19], no repetir</string>
+    <string name="violationDescription308">No es crítico, el equipo / utensilios / superficies de contacto con alimentos no están en buen estado de funcionamiento [s. 16 (b)], no repetir</string>
+    <string name="violationDescription309">! [CDATA [No es crítico, limpiadores químicos y agentes similares almacenados o etiquetados incorrectamente [s. 27], no repetir]]</string>
+    <string name="violationDescription310">! [CDATA [No es crítico, los recipientes y utensilios de un solo uso se usan más de una vez [s. 20], no repetir]]</string>
+    <string name="violationDescription311">No es crítico, las instalaciones no se mantienen según los planes aprobados [s. 6 (1) (b)], No repetir </string>
+    <string name="violationDescription312">No es crítico, los artículos no necesarios para la operación de las instalaciones de alimentos se almacenan en las instalaciones [s. 18], no repetir </string>
+    <string name="violationDescription313"> No crítico, animal vivo en las instalaciones excluyendo el animal guía en áreas aprobadas [s. 25 (1)], no repetir </string>
+    <string name="violationDescription314">No es crítico, el operador no ha proporcionado procedimientos de saneamiento por escrito aceptables [s. 24], no repetir</string>
+    <string name="violationDescription315">No es crítico, las unidades de refrigeración y el equipo de mantenimiento en caliente carecen de termómetros precisos [s. 19 (2)], no repetir</string>
+    <string name="violationDescription401"> Estaciones críticas y adecuadas de lavado de manos no disponibles para empleados [s. 21 (4)], no repetir</string>
+    <string name="violationDescription402">Crítico, el empleado no se lava las manos correctamente o con la frecuencia adecuada [s. 21 (3)], no repetir </string>
+    <string name="violationDescription403">No es crítico, el empleado carece de buena higiene personal, ropa limpia y control del cabello [s. 21 (1)], no repetir</string>
+    <string name="violationDescription404">No es crítico, el empleado fuma en las áreas de preparación / procesamiento / almacenamiento de alimentos [s. 21 (2)], no repetir</string>
+    <string name="violationDescription501">No es crítico, el operador no tiene FOODSAFE Nivel 1 o Equivalente [s. 10 (1)], no repetir </string>
+    <string name="violationDescription502">No es crítico, en ausencia del operador, ningún personal en servicio tiene el Nivel 1 FOODSAFE o equivalente [s. 10 (2)], no repetir</string>
+    <string name="january">Enero</string>
+    <string name="february">Febrero</string>
+    <string name="march">Marzo</string>
+    <string name="april">Abril</string>
+    <string name="may">Mayo</string>
+    <string name="june">Junio</string>
+    <string name="july">Julio</string>
+    <string name="august">Agosto</string>
+    <string name="september">Septiembre</string>
+    <string name="october">Octubre</string>
+    <string name="november">Noviembre</string>
+    <string name="december">Diciembre</string>
+    <string name="title_activity_maps">Mapa</string>
+    <string name="new_data_available">Hay una nueva actualización disponible. \n ¿Desea descargarla ahora?</string>
+    <string name="downloading">Espere \nDescargar ..</string>
+    <string name="low">Bajo</string>
+    <string name="moderate">Moderado</string>
+    <string name="high">Alto</string>
+    <string name="number_of_violations_less_than_or_equal">Número de infracciones menor o igual que</string>
+    <string name="none">Ninguno</string>
+    <string name="hazard_level_filter">  Nivel de peligro: </string>
+    <string name="favourites_filter">Favoritos:</string>
+    <string name="critical_violations_filter">Infracciones críticas:</string>
+    <string name="favourite_restaurants_with_new_inspections">Restaurantes favoritos con nuevas inspecciones: </string>
+    <string name="hazard_rating">Nivel de peligro: </string>
+
+</resources>

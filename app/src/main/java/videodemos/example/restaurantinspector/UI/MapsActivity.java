@@ -147,6 +147,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private List<Restaurant> restaurantDataset = new ArrayList<>();
+    private List<Restaurant> restaurantsFullList = new ArrayList<>();
 
 
 
@@ -381,14 +382,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void filterByName(String text) {
 
-        restaurantsTextFilter = new boolean[manager.getRestaurantList().size()];
+        restaurantsTextFilter = new boolean[restaurantsFullList.size()];
 
         if(text.isEmpty()){
             setAllValuesToTrue(restaurantsTextFilter);
         } else{
             text = text.toLowerCase();
-            for (int i = 0; i < manager.getRestaurantList().size(); i++){
-                Restaurant r = manager.getRestaurantList().get(i);
+            for (int i = 0; i < restaurantsFullList.size(); i++){
+                Restaurant r = restaurantsFullList.get(i);
 
                 if(r.getName().toLowerCase().contains(text)){
                     restaurantsTextFilter[i] = true;
@@ -400,7 +401,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void filterByFavourites(boolean doFilter){
-        restaurantsFavourites = new boolean[manager.getRestaurantList().size()];
+        restaurantsFavourites = new boolean[restaurantsFullList.size()];
 
         if (!doFilter){
             setAllValuesToTrue(restaurantsFavourites);
@@ -408,8 +409,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
-        for (int i = 0; i < manager.getRestaurantList().size(); i++){
-            if (manager.getRestaurantList().get(i).isFavourite()){
+        for (int i = 0; i < restaurantsFullList.size(); i++){
+            if (restaurantsFullList.get(i).isFavourite()){
                 restaurantsFavourites[i] = true;
             }
         }
@@ -419,7 +420,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void filterByCriticalViolations(String criticalViolations, boolean isGreaterThan){
 
-        restaurantsCriticalFilter = new boolean[manager.getRestaurantList().size()];
+        restaurantsCriticalFilter = new boolean[restaurantsFullList.size()];
 
         if (criticalViolations.isEmpty()) {
             setAllValuesToTrue(restaurantsCriticalFilter);
@@ -429,8 +430,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         int criticalViolation = Integer.parseInt(criticalViolations);
 
-        for (int j = 0; j < manager.getRestaurantList().size(); j++){
-            Restaurant r = manager.getRestaurantList().get(j);
+        for (int j = 0; j < restaurantsFullList.size(); j++){
+            Restaurant r = restaurantsFullList.get(j);
             int numOfCriticalViolationsFound = 0;
             for(Inspection i : r.getInspections()){
                 String dateOfInspection = i.getInspectionDate();
@@ -523,7 +524,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void filterByHazardLevel(String hazardLevel){
 
-        restaurantsHazardFilter = new boolean[manager.getRestaurantList().size()];
+        restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
 
         if (hazardLevel.equals("None")){
             setAllValuesToTrue(restaurantsHazardFilter);
@@ -531,8 +532,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
-        for (int i = 0; i < manager.getRestaurantList().size(); i++){
-            Restaurant r = manager.getRestaurantList().get(i);
+        for (int i = 0; i < restaurantsFullList.size(); i++){
+            Restaurant r = restaurantsFullList.get(i);
 
             if(r.getInspections().isEmpty()){
                 Log.d("ListActivity",r.getName() + " has no inspections");
@@ -617,7 +618,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     case R.id.filterModerate_map:
                         hazardFilter = "Moderate";
                         break;
-                    case R.id.filterHigh:
+                    case R.id.filterHigh_map:
                         hazardFilter = "High";
                         break;
                     case R.id.filterNone_map:
@@ -650,6 +651,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         manager.sortByRestaurantName();
         manager.sortInspections();
+
+        restaurantsFullList.addAll(manager.getRestaurantList());
     }
 
     //region Server Implementation
@@ -931,22 +934,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             int markerID;
             String hazardRating;
             if (restaurant.getInspections().isEmpty()) {
-                hazardRating = "No hazards";
+                hazardRating = getString(R.string.none);
             } else {
                 hazardRating = restaurant.getInspections().get(0).getHazardRating();
             }
 
             if (hazardRating.equals("High")) {
+                hazardRating = getString(R.string.high);
                 markerID = R.drawable.criticality_high_icon;
             } else if (hazardRating.equals("Moderate")) {
+                hazardRating = getString(R.string.moderate);
                 markerID = R.drawable.criticality_medium_icon;
             } else {
+                hazardRating = getString(R.string.low);
                 markerID = R.drawable.criticality_low_icon;
             }
             ClusterMarker newClusterMarker = new ClusterMarker(
 
                     new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
-                    restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + "Hazard Rating: " + hazardRating,
+                    restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + getString(R.string.hazard_rating)  + " " + hazardRating,
                     "blank",
                     markerID,
                     restaurant.getTrackingNumber()
@@ -1085,11 +1091,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public View getInfoContents(Marker marker) {
                 View v = getLayoutInflater().inflate(R.layout.custom_info_window, null);
                 TextView tLocation = v.findViewById(R.id.infoAddress);
-                if (marker.getTitle().contains("Hazard Rating: High")){
+                if (marker.getTitle().contains(getString(R.string.hazard_rating) + " " + getString(R.string.high))){
                     v.setBackgroundColor(ContextCompat.getColor(MapsActivity.this, R.color.colorHighHazard));
-                } else if (marker.getTitle().contains("Hazard Rating: Moderate")){
+                } else if (marker.getTitle().contains(getString(R.string.hazard_rating) + " " + getString(R.string.moderate))){
                     v.setBackgroundColor(ContextCompat.getColor(MapsActivity.this, R.color.colorMedHazard));
-                } else if (marker.getTitle().contains("Hazard Rating: Low")){
+                } else if (marker.getTitle().contains(getString(R.string.hazard_rating) + " " + getString(R.string.low))){
                     v.setBackgroundColor(ContextCompat.getColor(MapsActivity.this, R.color.colorLowHazard));
                 }
                 tLocation.setText(marker.getTitle());

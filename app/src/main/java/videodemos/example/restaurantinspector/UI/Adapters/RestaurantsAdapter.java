@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -20,6 +21,7 @@ import java.util.List;
 import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
 import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
+import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 
 /**
@@ -92,8 +94,12 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         this.restaurantDataset = restaurantDataset;
         this.context = context;
         this.onRestaurantListener = onRestaurantListener;
+        Toast.makeText(context, "Constructor, restaurantDataSet size : " + restaurantDataset.size(), Toast.LENGTH_SHORT).show();
 
         restaurantsFullList.addAll(restaurantDataset);
+//        RestaurantManager manager = RestaurantManager.getInstance();
+//        restaurantsFullList.addAll(manager.getRestaurantList());
+//        restaurantDataset.addAll(manager.getRestaurantList());
 
         restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
         restaurantsTextFilter = new boolean[restaurantsFullList.size()];
@@ -314,16 +320,20 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         }
     }
 
-    private void filterAll(){
+    public void filterAll(){
+        String rShown = "";
         restaurantDataset.clear();
         for (int i = 0; i < restaurantsFullList.size(); i++){
             if (restaurantsHazardFilter[i] && restaurantsTextFilter[i]
                     && restaurantsCriticalFilter[i] && restaurantsFavourites[i]){
                 restaurantDataset.add(restaurantsFullList.get(i));
+                rShown += restaurantsFullList.get(i).getName() + " ";
+
             }
         }
 
         //notifyItemRangeChanged(0, restaurantsFullList.size());
+        //Toast.makeText(context, "Size: " + restaurantsFullList.size(), Toast.LENGTH_LONG).show();
         notifyDataSetChanged();
     }
 

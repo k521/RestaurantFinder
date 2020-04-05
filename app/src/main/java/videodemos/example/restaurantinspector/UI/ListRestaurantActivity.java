@@ -29,6 +29,7 @@ import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.UI.Adapters.RestaurantsAdapter;
 
 import android.view.KeyEvent;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -85,21 +86,24 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         setupToolbar();
 
         manager = RestaurantManager.getInstance();
+        
 
+        setUpRestaurantsRecylerView();
+        setupSearchView();
 
+        setupSavedFilters();
 
         setupShowFiltersButton();
         setupCriticalFilter();
         setupFavouriteFilter();
-        setupSearchView();
-
-
-        setUpRestaurantsRecylerView();
 
 
 
 
-        setupSavedFilters();
+
+
+
+
         Log.d("order", "End of onCreate");
 
 
@@ -162,6 +166,8 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         String criticalFilter = intent.getStringExtra(MapsActivity.TAG_CRITICAL_FILTER);
         String hazardLevelFilter = intent.getStringExtra(MapsActivity.TAG_HAZARD_LEVER);
 
+
+
         if (hazardLevelFilter == null){
             return;
         }
@@ -200,9 +206,11 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
 
         SearchView searchView = findViewById(R.id.sv_restaurant_list);
-        searchView.setQuery(searchQuery, true);
+        searchView.setQuery(searchQuery, false);
         searchView.setIconified(false);
         searchView.clearFocus();
+
+
 
     }
 
@@ -251,12 +259,14 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
             @Override
             public boolean onQueryTextSubmit(String query) {
                 restaurantsAdapter.filterByName(query);
+                //Toast.makeText(ListRestaurantActivity.this, query, Toast.LENGTH_LONG).show();
                 searchView.clearFocus();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                //Toast.makeText(ListRestaurantActivity.this, newText, Toast.LENGTH_LONG).show();
                 restaurantsAdapter.filterByName(newText);
                 return true;
             }
@@ -270,18 +280,6 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         });
     }
 
-
-    private void clearFavouriteSharedPreferences(){
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(TAG_TRACKING_NUMBER_LIST, "");
-        editor.apply();
-    }
-
-    private String getFavouriteRestaurantsTrackingNumbers(){
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        return preferences.getString(TAG_TRACKING_NUMBER_LIST, "");
-    }
 
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.restaurant_list_toolbar);
