@@ -24,18 +24,22 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
 import videodemos.example.restaurantinspector.UI.Adapters.RestaurantsAdapter;
 
 import android.view.KeyEvent;
-import android.widget.Toast;
+
 import android.widget.ToggleButton;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -58,6 +62,8 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     private RecyclerView.LayoutManager layoutManager;
     private ConstraintLayout filtersLayout;
     private ConstraintLayout backgroundLayout;
+
+    List<Restaurant> restaurantsFullList = new ArrayList<>();
 
     public static Intent makeIntent(Context c, String searchQuery, boolean isFavouriteFilterOn, String hazardLevelFilter, boolean isGreaterThan, String criticalFilter){
         Intent intent = new Intent(c, ListRestaurantActivity.class);
@@ -86,9 +92,11 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         setupToolbar();
 
         manager = RestaurantManager.getInstance();
-        
+        restaurantsFullList.addAll(manager.getRestaurantList());
+
 
         setUpRestaurantsRecylerView();
+
         setupSearchView();
 
         setupSavedFilters();
@@ -96,7 +104,6 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         setupShowFiltersButton();
         setupCriticalFilter();
         setupFavouriteFilter();
-
 
 
 
@@ -177,12 +184,14 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         favSwitch.setChecked(isFavouriteFilterOn);
         restaurantsAdapter.filterByFavourites(isFavouriteFilterOn);
 
+
         ToggleButton tbGreater = findViewById(R.id.tb_greater_or_lesser_map);
         tbGreater.setChecked(isGreaterThan);
 
         TextView tvCriticalFilter = findViewById(R.id.filterInput_map);
         tvCriticalFilter.setText(criticalFilter);
         restaurantsAdapter.filterByCriticalViolations(criticalFilter, isGreaterThan);
+
 
         RadioGroup radioGroup = findViewById(R.id.radioGroup);
         switch (hazardLevelFilter){
@@ -342,7 +351,9 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         layoutManager = new LinearLayoutManager(this);
         restaurantsRecyclerView.setLayoutManager(layoutManager);
 
-        restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), this, this);
+
+
+        restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), restaurantsFullList, this, this);
         restaurantsRecyclerView.setAdapter(restaurantsAdapter);
 
 

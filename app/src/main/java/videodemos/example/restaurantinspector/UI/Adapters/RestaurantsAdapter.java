@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -30,7 +30,7 @@ import videodemos.example.restaurantinspector.R;
 
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
 
-    private List<Restaurant> restaurantDataset;
+    private List<Restaurant> restaurantDataset = new ArrayList<>();
     private List<Restaurant> restaurantsFullList = new ArrayList<>();
     private boolean[] restaurantsHazardFilter;
     private boolean[] restaurantsTextFilter;
@@ -90,13 +90,13 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         }
     }
 
-    public RestaurantsAdapter(List<Restaurant> restaurantDataset, Context context, OnRestaurantListener onRestaurantListener) {
+    public RestaurantsAdapter(List<Restaurant> restaurantsFullList, List<Restaurant> restaurantDataset, Context context, OnRestaurantListener onRestaurantListener) {
         this.restaurantDataset = restaurantDataset;
         this.context = context;
         this.onRestaurantListener = onRestaurantListener;
-        Toast.makeText(context, "Constructor, restaurantDataSet size : " + restaurantDataset.size(), Toast.LENGTH_SHORT).show();
+       // Toast.makeText(context, "Constructor, restaurantDataSet size : " + restaurantDataset.size(), Toast.LENGTH_SHORT).show();
 
-        restaurantsFullList.addAll(restaurantDataset);
+        this.restaurantsFullList.addAll(restaurantsFullList);
 //        RestaurantManager manager = RestaurantManager.getInstance();
 //        restaurantsFullList.addAll(manager.getRestaurantList());
 //        restaurantDataset.addAll(manager.getRestaurantList());
@@ -333,7 +333,6 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         }
 
         //notifyItemRangeChanged(0, restaurantsFullList.size());
-        //Toast.makeText(context, "Size: " + restaurantsFullList.size(), Toast.LENGTH_LONG).show();
         notifyDataSetChanged();
     }
 
