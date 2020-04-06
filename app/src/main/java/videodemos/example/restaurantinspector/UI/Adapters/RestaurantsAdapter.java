@@ -32,10 +32,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
     private List<Restaurant> restaurantDataset = new ArrayList<>();
     private List<Restaurant> restaurantsFullList = new ArrayList<>();
-    private boolean[] restaurantsHazardFilter;
-    private boolean[] restaurantsTextFilter;
-    private boolean[] restaurantsCriticalFilter;
-    private boolean[] restaurantsFavourites;
+
     private Context context;
     private OnRestaurantListener onRestaurantListener;
 
@@ -90,26 +87,12 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         }
     }
 
-    public RestaurantsAdapter(List<Restaurant> restaurantsFullList, List<Restaurant> restaurantDataset, Context context, OnRestaurantListener onRestaurantListener) {
+    public RestaurantsAdapter(List<Restaurant> restaurantDataset, Context context, OnRestaurantListener onRestaurantListener) {
         this.restaurantDataset = restaurantDataset;
         this.context = context;
         this.onRestaurantListener = onRestaurantListener;
-       // Toast.makeText(context, "Constructor, restaurantDataSet size : " + restaurantDataset.size(), Toast.LENGTH_SHORT).show();
 
-        this.restaurantsFullList.addAll(restaurantsFullList);
-//        RestaurantManager manager = RestaurantManager.getInstance();
-//        restaurantsFullList.addAll(manager.getRestaurantList());
-//        restaurantDataset.addAll(manager.getRestaurantList());
 
-        restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
-        restaurantsTextFilter = new boolean[restaurantsFullList.size()];
-        restaurantsCriticalFilter = new boolean[restaurantsFullList.size()];
-        restaurantsFavourites = new boolean[restaurantsFullList.size()];
-
-        setAllValuesToTrue(restaurantsHazardFilter);
-        setAllValuesToTrue(restaurantsTextFilter);
-        setAllValuesToTrue(restaurantsCriticalFilter);
-        setAllValuesToTrue(restaurantsFavourites);
     }
 
     @Override
@@ -209,132 +192,6 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         return new RestaurantsViewHolder(view, onRestaurantListener);
     }
 
-    public void filterByName(String text) {
-
-        restaurantsTextFilter = new boolean[restaurantsFullList.size()];
-
-        if(text.isEmpty()){
-            setAllValuesToTrue(restaurantsTextFilter);
-        } else{
-            text = text.toLowerCase();
-            for (int i = 0; i < restaurantsFullList.size(); i++){
-                Restaurant r = restaurantsFullList.get(i);
-
-                if(r.getName().toLowerCase().contains(text)){
-                    restaurantsTextFilter[i] = true;
-                }
-            }
-        }
-
-        filterAll();
-    }
-
-    public void filterByFavourites(boolean doFilter){
-        restaurantsFavourites = new boolean[restaurantsFullList.size()];
-
-        if (!doFilter){
-            setAllValuesToTrue(restaurantsFavourites);
-            filterAll();
-            return;
-        }
-
-        for (int i = 0; i < restaurantsFullList.size(); i++){
-            if (restaurantsFullList.get(i).isFavourite()){
-                restaurantsFavourites[i] = true;
-            }
-        }
-
-        filterAll();
-    }
-
-
-    public void filterByHazardLevel(String hazardLevel){
-
-        restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
-
-        if (hazardLevel.equals("None")){
-            setAllValuesToTrue(restaurantsHazardFilter);
-            filterAll();
-            return;
-        }
-
-        for (int i = 0; i < restaurantsFullList.size(); i++){
-            Restaurant r = restaurantsFullList.get(i);
-
-            if(r.getInspections().isEmpty()){
-                Log.d("ListActivity",r.getName() + " has no inspections");
-                continue;
-            }
-            Inspection mostRecentInspection = r.getInspections().get(0);
-            if(mostRecentInspection.getHazardRating().equals(hazardLevel)){
-                //r.setVisible(false);
-                restaurantsHazardFilter[i] = true;
-            }
-        }
-
-        filterAll();
-
-    }
-
-    public void filterByCriticalViolations(String criticalViolations, boolean isGreaterThan){
-
-        restaurantsCriticalFilter = new boolean[restaurantsFullList.size()];
-
-        if (criticalViolations.isEmpty()) {
-            setAllValuesToTrue(restaurantsCriticalFilter);
-            filterAll();
-            return;
-        }
-
-        int criticalViolation = Integer.parseInt(criticalViolations);
-
-        for (int j = 0; j < restaurantsFullList.size(); j++){
-            Restaurant r = restaurantsFullList.get(j);
-            int numOfCriticalViolationsFound = 0;
-            for(Inspection i : r.getInspections()){
-                String dateOfInspection = i.getInspectionDate();
-                DateCalculations dc = new DateCalculations();
-                int numOfDays = dc.daysInBetween(dateOfInspection);
-                if(numOfDays <= 365){
-                    numOfCriticalViolationsFound += i.getNumCritical();
-                }
-                else{
-                    break;
-                }
-            }
-            if(isGreaterThan && numOfCriticalViolationsFound >= criticalViolation){
-                Log.d("ListActivity",r.getName() + " : " + numOfCriticalViolationsFound);
-                restaurantsCriticalFilter[j] = true;
-            } else if (!isGreaterThan && numOfCriticalViolationsFound <= criticalViolation){
-                restaurantsCriticalFilter[j] = true;
-            }
-        }
-
-        filterAll();
-    }
-
-
-    private void setAllValuesToTrue(boolean[] list){
-        for (int i = 0; i < list.length; i++){
-            list[i] = true;
-        }
-    }
-
-    public void filterAll(){
-        String rShown = "";
-        restaurantDataset.clear();
-        for (int i = 0; i < restaurantsFullList.size(); i++){
-            if (restaurantsHazardFilter[i] && restaurantsTextFilter[i]
-                    && restaurantsCriticalFilter[i] && restaurantsFavourites[i]){
-                restaurantDataset.add(restaurantsFullList.get(i));
-                rShown += restaurantsFullList.get(i).getName() + " ";
-
-            }
-        }
-
-        //notifyItemRangeChanged(0, restaurantsFullList.size());
-        notifyDataSetChanged();
-    }
 
     public interface OnRestaurantListener {
         void onRestaurantClick(String trackingNumber);

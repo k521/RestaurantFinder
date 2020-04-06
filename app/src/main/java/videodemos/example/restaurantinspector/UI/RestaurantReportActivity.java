@@ -71,7 +71,9 @@ public class RestaurantReportActivity extends AppCompatActivity
 
     public void onGpsClick(View v){
         MapsActivity.comeFromInspectionList = true;
-        Intent intent = MapsActivity.makeGPSIntent(this, restaurant.getTrackingNumber());
+        Intent intent = MapsActivity.makeGPSIntent(this, restaurant.getTrackingNumber(), true);
+        RestaurantManager manager = RestaurantManager.getInstance();
+        manager.getRestaurantList().clear();
         startActivity(intent);
     }
 

@@ -88,6 +88,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker>
 {
 
+    public final static String TAG_COME_FROM_ACTIVITY = "come from activity";
     public final static String TAG_FAVOURITE = "fav";
     public final static String TAG_QUERY = "query";
     public final static String TAG_GREATER_THAN = "greater than";
@@ -151,13 +152,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    public static Intent makeGPSIntent(Context c, String trackingNumber){
+    public static Intent makeGPSIntent(Context c, String trackingNumber, boolean comeFromActivity){
         Intent intent = new Intent(c,MapsActivity.class);
         intent.putExtra(TAG_EXTRA_TRACKING_NUMBER, trackingNumber);
+        intent.putExtra(TAG_COME_FROM_ACTIVITY, comeFromActivity);
         return intent;
     }
 
-    public static Intent makeIntent(Context c, String searchQuery, boolean isFavouriteFilterOn, String hazardLevelFilter, boolean isGreaterThan, String criticalFilter){
+    public static Intent makeIntent(Context c, String searchQuery, boolean isFavouriteFilterOn, String hazardLevelFilter, boolean isGreaterThan, String criticalFilter, boolean comeFromActivity){
         Intent intent = new Intent(c, MapsActivity.class);
 
         intent.putExtra(TAG_FAVOURITE, isFavouriteFilterOn);
@@ -165,6 +167,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         intent.putExtra(TAG_GREATER_THAN, isGreaterThan);
         intent.putExtra(TAG_CRITICAL_FILTER, criticalFilter);
         intent.putExtra(TAG_HAZARD_LEVER, hazardLevelFilter);
+        intent.putExtra(TAG_COME_FROM_ACTIVITY, comeFromActivity);
 
         return intent;
     }
@@ -183,8 +186,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //restaurantDataset = manager.getRestaurantList();
 
+        Intent intent = getIntent();
 
-        checkIfTimeToUpdate();
+        if (!intent.getBooleanExtra(TAG_COME_FROM_ACTIVITY, false)){
+            checkIfTimeToUpdate();
+        }
+
         setupRestaurantManager();
 
         restaurantsHazardFilter = new boolean[manager.getRestaurantList().size()];
@@ -240,9 +247,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void checkForNewFavInspections() {
         if (!manager.isFavouritesMapEmpty()){
-            FragmentManager manager = getSupportFragmentManager();
+            FragmentManager fragmentManager = getSupportFragmentManager();
             NewFavouriteInspectionFragment dialog = new NewFavouriteInspectionFragment();
-            dialog.show(manager, "new fav dialog");
+            dialog.show(fragmentManager, "new fav dialog");
         }
     }
 
@@ -254,8 +261,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Target target = new ViewTarget(R.id.ib_show_filters, this);
             ShowcaseView showcaseView = new ShowcaseView.Builder(this)
                     .setTarget(target)
-                    .setContentTitle("See more filters")
-                    .setContentText("Click here to show/hide the filters")
+                    .setContentTitle(getString(R.string.see_more_filters))
+                    .setContentText(R.string.click_here_to_show_hide_the_filters)
                     .hideOnTouchOutside()
                     .setStyle(R.style.CustomShowcaseTheme)
                     .build();
@@ -1072,7 +1079,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 });
             }
 
-        }catch (SecurityException e){
+        }catch (Exception e){
             Log.e(TAG,"getDeviceLocation: SecurityException: " + e.getMessage() );
         }
     }

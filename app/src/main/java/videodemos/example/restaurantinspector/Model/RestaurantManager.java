@@ -70,7 +70,12 @@ public class RestaurantManager {
         return favouritesMap.isEmpty();
     }
 
+
     private RestaurantManager() {
+    }
+
+    public void clearFavMap(){
+        favouritesMap.clear();
     }
 
     public void readRestaurantFromNewCSV(Context c) {

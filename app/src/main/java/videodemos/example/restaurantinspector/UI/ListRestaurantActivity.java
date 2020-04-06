@@ -24,6 +24,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import videodemos.example.restaurantinspector.Model.DataHandling.DateCalculations;
+import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.RestaurantManager;
 import videodemos.example.restaurantinspector.R;
@@ -63,7 +65,12 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
     private ConstraintLayout filtersLayout;
     private ConstraintLayout backgroundLayout;
 
-    List<Restaurant> restaurantsFullList = new ArrayList<>();
+    private boolean[] restaurantsHazardFilter;
+    private boolean[] restaurantsTextFilter;
+    private boolean[] restaurantsCriticalFilter;
+    private boolean[] restaurantsFavourites;
+
+    List<Restaurant> restaurantDataset = new ArrayList<>();
 
     public static Intent makeIntent(Context c, String searchQuery, boolean isFavouriteFilterOn, String hazardLevelFilter, boolean isGreaterThan, String criticalFilter){
         Intent intent = new Intent(c, ListRestaurantActivity.class);
@@ -92,8 +99,9 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         setupToolbar();
 
         manager = RestaurantManager.getInstance();
-        restaurantsFullList.addAll(manager.getRestaurantList());
 
+
+        setupArrayFilters();
 
         setUpRestaurantsRecylerView();
 
@@ -115,6 +123,18 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
 
         //clearFavouriteSharedPreferences();
+    }
+
+    private void setupArrayFilters() {
+        restaurantsHazardFilter = new boolean[manager.getRestaurantList().size()];
+        restaurantsTextFilter = new boolean[manager.getRestaurantList().size()];
+        restaurantsCriticalFilter = new boolean[manager.getRestaurantList().size()];
+        restaurantsFavourites = new boolean[manager.getRestaurantList().size()];
+
+        setAllValuesToTrue(restaurantsHazardFilter);
+        setAllValuesToTrue(restaurantsTextFilter);
+        setAllValuesToTrue(restaurantsCriticalFilter);
+        setAllValuesToTrue(restaurantsFavourites);
     }
 
     @Override
@@ -160,7 +180,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         favouritesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                restaurantsAdapter.filterByFavourites(isChecked);
+                filterByFavourites(isChecked);
             }
         });
     }
@@ -182,7 +202,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         Switch favSwitch = findViewById(R.id.sw_filter_favourites_map);
         favSwitch.setChecked(isFavouriteFilterOn);
-        restaurantsAdapter.filterByFavourites(isFavouriteFilterOn);
+        filterByFavourites(isFavouriteFilterOn);
 
 
         ToggleButton tbGreater = findViewById(R.id.tb_greater_or_lesser_map);
@@ -190,26 +210,26 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
         TextView tvCriticalFilter = findViewById(R.id.filterInput_map);
         tvCriticalFilter.setText(criticalFilter);
-        restaurantsAdapter.filterByCriticalViolations(criticalFilter, isGreaterThan);
+        filterByCriticalViolations(criticalFilter, !isGreaterThan);
 
 
         RadioGroup radioGroup = findViewById(R.id.radioGroup);
         switch (hazardLevelFilter){
             case "Low":
                 radioGroup.check(R.id.filterLow_map);
-                restaurantsAdapter.filterByHazardLevel("Low");
+                filterByHazardLevel("Low");
                 break;
             case "Moderate":
                 radioGroup.check(R.id.filterModerate_map);
-                restaurantsAdapter.filterByHazardLevel("Moderate");
+                filterByHazardLevel("Moderate");
                 break;
             case "High":
-                radioGroup.check(R.id.filterHigh_map);
-                restaurantsAdapter.filterByHazardLevel("High");
+                radioGroup.check(R.id.filterHigh);
+                filterByHazardLevel("High");
                 break;
             default:
                 radioGroup.check(R.id.filterNone_map);
-                restaurantsAdapter.filterByHazardLevel("None");
+                filterByHazardLevel("None");
         }
 
 
@@ -259,7 +279,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
             isGreaterThan = false;
         }
 
-        restaurantsAdapter.filterByCriticalViolations(content, isGreaterThan);
+        filterByCriticalViolations(content, isGreaterThan);
     }
 
     private void setupSearchView() {
@@ -267,7 +287,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                restaurantsAdapter.filterByName(query);
+                filterByName(query);
                 //Toast.makeText(ListRestaurantActivity.this, query, Toast.LENGTH_LONG).show();
                 searchView.clearFocus();
                 return true;
@@ -276,7 +296,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
             @Override
             public boolean onQueryTextChange(String newText) {
                 //Toast.makeText(ListRestaurantActivity.this, newText, Toast.LENGTH_LONG).show();
-                restaurantsAdapter.filterByName(newText);
+                filterByName(newText);
                 return true;
             }
         });
@@ -334,7 +354,7 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
                 Intent mapsActivity = MapsActivity.makeIntent(ListRestaurantActivity.this,
                         searchView.getQuery().toString(), favSwitch.isChecked(), hazardFilter,
-                        tbGreater.isChecked(), criticalFilter.getText().toString());
+                        tbGreater.isChecked(), criticalFilter.getText().toString(), true);
 
                 startActivity(mapsActivity);
                 manager.getRestaurantList().clear();
@@ -353,11 +373,144 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
 
 
 
-        restaurantsAdapter = new RestaurantsAdapter(manager.getRestaurantList(), restaurantsFullList, this, this);
+        restaurantsAdapter = new RestaurantsAdapter(restaurantDataset,this, this);
         restaurantsRecyclerView.setAdapter(restaurantsAdapter);
 
 
     }
+
+    //region Filters
+
+    public void filterByName(String text) {
+
+        restaurantsTextFilter = new boolean[manager.getRestaurantList().size()];
+
+        if(text.isEmpty()){
+            setAllValuesToTrue(restaurantsTextFilter);
+        } else{
+            text = text.toLowerCase();
+            for (int i = 0; i < manager.getRestaurantList().size(); i++){
+                Restaurant r = manager.getRestaurantList().get(i);
+
+                if(r.getName().toLowerCase().contains(text)){
+                    restaurantsTextFilter[i] = true;
+                }
+            }
+        }
+
+        filterAll();
+    }
+
+    public void filterByFavourites(boolean doFilter){
+        restaurantsFavourites = new boolean[manager.getRestaurantList().size()];
+
+        if (!doFilter){
+            setAllValuesToTrue(restaurantsFavourites);
+            filterAll();
+            return;
+        }
+
+        for (int i = 0; i < manager.getRestaurantList().size(); i++){
+            if (manager.getRestaurantList().get(i).isFavourite()){
+                restaurantsFavourites[i] = true;
+            }
+        }
+
+        filterAll();
+    }
+
+
+    public void filterByHazardLevel(String hazardLevel){
+
+        restaurantsHazardFilter = new boolean[manager.getRestaurantList().size()];
+
+        if (hazardLevel.equals("None")){
+            setAllValuesToTrue(restaurantsHazardFilter);
+            filterAll();
+            return;
+        }
+
+        for (int i = 0; i < manager.getRestaurantList().size(); i++){
+            Restaurant r = manager.getRestaurantList().get(i);
+
+            if(r.getInspections().isEmpty()){
+                Log.d("ListActivity",r.getName() + " has no inspections");
+                continue;
+            }
+            Inspection mostRecentInspection = r.getInspections().get(0);
+            if(mostRecentInspection.getHazardRating().equals(hazardLevel)){
+                //r.setVisible(false);
+                restaurantsHazardFilter[i] = true;
+            }
+        }
+
+        filterAll();
+
+    }
+
+    public void filterByCriticalViolations(String criticalViolations, boolean isGreaterThan){
+
+        restaurantsCriticalFilter = new boolean[manager.getRestaurantList().size()];
+
+        if (criticalViolations.isEmpty()) {
+            setAllValuesToTrue(restaurantsCriticalFilter);
+            filterAll();
+            return;
+        }
+
+        int criticalViolation = Integer.parseInt(criticalViolations);
+
+        for (int j = 0; j < manager.getRestaurantList().size(); j++){
+            Restaurant r = manager.getRestaurantList().get(j);
+            int numOfCriticalViolationsFound = 0;
+            for(Inspection i : r.getInspections()){
+                String dateOfInspection = i.getInspectionDate();
+                DateCalculations dc = new DateCalculations();
+                int numOfDays = dc.daysInBetween(dateOfInspection);
+                if(numOfDays <= 365){
+                    numOfCriticalViolationsFound += i.getNumCritical();
+                }
+                else{
+                    break;
+                }
+            }
+            if(isGreaterThan && numOfCriticalViolationsFound >= criticalViolation){
+                Log.d("ListActivity",r.getName() + " : " + numOfCriticalViolationsFound);
+                restaurantsCriticalFilter[j] = true;
+            } else if (!isGreaterThan && numOfCriticalViolationsFound <= criticalViolation){
+                restaurantsCriticalFilter[j] = true;
+            }
+        }
+
+        filterAll();
+    }
+
+
+    private void setAllValuesToTrue(boolean[] list){
+        for (int i = 0; i < list.length; i++){
+            list[i] = true;
+        }
+    }
+
+    public void filterAll(){
+        String rShown = "";
+        Log.d("filtering", "Size of manager: " + manager.getRestaurantList().size() +
+                ", Size of hazardFilter = " + restaurantsHazardFilter.length + ", Size of TextFilter: " + restaurantsTextFilter.length);
+
+        restaurantDataset.clear();
+        for (int i = 0; i < manager.getRestaurantList().size(); i++){
+            if (restaurantsHazardFilter[i] && restaurantsTextFilter[i]
+                    && restaurantsCriticalFilter[i] && restaurantsFavourites[i]){
+                restaurantDataset.add(manager.getRestaurantList().get(i));
+                rShown += manager.getRestaurantList().get(i).getName() + " ";
+
+            }
+        }
+
+        //notifyItemRangeChanged(0, restaurantsFullList.size());
+        restaurantsAdapter.notifyDataSetChanged();
+    }
+    //endregion Filters
 
     @Override
     public void onRestaurantClick(String trackingNumber) {
@@ -378,19 +531,19 @@ public class ListRestaurantActivity extends AppCompatActivity implements Restaur
         switch(view.getId()) {
             case R.id.filterLow_map:
                 if (checked)
-                    restaurantsAdapter.filterByHazardLevel("Low");
+                    filterByHazardLevel("Low");
                     break;
             case R.id.filterModerate_map:
                 if (checked)
-                    restaurantsAdapter.filterByHazardLevel("Moderate");
+                    filterByHazardLevel("Moderate");
                     break;
             case R.id.filterHigh:
                 if(checked)
-                    restaurantsAdapter.filterByHazardLevel("High");
+                    filterByHazardLevel("High");
                     break;
             case R.id.filterNone_map:
                 if (checked){
-                    restaurantsAdapter.filterByHazardLevel("None");
+                    filterByHazardLevel("None");
                     break;
                 }
         }

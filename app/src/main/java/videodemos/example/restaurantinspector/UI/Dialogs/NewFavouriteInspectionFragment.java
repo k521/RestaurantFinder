@@ -44,6 +44,7 @@ public class NewFavouriteInspectionFragment extends AppCompatDialogFragment{
         DialogInterface.OnClickListener okListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                manager.clearFavMap();
             }
         };
 

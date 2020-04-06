@@ -186,5 +186,7 @@
     <string name="critical_violations_filter">Infracciones críticas:</string>
     <string name="favourite_restaurants_with_new_inspections">Restaurantes favoritos con nuevas inspecciones: </string>
     <string name="hazard_rating">Nivel de peligro: </string>
-
+    <string name="see_more_filters">Ver mas filtros</string>
+    <string name="click_here_to_show_hide_the_filters">Presiona aqui para mostrar/esconder los filtros</string>
+    <string name="hide">Esconder</string>
 </resources>

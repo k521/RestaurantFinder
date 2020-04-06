@@ -186,5 +186,8 @@
     <string name="critical_violations_filter">Critical violations:</string>
     <string name="favourite_restaurants_with_new_inspections">Favourite restaurants with new inspections:</string>
     <string name="hazard_rating">Hazard Rating: </string>
+    <string name="see_more_filters">See more filters</string>
+    <string name="click_here_to_show_hide_the_filters">Click here to show/hide the filters</string>
+    <string name="hide">Hide</string>
 
 </resources>
