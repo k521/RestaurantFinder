@@ -528,18 +528,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void filterAll(){
-        restaurantDataset.clear();
-        clusterManager.clearItems();
-        for (int i = 0; i < manager.getRestaurantList().size(); i++){
-            if (restaurantsHazardFilter[i] && restaurantsTextFilter[i]
-                    && restaurantsCriticalFilter[i] && restaurantsFavourites[i]){
-                restaurantDataset.add(manager.getRestaurantList().get(i));
+        try{
+            restaurantDataset.clear();
+            clusterManager.clearItems();
+            for (int i = 0; i < manager.getRestaurantList().size(); i++){
+                if (restaurantsHazardFilter[i] && restaurantsTextFilter[i]
+                        && restaurantsCriticalFilter[i] && restaurantsFavourites[i]){
+                    restaurantDataset.add(manager.getRestaurantList().get(i));
+                }
             }
+
+            readItems();
+            clusterManager.cluster();
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
-        readItems();
-
-        clusterManager.cluster();
 
     }
 
