@@ -30,15 +30,9 @@ import videodemos.example.restaurantinspector.R;
 
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
 
-    private List<Restaurant> restaurantDataset = new ArrayList<>();
-    private List<Restaurant> restaurantsFullList = new ArrayList<>();
-
+    private List<Restaurant> restaurantDataset;
     private Context context;
     private OnRestaurantListener onRestaurantListener;
-
-    private List<Restaurant> textFilterList = new ArrayList<>();
-
-    private boolean areFiltersOn = false;
 
     public class RestaurantsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView restaurantName;
@@ -61,21 +55,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             favouriteIcon = itemView.findViewById(R.id.iv_card_favourite);
             this.onRestaurantListener = onRestaurantListener;
 
-            Log.d("Adapter_Init", "Init arrays");
-            Log.d("order", "Start of ViewHolder");
-
-//            restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
-//            restaurantsTextFilter = new boolean[restaurantsFullList.size()];
-//            restaurantsCriticalFilter = new boolean[restaurantsFullList.size()];
-//            restaurantsFavourites = new boolean[restaurantsFullList.size()];
-//
-//            setAllValuesToTrue(restaurantsHazardFilter);
-//            setAllValuesToTrue(restaurantsTextFilter);
-//            setAllValuesToTrue(restaurantsCriticalFilter);
-//            setAllValuesToTrue(restaurantsFavourites);
-
             itemView.setOnClickListener(this);
-
         }
 
         @Override
@@ -87,11 +67,11 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         }
     }
 
-    public RestaurantsAdapter(List<Restaurant> restaurantDataset, Context context, OnRestaurantListener onRestaurantListener) {
+    public RestaurantsAdapter(List<Restaurant> restaurantDataset, Context context,
+                              OnRestaurantListener onRestaurantListener) {
         this.restaurantDataset = restaurantDataset;
         this.context = context;
         this.onRestaurantListener = onRestaurantListener;
-
 
     }
 
@@ -115,11 +95,13 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                 Inspection latestInspection = restaurantInQuestion.getInspections().get(0);
                 // Get the number of days since the last inspection
                 DateCalculations dateCalculations = new DateCalculations(context);
-                int numOfDaysSinceLastInspection = dateCalculations.daysInBetween(latestInspection.getInspectionDate());
+                int numOfDaysSinceLastInspection = dateCalculations
+                        .daysInBetween(latestInspection.getInspectionDate());
 
                 // Check to see if it happened in the last 30 days
                 if (numOfDaysSinceLastInspection <= LESS_THAN_A_MONTH) {
-                    holder.lastInspection.setText(context.getString(R.string.date_of_inspection_days_ago, numOfDaysSinceLastInspection));
+                    holder.lastInspection
+                            .setText(context.getString(R.string.date_of_inspection_days_ago, numOfDaysSinceLastInspection));
                 } else if (numOfDaysSinceLastInspection <= LESS_THAN_A_YEAR) {
                     String date = latestInspection.getInspectionDate();
                     String month = date.substring(4, 6);
@@ -137,10 +119,12 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                     String month = date.substring(4, 6);
 
                     String monthName = dateCalculations.getMonthName(Integer.parseInt(month));
-                    holder.lastInspection.setText(context.getString(R.string.date_of_inspection_with_params, monthName, Integer.parseInt(year)));
+                    holder.lastInspection
+                            .setText(context.getString(R.string.date_of_inspection_with_params, monthName, Integer.parseInt(year)));
 
                 }
-                int numOfIssues = latestInspection.getNumCritical() + latestInspection.getNumNonCritical();
+                int numOfIssues = latestInspection.getNumCritical() +
+                        latestInspection.getNumNonCritical();
 
                 holder.numOfIssues.setText(context.getResources().getString(R.string.number_of_issues, numOfIssues));
 
@@ -163,13 +147,21 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             }
 
 
-            String[] restaurantsWithCustomIcons = context.getResources().getStringArray(R.array.restaurants_with_custom_icons);
-            String[] restaurantsIconIds = context.getResources().getStringArray(R.array.restaurants_image_ids);
+            String[] restaurantsWithCustomIcons = context
+                    .getResources()
+                    .getStringArray(R.array.restaurants_with_custom_icons);
+
+            String[] restaurantsIconIds = context
+                    .getResources()
+                    .getStringArray(R.array.restaurants_image_ids);
+
             holder.restaurantIcon.setImageResource(R.drawable.ic_restaurant_white_24dp);
             for (int i = 0; i < restaurantsWithCustomIcons.length; i++) {
                 if (restaurantInQuestion.getName().contains(restaurantsWithCustomIcons[i])) {
                     String idName = restaurantsIconIds[i];
-                    int id = context.getResources().getIdentifier(idName, "drawable", context.getPackageName());
+                    int id = context
+                            .getResources()
+                            .getIdentifier(idName, "drawable", context.getPackageName());
                     holder.restaurantIcon.setImageResource(id);
                     break;
                 }

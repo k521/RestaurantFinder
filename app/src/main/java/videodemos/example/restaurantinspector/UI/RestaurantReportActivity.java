@@ -37,12 +37,10 @@ public class RestaurantReportActivity extends AppCompatActivity
         return intent;
     }
 
-
     private String trackingNumber;
     private final String PREFERENCES = "data";
     private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
     private SharedPreferences preferences;
-    private int indexOfRestaurant;
     private Restaurant restaurant;
 
     @Override
@@ -123,11 +121,19 @@ public class RestaurantReportActivity extends AppCompatActivity
             }
         } else if (!isFavourite && listOfTrackingNums.contains(restaurant.getTrackingNumber())){
             if (listOfTrackingNums.contains("," + restaurant.getTrackingNumber())){
-                listOfTrackingNums = listOfTrackingNums.replaceAll( "," + restaurant.getTrackingNumber(), "");
+
+                listOfTrackingNums = listOfTrackingNums
+                        .replaceAll( "," + restaurant.getTrackingNumber(), "");
+
             } else if (listOfTrackingNums.contains(restaurant.getTrackingNumber() + ",")){
-                listOfTrackingNums = listOfTrackingNums.replaceAll( restaurant.getTrackingNumber() + ",", "");
+
+                listOfTrackingNums = listOfTrackingNums
+                        .replaceAll( restaurant.getTrackingNumber() + ",", "");
+
             } else if (listOfTrackingNums.contains(restaurant.getTrackingNumber())){
-                listOfTrackingNums = listOfTrackingNums.replaceAll( restaurant.getTrackingNumber(), "");
+
+                listOfTrackingNums = listOfTrackingNums
+                        .replaceAll( restaurant.getTrackingNumber(), "");
             }
         }
 
@@ -165,8 +171,6 @@ public class RestaurantReportActivity extends AppCompatActivity
 
     @Override
     public void onInspectionClick(int position) {
-//        Log.d("We are passing the following index", "Rest Index " + indexOfRestaurant +
-//                " Inspect Index " + position);
         Intent intent = InspectionReportActivity.makeIntent(this,trackingNumber,position);
         startActivity(intent);
 

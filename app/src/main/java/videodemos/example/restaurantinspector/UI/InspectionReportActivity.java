@@ -65,7 +65,6 @@ public class InspectionReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspection_report);
 
-        //restaurantName = getIntent().getIntExtra(TAG_RESTAURANT, 0);
         restaurantName = getIntent().getStringExtra(TAG_RESTAURANT);
         inspectionIndex = getIntent().getIntExtra(TAG_INSPECTION, 0);
         maps = new ViolationMaps(this);

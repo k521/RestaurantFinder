@@ -94,6 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public final static String TAG_GREATER_THAN = "greater than";
     public final static String TAG_CRITICAL_FILTER = "critical filter";
     public final static String TAG_HAZARD_LEVER = "hazard level";
+    public final String TAG_DIALOG_NEW_FAV = "new fav dialog";
 
     public static final String TAG_EXTRA_TRACKING_NUMBER = "tracking number";
     public static boolean comeFromInspectionList = false;
@@ -109,34 +110,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final String TAG_DEFAULT_DATA = "default_data";
     private final String TAG_DIALOG = "new data dialog tag";
 
+    private final String LOW_HAZARD = "Low";
+    private final String MODERATE_HAZARD = "Moderate";
+    private final String HIGH_HAZARD = "High";
+    private final String NONE_HAZARD = "None";
+
     private static final String TAG = "MapActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
 
-    public static final float DEFAULT_ZOOM =15f;
+    public static final float DEFAULT_ZOOM = 15f;
 
     private GoogleMap map;
     private ClusterManager<ClusterMarker> clusterManager;
     private List<ClusterMarker> clusterMarkers = new ArrayList<>();
 
-    //widgets
-    private EditText searchText;
+
     private ImageView gps;
-    //vars
+
     private Boolean locationPermissionsGranted = false;
     private FusedLocationProviderClient fusedLocationClient;
-
-    private boolean isComingFromGPS = false;
 
     private SharedPreferences preferences;
     private RestaurantManager manager = RestaurantManager.getInstance();
 
     private Marker customMarker;
-    private String customMarkerTrackingNumber;
-
-    //TODO: Add favourite restaurants to the HashMap before updating the csv
-
 
     private boolean[] restaurantsHazardFilter;
     private boolean[] restaurantsTextFilter;
@@ -146,10 +145,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private ConstraintLayout filtersLayout;
 
-
     private List<Restaurant> restaurantDataset = new ArrayList<>();
     private List<Restaurant> restaurantsFullList = new ArrayList<>();
-
 
 
     public static Intent makeGPSIntent(Context c, String trackingNumber, boolean comeFromActivity){
@@ -159,7 +156,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
-    public static Intent makeIntent(Context c, String searchQuery, boolean isFavouriteFilterOn, String hazardLevelFilter, boolean isGreaterThan, String criticalFilter, boolean comeFromActivity){
+    public static Intent makeIntent(Context c, String searchQuery, boolean isFavouriteFilterOn,
+                                    String hazardLevelFilter, boolean isGreaterThan,
+                                    String criticalFilter, boolean comeFromActivity){
         Intent intent = new Intent(c, MapsActivity.class);
 
         intent.putExtra(TAG_FAVOURITE, isFavouriteFilterOn);
@@ -172,19 +171,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
-    public static Intent makeIntent(Context c){
-        Intent intent = new Intent(c, MapsActivity.class);
-
-        return intent;
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
-        //restaurantDataset = manager.getRestaurantList();
 
         Intent intent = getIntent();
 
@@ -208,7 +199,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         setupSearchView();
 
-        Log.d("Size", "size = " + restaurantDataset.size() + "Original = " + manager.getRestaurantList().size());
 
         if(!isServicesOK()){
             Intent mainActivity = ListRestaurantActivity.makeIntent(MapsActivity.this);
@@ -216,28 +206,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             finish();
         }
 
-        Log.d("Got_here", "211");
-
         setupToolbar();
-
         setupShowFiltersButton();
-        Log.d("Got_here", "216");
-
         getLocationPermission();
-
         setupCriticalFilter();
         setupFavouriteFilter();
 
-
-        //searchText = findViewById(R.id.input_search);
         gps = findViewById(R.id.ic_gps);
 
         showTutorial();
 
-        Log.d("Got_here", "229");
         updateNewInspectionMap();
         checkForNewFavInspections();
-        Log.d("Got_here", "232");
 
     }
 
@@ -249,7 +229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (!manager.isFavouritesMapEmpty()){
             FragmentManager fragmentManager = getSupportFragmentManager();
             NewFavouriteInspectionFragment dialog = new NewFavouriteInspectionFragment();
-            dialog.show(fragmentManager, "new fav dialog");
+            dialog.show(fragmentManager, TAG_DIALOG_NEW_FAV);
         }
     }
 
@@ -295,28 +275,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         TextView tvCriticalFilter = findViewById(R.id.filterInput_map);
         tvCriticalFilter.setText(criticalFilter);
-        filterByCriticalViolations(criticalFilter, isGreaterThan);
+        filterByCriticalViolations(criticalFilter, !isGreaterThan);
 
         RadioGroup radioGroup = findViewById(R.id.radioGroup);
+
         switch (hazardLevelFilter){
-            case "Low":
+            case LOW_HAZARD:
                 radioGroup.check(R.id.filterLow_map);
-                filterByHazardLevel("Low");
+                filterByHazardLevel(LOW_HAZARD);
                 break;
-            case "Moderate":
+            case MODERATE_HAZARD:
                 radioGroup.check(R.id.filterModerate_map);
-                filterByHazardLevel("Moderate");
+                filterByHazardLevel(MODERATE_HAZARD);
                 break;
-            case "High":
+            case HIGH_HAZARD:
                 radioGroup.check(R.id.filterHigh_map);
-                filterByHazardLevel("High");
+                filterByHazardLevel(HIGH_HAZARD);
                 break;
             default:
                 radioGroup.check(R.id.filterNone_map);
-                filterByHazardLevel("None");
+                filterByHazardLevel(NONE_HAZARD);
         }
-
-
 
         SearchView searchView = findViewById(R.id.sv_maps);
         searchView.setQuery(searchQuery, true);
@@ -342,8 +321,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE){
-                    //Toast.makeText(ListRestaurantActivity.this,"Enter detected",Toast.LENGTH_SHORT).show();
-
                     filterEditText();
                 }
                 return false;
@@ -367,8 +344,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onQueryTextSubmit(String query) {
                 filterByName(query);
                 searchView.clearFocus();
-
-                //geoLocate();
                 return true;
             }
 
@@ -452,7 +427,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
             if(isGreaterThan && numOfCriticalViolationsFound >= criticalViolation){
-                Log.d("ListActivity",r.getName() + " : " + numOfCriticalViolationsFound);
                 restaurantsCriticalFilter[j] = true;
             } else if (!isGreaterThan && numOfCriticalViolationsFound <= criticalViolation){
                 restaurantsCriticalFilter[j] = true;
@@ -483,15 +457,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
-
     private void filterEditText(){
         TextView filterText = findViewById(R.id.filterInput_map);
         String content = filterText.getText().toString();
 
         boolean isGreaterThan = true;
         ToggleButton toggleComparison = findViewById(R.id.tb_greater_or_lesser_map);
-        //Toast.makeText(this, toggleComparison.getText(), Toast.LENGTH_SHORT).show();
 
         if (toggleComparison.isChecked()){
             isGreaterThan = false;
@@ -512,19 +483,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switch(view.getId()) {
             case R.id.filterLow_map:
                 if (checked)
-                    filterByHazardLevel("Low");
+                    filterByHazardLevel(LOW_HAZARD);
                 break;
             case R.id.filterModerate_map:
                 if (checked)
-                    filterByHazardLevel("Moderate");
+                    filterByHazardLevel(MODERATE_HAZARD);
                 break;
             case R.id.filterHigh_map:
                 if(checked)
-                    filterByHazardLevel("High");
+                    filterByHazardLevel(HIGH_HAZARD);
                 break;
             case R.id.filterNone_map:
                 if(checked)
-                    filterByHazardLevel("None");
+                    filterByHazardLevel(NONE_HAZARD);
         }
 
     }
@@ -533,7 +504,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         restaurantsHazardFilter = new boolean[restaurantsFullList.size()];
 
-        if (hazardLevel.equals("None")){
+
+        if (hazardLevel.equals(NONE_HAZARD)){
             setAllValuesToTrue(restaurantsHazardFilter);
             filterAll();
             return;
@@ -543,12 +515,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Restaurant r = restaurantsFullList.get(i);
 
             if(r.getInspections().isEmpty()){
-                Log.d("ListActivity",r.getName() + " has no inspections");
                 continue;
             }
             Inspection mostRecentInspection = r.getInspections().get(0);
             if(mostRecentInspection.getHazardRating().equals(hazardLevel)){
-                //r.setVisible(false);
                 restaurantsHazardFilter[i] = true;
             }
         }
@@ -559,7 +529,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void filterAll(){
         restaurantDataset.clear();
-        //map.clear();
         clusterManager.clearItems();
         for (int i = 0; i < manager.getRestaurantList().size(); i++){
             if (restaurantsHazardFilter[i] && restaurantsTextFilter[i]
@@ -568,7 +537,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
-        //onMapReady(map);
         readItems();
 
         clusterManager.cluster();
@@ -577,19 +545,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     public boolean isServicesOK(){
-        Log.d(TAG, "isServicesOK: checking google services version");
-
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapsActivity.this);
+        int available = GoogleApiAvailability
+                .getInstance()
+                .isGooglePlayServicesAvailable(MapsActivity.this);
 
         if(available == ConnectionResult.SUCCESS){
-            //everything is fine and the user can make map requests
-            Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
-        }
-        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-            //an error occured but we can resolve it
-            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapsActivity.this, available, ERROR_DIALOG_REQUEST);
+        } else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+            Dialog dialog = GoogleApiAvailability
+                    .getInstance()
+                    .getErrorDialog(MapsActivity.this, available, ERROR_DIALOG_REQUEST);
+
             dialog.show();
         }
         return false;
@@ -620,19 +586,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 String hazardFilter = "";
                 switch(radioInt) {
                     case R.id.filterLow_map:
-                        hazardFilter = "Low";
+                        hazardFilter = LOW_HAZARD;
                         break;
                     case R.id.filterModerate_map:
-                        hazardFilter = "Moderate";
+                        hazardFilter = MODERATE_HAZARD;
                         break;
                     case R.id.filterHigh_map:
-                        hazardFilter = "High";
+                        hazardFilter = HIGH_HAZARD;
                         break;
                     case R.id.filterNone_map:
-                        hazardFilter = "none";
+                        hazardFilter = NONE_HAZARD;
                         break;
                 }
-
 
                 Intent listActivity = ListRestaurantActivity.makeIntent(MapsActivity.this,
                         searchView.getQuery().toString(), favSwitch.isChecked(), hazardFilter,
@@ -647,11 +612,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void setupRestaurantManager(){
         if (isDataDefaultVersion()){
-            // Call old method for csv parsing
             manager.readRestaurantFromOldCSV(this);
             manager.readInspectionsFromOldCSV(this);
         } else {
-            // Call new method for csv parsing
             manager.readRestaurantFromNewCSV(this);
             manager.readInspectionsFromNewCSV(this);
         }
@@ -761,7 +724,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             return body;
 
-
         } catch (Exception e) {
             Log.wtf("My Activity", "Error reading data file on line " + line, e);
             e.printStackTrace();
@@ -864,32 +826,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return map;
     }
 
-    private String violationType = "";
-    private int maxCritical = 564983;
-
 
     private void init(){
-        Log.d(TAG, "init: initializing");
 
-//        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent keyEvent) {
-//                if (actionId == EditorInfo.IME_ACTION_SEARCH
-//                        ||actionId == EditorInfo.IME_ACTION_DONE
-//                        ||keyEvent.getAction() == KeyEvent.ACTION_DOWN
-//                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
-//                    //action goes here:
-//                    geoLocate();
-//                    hideSoftKeyboard();
-//                }
-//
-//                return false;
-//            }
-//        });
         gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: clicked gps icon");
                 getDeviceLocation();
             }
         });
@@ -900,7 +842,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.d("MapActivity","onMapReadyCalled");
         map = googleMap;
 
         clusterManager = new ClusterManager<ClusterMarker>(this, getMap());
@@ -919,11 +860,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setupSavedFilters();
 
         if(locationPermissionsGranted){
-            Log.d(TAG, "Executing: getDeviceLocation() function");
             getDeviceLocation();
             map.setMyLocationEnabled(true);
 
-            //UI settings
             map.getUiSettings().setMyLocationButtonEnabled(false);
             map.getUiSettings().setAllGesturesEnabled(true);
             map.getUiSettings().setZoomControlsEnabled(true);
@@ -933,11 +872,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void readItems() {
-        Log.d("ReadItem", "START");
-        Log.d("ReadItem", "List = " + restaurantDataset.size());
-
         for (Restaurant restaurant : restaurantDataset) {
-            Log.d("ReadItem", restaurant.getName());
             int markerID;
             String hazardRating;
             if (restaurant.getInspections().isEmpty()) {
@@ -946,10 +881,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 hazardRating = restaurant.getInspections().get(0).getHazardRating();
             }
 
-            if (hazardRating.equals("High")) {
+            if (hazardRating.equals(HIGH_HAZARD)) {
                 hazardRating = getString(R.string.high);
                 markerID = R.drawable.criticality_high_icon;
-            } else if (hazardRating.equals("Moderate")) {
+            } else if (hazardRating.equals(MODERATE_HAZARD)) {
                 hazardRating = getString(R.string.moderate);
                 markerID = R.drawable.criticality_medium_icon;
             } else {
@@ -959,10 +894,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ClusterMarker newClusterMarker = new ClusterMarker(
 
                     new LatLng(restaurant.getLatitude(), restaurant.getLongitude()),
-                    restaurant.getName() + "\n" + restaurant.getPhysicalAddress() + "\n" + getString(R.string.hazard_rating)  + " " + hazardRating,
-                    "blank",
-                    markerID,
-                    restaurant.getTrackingNumber()
+                    restaurant.getName() + "\n" + restaurant.getPhysicalAddress() +
+                            "\n" + getString(R.string.hazard_rating)  + " " + hazardRating,
+                    "blank", markerID, restaurant.getTrackingNumber()
             );
 
             clusterManager.addItem(newClusterMarker);
@@ -972,8 +906,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: called.");
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         locationPermissionsGranted = false;
 
         switch(requestCode){
@@ -982,11 +916,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     for(int i = 0; i < grantResults.length; i++){
                         if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
                             locationPermissionsGranted = false;
-                            Log.d(TAG, "onRequestPermissionsResult: permission failed");
                             return;
                         }
                     }
-                    Log.d(TAG, "onRequestPermissionsResult: permission granted");
                     locationPermissionsGranted = true;
                     initMap();
                 }
@@ -995,7 +927,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void getLocationPermission(){
-        Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
@@ -1018,14 +949,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void initMap(){
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
     public void getDeviceLocation () {
-        Log.d(TAG, "getDeviceLocation: getting the device current location");
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         try{
             if(locationPermissionsGranted){
@@ -1042,12 +971,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             if (comeFromInspectionList) {
 
-                                isComingFromGPS = true;
                                 ClusterMarker foundMarker = new ClusterMarker();
                                 int index = 0;
                                 for (ClusterMarker marker : clusterMarkers) {
 
-                                    if (marker.getTrackingNumber().equals(trackingNumberFromIntent)) {
+                                    if (marker.getTrackingNumber().equals(trackingNumberFromIntent)){
                                         foundMarker = marker;
                                         break;
                                     }
@@ -1056,13 +984,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 LatLng currGPS = foundMarker.getPosition();
 
-                                final int fIndex = index;
-                                customMarker = map.addMarker(new MarkerOptions().position(currGPS).title(foundMarker.getTitle()).snippet(foundMarker.getSnippet()));
-                                moveCamera(currGPS,
-                                        DEFAULT_ZOOM, foundMarker.getTitle());
-                                customMarker.showInfoWindow();
 
-                                customMarkerTrackingNumber = foundMarker.getTrackingNumber();
+                                customMarker = map.addMarker(new MarkerOptions()
+                                        .position(currGPS)
+                                        .title(foundMarker.getTitle())
+                                        .snippet(foundMarker.getSnippet()));
+
+                                moveCamera(currGPS,
+                                        DEFAULT_ZOOM,
+                                        foundMarker.getTitle());
+                                customMarker.showInfoWindow();
 
                                 comeFromInspectionList = false;
 
@@ -1070,7 +1001,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                         DEFAULT_ZOOM, "My location");
                             }
-
 
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
@@ -1085,7 +1015,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void moveCamera(LatLng latLng, float zoom, String title){
-        Log.d(TAG, "moveCamera: moving the camera to: lat:" + latLng.latitude + ", lng: " + latLng.longitude);
         map.moveCamera( CameraUpdateFactory.newLatLngZoom(latLng,zoom));
 
         map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -1099,19 +1028,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 View v = getLayoutInflater().inflate(R.layout.custom_info_window, null);
                 TextView tLocation = v.findViewById(R.id.infoAddress);
                 if (marker.getTitle().contains(getString(R.string.hazard_rating) + " " + getString(R.string.high))){
-                    v.setBackgroundColor(ContextCompat.getColor(MapsActivity.this, R.color.colorHighHazard));
+                    v.setBackgroundColor(ContextCompat
+                            .getColor(MapsActivity.this, R.color.colorHighHazard));
                 } else if (marker.getTitle().contains(getString(R.string.hazard_rating) + " " + getString(R.string.moderate))){
-                    v.setBackgroundColor(ContextCompat.getColor(MapsActivity.this, R.color.colorMedHazard));
+                    v.setBackgroundColor(ContextCompat
+                            .getColor(MapsActivity.this, R.color.colorMedHazard));
                 } else if (marker.getTitle().contains(getString(R.string.hazard_rating) + " " + getString(R.string.low))){
-                    v.setBackgroundColor(ContextCompat.getColor(MapsActivity.this, R.color.colorLowHazard));
+                    v.setBackgroundColor(ContextCompat
+                            .getColor(MapsActivity.this, R.color.colorLowHazard));
                 }
                 tLocation.setText(marker.getTitle());
                 return v;
             }
         });
 
-
-        if (!title.equals("My location") ){
+        final String MY_LOCATION = "My location";
+        if (!title.equals(MY_LOCATION) ){
             MarkerOptions options = new MarkerOptions()
                     .position(latLng)
                     .title(title);
@@ -1155,8 +1087,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return true;
     }
-
-
 
     //endregion Interface Override methods
 

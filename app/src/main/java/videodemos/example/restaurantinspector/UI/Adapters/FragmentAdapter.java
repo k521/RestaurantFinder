@@ -23,10 +23,11 @@ import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.R;
 
 /**
- * Restaurants adapter for fragment
+ * An adapter to show favourite restaurants with new inspections.
  */
 
 public class FragmentAdapter extends RecyclerView.Adapter<FragmentAdapter.RestaurantsViewHolder> {
+
 
     private List<Restaurant> restaurantDataset;
     private Context context;
@@ -59,10 +60,11 @@ public class FragmentAdapter extends RecyclerView.Adapter<FragmentAdapter.Restau
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantsViewHolder holder, int position) {
+        final String LOW_HAZARD = "Low";
+        final String MODERATE_HAZARD = "Moderate";
+
         Restaurant restaurantInQuestion = restaurantDataset.get(position);
-
         holder.restaurantName.setText(restaurantInQuestion.getName());
-
 
         Inspection latestInspection = restaurantInQuestion.getInspections().get(0);
 
@@ -75,15 +77,14 @@ public class FragmentAdapter extends RecyclerView.Adapter<FragmentAdapter.Restau
 
         holder.lastInspection.setText(dateInQuestion);
 
-
         int numOfIssues = latestInspection.getNumCritical() + latestInspection.getNumNonCritical();
 
         holder.numOfIssues.setText(context.getResources().getString(R.string.number_of_issues, numOfIssues));
 
-        if (latestInspection.getHazardRating().equals("Low")) {
+        if (latestInspection.getHazardRating().equals(LOW_HAZARD)) {
             int lowHazardColor = ContextCompat.getColor(context, R.color.colorLowHazard);
             holder.cardViewBackground.setCardBackgroundColor(lowHazardColor);
-        } else if (latestInspection.getHazardRating().equals("Moderate")) {
+        } else if (latestInspection.getHazardRating().equals(MODERATE_HAZARD)) {
             int medHazardColor = ContextCompat.getColor(context, R.color.colorMedHazard);
             holder.cardViewBackground.setCardBackgroundColor(medHazardColor);
         } else {

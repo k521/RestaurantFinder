@@ -23,7 +23,6 @@ public class Restaurant {
     private double latitude;
     private double longitude;
     private boolean isFavourite = false;
-    private boolean isVisible = true;
 
 
     private List<Inspection> inspections = new ArrayList<>();
@@ -75,22 +74,12 @@ public class Restaurant {
     }
 
 
-
     public double getLongitude() {
         return longitude;
     }
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
-    }
-
-
-    public boolean isVisible() {
-        return isVisible;
-    }
-
-    public void setVisible(boolean visible) {
-        isVisible = visible;
     }
 
 

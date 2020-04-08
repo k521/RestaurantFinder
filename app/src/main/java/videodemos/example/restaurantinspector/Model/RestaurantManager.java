@@ -34,8 +34,6 @@ import static android.content.Context.MODE_PRIVATE;
 public class RestaurantManager {
 
     public static RestaurantManager instance;
-    private List<Restaurant> restaurantList = new ArrayList<>();
-    private HashMap<String, Inspection> favouritesMap = new HashMap<>();
 
     public static RestaurantManager getInstance() {
         if (instance == null) {
@@ -47,7 +45,14 @@ public class RestaurantManager {
 
     private final String PREFERENCES = "data";
     private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
+
+    private List<Restaurant> restaurantList = new ArrayList<>();
+    private HashMap<String, Inspection> favouritesMap = new HashMap<>();
     private SharedPreferences preferences;
+
+
+    private RestaurantManager() {
+    }
 
     public List<Restaurant> getRestaurantList() {
         return restaurantList;
@@ -57,7 +62,7 @@ public class RestaurantManager {
         return restaurantList.get(index);
     }
 
-    public void insertIntoFavouritesMap(String trackingNumber, Inspection latestInspection){
+    public void insertIntoFavouritesMap(String trackingNumber, Inspection latestInspection) {
         favouritesMap.put(trackingNumber, latestInspection);
 
     }
@@ -66,15 +71,11 @@ public class RestaurantManager {
         return favouritesMap;
     }
 
-    public boolean isFavouritesMapEmpty(){
+    public boolean isFavouritesMapEmpty() {
         return favouritesMap.isEmpty();
     }
 
-
-    private RestaurantManager() {
-    }
-
-    public void clearFavMap(){
+    public void clearFavMap() {
         favouritesMap.clear();
     }
 
@@ -171,7 +172,7 @@ public class RestaurantManager {
                 }
 
                 String favourites = getFavouriteRestaurantsTrackingNumbers(c);
-                if (favourites.contains(restaurant.getTrackingNumber())){
+                if (favourites.contains(restaurant.getTrackingNumber())) {
                     restaurant.setFavourite(true);
                 }
                 restaurantList.add(restaurant);
@@ -352,7 +353,7 @@ public class RestaurantManager {
                 }
 
                 String favourites = getFavouriteRestaurantsTrackingNumbers(c);
-                if (favourites.contains(restaurant.getTrackingNumber())){
+                if (favourites.contains(restaurant.getTrackingNumber())) {
                     restaurant.setFavourite(true);
                 }
                 restaurantList.add(restaurant);
@@ -437,16 +438,21 @@ public class RestaurantManager {
     }
 
 
-    public void removeNonNewRestaurantInspections(){
-        for (Restaurant r : restaurantList){
+    public void removeNonNewRestaurantInspections() {
+        for (Restaurant r : restaurantList) {
             String key = r.getTrackingNumber();
-            if (favouritesMap.containsKey(key)){
+            if (favouritesMap.containsKey(key)) {
                 Inspection latestInspectionFromOldData = favouritesMap.get(key);
                 Inspection latestInspectionFromNewData = r.getInspections().get(0);
 
-                if (latestInspectionFromOldData.getInspectionDate().equals(latestInspectionFromNewData.getInspectionDate())){
-                    favouritesMap.remove(key);
+                try {
+                    if (latestInspectionFromOldData.getInspectionDate().equals(latestInspectionFromNewData.getInspectionDate())) {
+                        favouritesMap.remove(key);
+                    }
+                } catch (NullPointerException e) {
+                    Log.d("Exception", "Null Inspection");
                 }
+
             }
         }
     }
@@ -469,7 +475,7 @@ public class RestaurantManager {
         }
     }
 
-    private String getFavouriteRestaurantsTrackingNumbers(Context c){
+    private String getFavouriteRestaurantsTrackingNumbers(Context c) {
         preferences = c.getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         return preferences.getString(TAG_TRACKING_NUMBER_LIST, "");
     }
