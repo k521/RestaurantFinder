@@ -1,0 +1,4 @@
+Language support:
+
+- English
+- Spanish
