@@ -34,9 +34,9 @@ import videodemos.example.restaurantinspector.R;
 
 public class InspectionReportActivity extends AppCompatActivity {
 
-    public static Intent makeIntent(Context c, int indexOfRestaurant, int indexOfInspection) {
+    public static Intent makeIntent(Context c, String trackingNumber, int indexOfInspection) {
         Intent intentThirdActivity = new Intent(c, InspectionReportActivity.class);
-        intentThirdActivity.putExtra(TAG_RESTAURANT, indexOfRestaurant);
+        intentThirdActivity.putExtra(TAG_RESTAURANT, trackingNumber);
         intentThirdActivity.putExtra(TAG_INSPECTION, indexOfInspection);
         return intentThirdActivity;
 
@@ -47,7 +47,7 @@ public class InspectionReportActivity extends AppCompatActivity {
 
     private List<Violation> violationList = new ArrayList<Violation>();
 
-    private int restaurantName;
+    private String restaurantName;
     private int inspectionIndex;
 
 
@@ -65,7 +65,7 @@ public class InspectionReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspection_report);
 
-        restaurantName = getIntent().getIntExtra(TAG_RESTAURANT, 0);
+        restaurantName = getIntent().getStringExtra(TAG_RESTAURANT);
         inspectionIndex = getIntent().getIntExtra(TAG_INSPECTION, 0);
         maps = new ViolationMaps(this);
 
@@ -81,7 +81,11 @@ public class InspectionReportActivity extends AppCompatActivity {
     }
 
     private void getCurrentRestaurant() {
-        currentRestaurant = restaurantManager.getRestaurant(restaurantName);
+        for(Restaurant r : restaurantManager.getRestaurantList()){
+            if(r.getTrackingNumber().equals(restaurantName)){
+                currentRestaurant = r;
+            }
+        }
     }
 
     private void getCurrentInspectionReport() {
@@ -132,14 +136,17 @@ public class InspectionReportActivity extends AppCompatActivity {
             int lowHazardColor = ContextCompat.getColor(this, R.color.colorLowHazard);
             hazardBackground.setBackgroundColor(lowHazardColor);
             hazardIcon.setImageResource(R.drawable.low_hazard_icon);
+            hazardRating = getString(R.string.low);
         } else if (hazardRating.equals("Moderate")) {
             int lowMedColor = ContextCompat.getColor(this, R.color.colorMedHazard);
             hazardBackground.setBackgroundColor(lowMedColor);
             hazardIcon.setImageResource(R.drawable.med_hazard_icon);
+            hazardRating = getString(R.string.moderate);
         } else {
             int lowHighColor = ContextCompat.getColor(this, R.color.colorHighHazard);
             hazardBackground.setBackgroundColor(lowHighColor);
             hazardIcon.setImageResource(R.drawable.high_hazard_icon);
+            hazardRating = getString(R.string.high);
         }
 
         hazardDescription.setText(getString(R.string.hazard_level, hazardRating));

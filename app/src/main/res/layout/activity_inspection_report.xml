@@ -14,23 +14,25 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:titleTextColor="@android:color/background_light" >
+        app:titleTextColor="@android:color/background_light">
 
         <TextView
             android:id="@+id/tv_inspection_details_restaurant_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/inspections_details"
-            android:textSize="20sp"
-            android:paddingEnd="60dp"
             android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="@android:color/background_light"/>
+            android:paddingEnd="60dp"
+            android:text="@string/inspections_details"
+            android:textColor="@android:color/background_light"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
     </androidx.appcompat.widget.Toolbar>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_hazard_background"
@@ -202,5 +204,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.4" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

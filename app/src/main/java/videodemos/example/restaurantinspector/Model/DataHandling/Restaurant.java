@@ -1,5 +1,7 @@
 package videodemos.example.restaurantinspector.Model.DataHandling;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,8 +22,8 @@ public class Restaurant {
     private String factype;
     private double latitude;
     private double longitude;
-    private boolean isFavourite;
-    private boolean isVisible;
+    private boolean isFavourite = false;
+
 
     private List<Inspection> inspections = new ArrayList<>();
 
@@ -72,22 +74,12 @@ public class Restaurant {
     }
 
 
-
     public double getLongitude() {
         return longitude;
     }
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
-    }
-
-
-    public boolean isVisible() {
-        return isVisible;
-    }
-
-    public void setVisible(boolean visible) {
-        isVisible = visible;
     }
 
 
@@ -123,6 +115,16 @@ public class Restaurant {
         Collections.sort(inspections, comparatorName);
     }
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (!(obj instanceof Restaurant)) {
+            return false;
+        }
+
+        Restaurant other = (Restaurant) obj;
+
+        return trackingNumber.equals(other.getTrackingNumber());
+    }
 
     @Override
     public String toString() {

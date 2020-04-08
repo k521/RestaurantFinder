@@ -75,5 +75,6 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
         }
         super.onClusterItemUpdated(item, marker);
     }
+
 }
 

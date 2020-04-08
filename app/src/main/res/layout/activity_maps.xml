@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android = "http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_maps_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -79,56 +80,192 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restaurant_list_toolbar"
+        app:layout_constraintVertical_bias="1.0"
         tools:context=".UI.MapsActivity" />
 
-    <RelativeLayout
-        android:id="@+id/relLayout1"
+    <SearchView
+        android:id="@+id/sv_maps"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="36dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/white_boarder"
-        android:elevation="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/searchview_background"
+        app:layout_constraintEnd_toStartOf="@+id/ib_show_filters"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/restaurant_list_toolbar">
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_list_toolbar" />
 
-        <ImageView
-            android:id="@+id/ic_magnify"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:src="@drawable/ic_magnify" />
+    <ImageButton
+        android:id="@+id/ib_show_filters"
+        android:layout_width="36dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/searchview_background"
+        app:layout_constraintBottom_toBottomOf="@+id/sv_maps"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_list_toolbar"
+        app:srcCompat="@drawable/ic_expand_more_black_24dp" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_map_filters"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/searchview_background"
+        android:layoutAnimation="@anim/layout_animation_fall_down"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/sv_maps"
+        app:layout_constraintTop_toBottomOf="@+id/sv_maps">
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:checkedButton="@id/filterNone_map"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView9"
+            app:layout_constraintTop_toTopOf="@+id/textView9">
+
+            <RadioButton
+                android:id="@+id/filterNone_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorNoHazard"
+                android:onClick="onRadioClick"
+                android:text="@string/none" />
+
+            <RadioButton
+                android:id="@+id/filterLow_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorLowHazard"
+                android:onClick="onRadioClick"
+                android:text="@string/low" />
+
+            <RadioButton
+                android:id="@+id/filterModerate_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorMedHazard"
+                android:onClick="onRadioClick"
+                android:text="@string/moderate" />
+
+            <RadioButton
+                android:id="@+id/filterHigh_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorHighHazard"
+                android:onClick="onRadioClick"
+                android:text="@string/high" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/searchview_background"
+            android:gravity="center"
+            android:text="@string/critical_violations_filter"
+            app:layout_constraintBottom_toBottomOf="@id/tb_greater_or_lesser_map"
+            app:layout_constraintEnd_toEndOf="@id/textView9"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
         <EditText
-            android:id="@+id/input_search"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="3dp"
-            android:layout_toRightOf="@id/ic_magnify"
-            android:background="@null"
-            android:hint="Enter Address, City or Zip Code"
-            android:imeOptions="actionSearch"
-            android:textColor="#000"
-            android:textSize="15dp" />
+            android:id="@+id/filterInput_map"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:inputType="number"
+            android:maxLines="1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tb_greater_or_lesser_map"
+            app:layout_constraintTop_toTopOf="@+id/textView8" />
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/searchview_background"
+            android:gravity="center"
+            android:text="@string/hazard_level_filter"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/radioGroup"
+            app:layout_constraintEnd_toStartOf="@id/radioGroup"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sw_filter_favourites_map" />
+
+        <ToggleButton
+            android:id="@+id/tb_greater_or_lesser_map"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:background="@color/colorNoHazard"
+            android:text="ToggleButton"
+            android:textColor="@color/cardview_light_background"
+            android:textOff="&gt;="
+            android:textOn="&lt;="
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="@+id/filterInput_map"
+            app:layout_constraintStart_toEndOf="@+id/textView8"
+            app:layout_constraintTop_toTopOf="@+id/filterInput_map" />
+
+        <Switch
+            android:id="@+id/sw_filter_favourites_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/searchview_background"
+            android:gravity="center"
+            android:text="@string/favourites_filter"
+            app:layout_constraintBottom_toBottomOf="@+id/sw_filter_favourites_map"
+            app:layout_constraintEnd_toStartOf="@+id/radioGroup"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/sw_filter_favourites_map" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <ImageView
         android:id="@+id/ic_gps"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_below="@+id/relLayout1"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="32dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_gps"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relLayout1" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

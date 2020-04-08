@@ -14,4 +14,15 @@
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
     </style>
 
+    <style name="CustomShowcaseTheme" parent="ShowcaseView.Light">
+        <item name="sv_backgroundColor">#A6D4E8FF</item>
+        <item name="sv_showcaseColor">#B2003868</item>
+        <item name="sv_buttonText">@string/hide</item>
+        <item name="sv_tintButtonColor">false</item>
+        <item name="sv_titleTextAppearance">@style/CustomTitle</item>
+    </style>
+
+    <style name="CustomTitle" parent="TextAppearance.ShowcaseView.Title">
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

@@ -1,6 +1,7 @@
 package videodemos.example.restaurantinspector.Model;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -16,12 +17,15 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import videodemos.example.restaurantinspector.Model.DataHandling.Inspection;
 import videodemos.example.restaurantinspector.Model.DataHandling.Restaurant;
 import videodemos.example.restaurantinspector.Model.Network.HttpHandler;
 import videodemos.example.restaurantinspector.R;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * A class that holds and loads the list of restaurants.
@@ -30,7 +34,6 @@ import videodemos.example.restaurantinspector.R;
 public class RestaurantManager {
 
     public static RestaurantManager instance;
-    private List<Restaurant> restaurantList = new ArrayList<>();
 
     public static RestaurantManager getInstance() {
         if (instance == null) {
@@ -38,6 +41,17 @@ public class RestaurantManager {
         }
 
         return instance;
+    }
+
+    private final String PREFERENCES = "data";
+    private final String TAG_TRACKING_NUMBER_LIST = "list of tracking numbers";
+
+    private List<Restaurant> restaurantList = new ArrayList<>();
+    private HashMap<String, Inspection> favouritesMap = new HashMap<>();
+    private SharedPreferences preferences;
+
+
+    private RestaurantManager() {
     }
 
     public List<Restaurant> getRestaurantList() {
@@ -48,7 +62,21 @@ public class RestaurantManager {
         return restaurantList.get(index);
     }
 
-    private RestaurantManager() {
+    public void insertIntoFavouritesMap(String trackingNumber, Inspection latestInspection) {
+        favouritesMap.put(trackingNumber, latestInspection);
+
+    }
+
+    public HashMap<String, Inspection> getFavouritesMap() {
+        return favouritesMap;
+    }
+
+    public boolean isFavouritesMapEmpty() {
+        return favouritesMap.isEmpty();
+    }
+
+    public void clearFavMap() {
+        favouritesMap.clear();
     }
 
     public void readRestaurantFromNewCSV(Context c) {
@@ -143,6 +171,10 @@ public class RestaurantManager {
                     }
                 }
 
+                String favourites = getFavouriteRestaurantsTrackingNumbers(c);
+                if (favourites.contains(restaurant.getTrackingNumber())) {
+                    restaurant.setFavourite(true);
+                }
                 restaurantList.add(restaurant);
 
             }
@@ -320,6 +352,10 @@ public class RestaurantManager {
                     restaurant.setLongitude(0);
                 }
 
+                String favourites = getFavouriteRestaurantsTrackingNumbers(c);
+                if (favourites.contains(restaurant.getTrackingNumber())) {
+                    restaurant.setFavourite(true);
+                }
                 restaurantList.add(restaurant);
 
             }
@@ -402,6 +438,26 @@ public class RestaurantManager {
     }
 
 
+    public void removeNonNewRestaurantInspections() {
+        for (Restaurant r : restaurantList) {
+            String key = r.getTrackingNumber();
+            if (favouritesMap.containsKey(key)) {
+                Inspection latestInspectionFromOldData = favouritesMap.get(key);
+                Inspection latestInspectionFromNewData = r.getInspections().get(0);
+
+                try {
+                    if (latestInspectionFromOldData.getInspectionDate().equals(latestInspectionFromNewData.getInspectionDate())) {
+                        favouritesMap.remove(key);
+                    }
+                } catch (NullPointerException e) {
+                    Log.d("Exception", "Null Inspection");
+                }
+
+            }
+        }
+    }
+
+
     public void sortByRestaurantName() {
         Comparator<Restaurant> comparatorName = new Comparator<Restaurant>() {
             @Override
@@ -417,6 +473,11 @@ public class RestaurantManager {
         for (Restaurant r : restaurantList) {
             r.sortByInspectionDate();
         }
+    }
+
+    private String getFavouriteRestaurantsTrackingNumbers(Context c) {
+        preferences = c.getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        return preferences.getString(TAG_TRACKING_NUMBER_LIST, "");
     }
 
 }
